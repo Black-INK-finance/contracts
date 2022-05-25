@@ -52,4 +52,8 @@ interface IEverFarmPool {
     function finishSafeWithdraw(address user, uint128 amount, address send_gas_to) external;
     function upgrade(TvmCell new_code, uint32 new_version, address send_gas_to) external;
     function updateUserDataCode(TvmCell new_code, uint32 new_version, address send_gas_to) external;
+
+    function getUserDataAddress(address user) external view responsible returns (address);
+    function claimReward(address send_gas_to, uint32 nonce) external;
+    function withdraw(uint128 amount, address send_gas_to, uint32 nonce) external;
 }

@@ -1,17 +1,26 @@
 const logger = require("mocha-logger");
-const {expect} = require("chai");
+const chai = require('chai');
+chai.use(require('chai-bignumber')());
+
+const { expect } = chai;
 const {
     convertCrystal
 } = locklift.utils;
 
+const _ = require('underscore');
+
 
 // ------------------------------- UTILS -----------------------------------
 async function sleep(ms) {
-    return;
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+const TOKEN_CONTRACTS_PATH = './node_modules/broxus-ton-tokens-contracts/build';
+const DEX_CONTRACTS_PATH = './node_modules/flatqube/build';
 
 const isValidTonAddress = (address) => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
 
+const getRandomNonce = locklift.utils.getRandomNonce;
 
 const afterRun = async (tx) => {
     if (locklift.network === 'dev' || locklift.network === 'main') {
@@ -99,10 +108,10 @@ class TokenWallet {
                 recipient: addr,
                 deployWalletValue: 0,
                 remainingGasTo: this._owner.address,
-                notify: notify,
+                notify: true,
                 payload: payload
             },
-            value: convertCrystal(5, 'nano'),
+            value: convertCrystal(10, 'nano'),
             tracing: tracing,
             tracing_allowed_codes: allowed_codes
         });
@@ -142,6 +151,14 @@ class Token {
         return TokenWallet.from_addr(wallet_addr, user);
     }
 
+    async name() {
+        return this.token.call({ method: 'name' });
+    }
+
+    async symbol() {
+        return this.token.call({ method: 'symbol' });
+    }
+
     async deployWallet(user) {
         await user.runTarget({
             contract: this.token,
@@ -179,7 +196,7 @@ class Token {
 
         await wait_acc_deployed(walletAddr);
 
-        logger.log(`User token wallet: ${walletAddr}`);
+        // logger.log(`User token wallet: ${walletAddr}`);
         return TokenWallet.from_addr(walletAddr, user);
     }
 }
@@ -660,8 +677,6 @@ const setupTokenRoot = async function(token_name, token_symbol, owner) {
     _root.afterRun = afterRun;
     _root.setKeyPair(keyPair);
 
-    logger.log(`Token root address: ${_root.address}`);
-
     const name = await _root.call({
         method: 'name',
         params: {}
@@ -669,6 +684,11 @@ const setupTokenRoot = async function(token_name, token_symbol, owner) {
 
     expect(name.toString()).to.be.equal(token_name, 'Wrong root name');
     expect((await locklift.ton.getBalance(_root.address)).toNumber()).to.be.above(0, 'Root balance empty');
+
+    _root.name = `Token root [${token_symbol}]`;
+
+    await logContract(_root);
+
     return new Token(_root, owner);
 }
 
@@ -678,7 +698,7 @@ const getUserDataDetails = async function(userData) {
 }
 
 
-const deployUser = async function() {
+const deployUser = async function(name = '', amount = 200) {
     const [keyPair] = await locklift.keys.getKeyPairs();
     const Account = await locklift.factory.getAccount('Wallet');
     const _user = await locklift.giver.deployContract({
@@ -688,17 +708,21 @@ const deployUser = async function() {
             _randomNonce: locklift.utils.getRandomNonce()
         },
         keyPair,
-    }, convertCrystal(50, 'nano'));
+    }, convertCrystal(amount, 'nano'));
 
     _user.afterRun = afterRun;
 
     _user.setKeyPair(keyPair);
 
+    if (name !== '') {
+        _user.name = name;
+    }
+
     const userBalance = await locklift.ton.getBalance(_user.address);
 
     expect(userBalance.toNumber()).to.be.above(0, 'Bad user balance');
 
-    logger.log(`User address: ${_user.address}`);
+    await logContract(_user);
 
     const {
         acc_type_name
@@ -708,8 +732,257 @@ const deployUser = async function() {
     return _user;
 }
 
+const logContract = async (contract) => {
+    const balance = await locklift.ton.getBalance(contract.address);
+
+    logger.log(`${contract.name} (${contract.address}) - ${locklift.utils.convertCrystal(balance, 'ton')}`);
+};
+
+
+const setupDex = async (god) => {
+    const [keyPair] = await locklift.keys.getKeyPairs();
+
+    // Deploy token factory
+    const TokenFactory = await locklift.factory.getContract('TokenFactory', DEX_CONTRACTS_PATH);
+
+    const TokenRoot = await locklift.factory.getContract('TokenRootUpgradeable', TOKEN_CONTRACTS_PATH);
+    const TokenWallet = await locklift.factory.getContract('TokenWalletUpgradeable', TOKEN_CONTRACTS_PATH);
+    const TokenWalletPlatform = await locklift.factory.getContract('TokenWalletPlatform', TOKEN_CONTRACTS_PATH);
+
+    const token_factory = await locklift.giver.deployContract({
+        contract: TokenFactory,
+        constructorParams: {
+            _owner: god.address
+        },
+        initParams: {
+            randomNonce_: getRandomNonce(),
+        },
+        keyPair,
+    }, locklift.utils.convertCrystal(2, 'nano'));
+
+    await god.runTarget({
+        contract: token_factory,
+        method: 'setRootCode',
+        params: {_rootCode: TokenRoot.code},
+        keyPair
+    });
+
+    await god.runTarget({
+        contract: token_factory,
+        method: 'setWalletCode',
+        params: {_walletCode: TokenWallet.code},
+    });
+
+    await god.runTarget({
+        contract: token_factory,
+        method: 'setWalletPlatformCode',
+        params: {_walletPlatformCode: TokenWalletPlatform.code},
+    });
+
+    await logContract(token_factory);
+
+    // Deploy dex root
+    const DexPlatform = await locklift.factory.getContract(
+        'DexPlatform',
+        DEX_CONTRACTS_PATH
+    );
+    const DexAccount = await locklift.factory.getContract(
+        'DexAccount',
+        DEX_CONTRACTS_PATH
+    );
+    const DexPair = await locklift.factory.getContract(
+        'DexPair',
+        DEX_CONTRACTS_PATH
+    );
+    const DexVaultLpTokenPending = await locklift.factory.getContract(
+        'DexVaultLpTokenPending',
+        DEX_CONTRACTS_PATH
+    );
+    const DexRoot = await locklift.factory.getContract(
+        'DexRoot',
+        DEX_CONTRACTS_PATH
+    );
+    const DexVault = await locklift.factory.getContract(
+        'DexVault',
+        DEX_CONTRACTS_PATH
+    );
+
+    const dex_root = await locklift.giver.deployContract({
+        contract: DexRoot,
+        constructorParams: {
+            initial_owner: god.address,
+            initial_vault: locklift.ton.zero_address
+        },
+        initParams: {
+            _nonce: locklift.utils.getRandomNonce(),
+        },
+        keyPair,
+    }, locklift.utils.convertCrystal(2, 'nano'));
+
+    await logContract(dex_root);
+
+    const dex_vault = await locklift.giver.deployContract({
+        contract: DexVault,
+        constructorParams: {
+            owner_: god.address,
+            token_factory_: token_factory.address,
+            root_: dex_root.address
+        },
+        initParams: {
+            _nonce: getRandomNonce(),
+        },
+        keyPair,
+    }, locklift.utils.convertCrystal(2, 'nano'));
+
+    await logContract(dex_vault);
+
+    await god.runTarget({
+        contract: dex_vault,
+        method: 'installPlatformOnce',
+        params: {code: DexPlatform.code},
+    });
+
+    await god.runTarget({
+        contract: dex_vault,
+        method: 'installOrUpdateLpTokenPendingCode',
+        params: {code: DexVaultLpTokenPending.code},
+    });
+
+    await god.runTarget({
+        contract: dex_root,
+        method: 'setVaultOnce',
+        params: {new_vault: dex_vault.address},
+    });
+
+    await god.runTarget({
+        contract: dex_root,
+        method: 'installPlatformOnce',
+        params: {code: DexPlatform.code},
+    });
+
+    await god.runTarget({
+        contract: dex_root,
+        method: 'installOrUpdateAccountCode',
+        params: {code: DexAccount.code},
+    });
+
+    await god.runTarget({
+        contract: dex_root,
+        method: 'installOrUpdatePairCode',
+        params: {code: DexPair.code},
+    });
+
+    await god.runTarget({
+        contract: dex_root,
+        method: 'setActive',
+        params: {new_active: true},
+    });
+
+    return [token_factory, dex_root, dex_vault];
+};
+
+const deployDexPair = async (owner, dex_root, left, right) => {
+    await owner.runTarget({
+        contract: dex_root,
+        method: 'deployPair',
+        params: {
+            left_root: left.address,
+            right_root: right.address,
+            send_gas_to: owner.address,
+        },
+        value: locklift.utils.convertCrystal(10, 'nano'),
+    });
+
+    const pair_address = await dex_root.call({
+        method: 'getExpectedPairAddress',
+        params: {
+            'left_root': left.address,
+            'right_root': right.address,
+        },
+        keyPair: owner.keyPair
+    });
+
+    const left_symbol = await left.symbol();
+    const right_symbol = await right.symbol();
+
+    const DexPair = await locklift.factory.getContract('DexPair', DEX_CONTRACTS_PATH);
+    DexPair.setAddress(pair_address);
+
+    DexPair.name = `Dex Pair [${left_symbol}-${right_symbol}]`;
+
+    await logContract(DexPair);
+
+    const dex_pair_lp_root = await DexPair.call({
+        method: 'lp_root',
+        params: {}
+    });
+
+    const DexPairLp = await locklift.factory.getContract(
+        'TokenRoot',
+        TOKEN_CONTRACTS_PATH
+    );
+    DexPairLp.setAddress(dex_pair_lp_root);
+
+    DexPairLp.name = `Dex pair LP root [${left_symbol}-${right_symbol}]`;
+
+    // await logContract(DexPairLp);
+
+    return [DexPair, DexPairLp];
+};
+
+
+
+class MetricManager {
+    constructor(...contracts) {
+        this.contracts = contracts;
+        this.checkpoints = {};
+    }
+
+    lastCheckPointName() {
+        return Object.keys(this.checkpoints).pop();
+    }
+
+    async checkPoint(name) {
+        const balances = await Promise.all(this.contracts.map(async (contract) =>
+            locklift.ton.getBalance(contract.address)));
+
+        this.checkpoints[name] = balances;
+    }
+
+    getCheckPoint(name) {
+        const checkpoint = this.checkpoints[name];
+
+        if (!checkpoint) throw new Error(`No checkpoint "${name}"`);
+
+        return checkpoint;
+    }
+
+    async getDifference(startCheckPointName, endCheckPointName) {
+        const startCheckPoint = this.getCheckPoint(startCheckPointName);
+        const endCheckPoint = this.getCheckPoint(endCheckPointName);
+
+        const difference = {};
+
+        for (const [startMetric, endMetric, contract] of _.zip(startCheckPoint, endCheckPoint, this.contracts)) {
+            difference[contract.name] = endMetric - startMetric;
+        }
+
+        return difference;
+    }
+
+    addContract(contract, fill=0) {
+        this.contracts.push(contract);
+
+        for (const checkpoint of Object.keys(this.checkpoints)) {
+            this.checkpoints[checkpoint].push(fill);
+        }
+    }
+}
+
 
 module.exports = {
+    expect,
+    Token,
     setupFabric,
     afterRun,
     sleep,
@@ -721,5 +994,10 @@ module.exports = {
     checkReward,
     FarmPool,
     isValidTonAddress,
-    Fabric
+    Fabric,
+    logContract,
+    setupDex,
+    deployDexPair,
+    DEX_CONTRACTS_PATH,
+    MetricManager
 };

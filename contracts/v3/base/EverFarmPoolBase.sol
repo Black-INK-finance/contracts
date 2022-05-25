@@ -261,7 +261,7 @@ abstract contract EverFarmPoolBase is EverFarmPoolStorage {
         deposit.send_gas_to.transfer(0, false, MsgFlag.ALL_NOT_RESERVED);
     }
 
-    function withdraw(uint128 amount, address send_gas_to, uint32 nonce) external virtual {
+    function withdraw(uint128 amount, address send_gas_to, uint32 nonce) external override virtual {
         require (amount > 0, ZERO_AMOUNT_INPUT);
         require (msg.value >= MIN_CALL_MSG_VALUE + TOKEN_TRANSFER_VALUE * rewardTokenRoot.length, LOW_WITHDRAW_MSG_VALUE);
         tvm.rawReserve(_reserve(), 0);
@@ -295,7 +295,7 @@ abstract contract EverFarmPoolBase is EverFarmPoolStorage {
         IUserData(userDataAddr).processClaimReward{value: 0, flag: MsgFlag.ALL_NOT_RESERVED}(accRewardPerShare, lastRewardTime, farmEndTime, send_gas_to, nonce, user_data_version);
     }
 
-    function claimReward(address send_gas_to, uint32 nonce) external virtual {
+    function claimReward(address send_gas_to, uint32 nonce) external override virtual {
         require (msg.value >= MIN_CALL_MSG_VALUE + TOKEN_TRANSFER_VALUE * rewardTokenRoot.length, LOW_WITHDRAW_MSG_VALUE);
         tvm.rawReserve(_reserve(), 0);
 
@@ -569,7 +569,7 @@ abstract contract EverFarmPoolBase is EverFarmPoolStorage {
         }(userDataCode, constructor_params.toCell(), user_data_owner);
     }
 
-    function getUserDataAddress(address user) public virtual view responsible returns (address) {
+    function getUserDataAddress(address user) public override virtual view responsible returns (address) {
         return { value: 0, flag: MsgFlag.REMAINING_GAS, bounce: false } address(tvm.hash(_buildInitData(_buildUserDataParams(user))));
     }
 
