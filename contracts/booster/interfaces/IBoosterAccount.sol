@@ -35,7 +35,8 @@ interface IBoosterAccount is IBoosterBase {
         uint version
     ) external;
 
-    function initialized() external view returns(bool);
+    function isNeedPing() external view returns(bool);
+    function isInitialized() external view returns(bool);
 
     // Owner methods
     function setPaused(bool _paused) external;

@@ -50,6 +50,14 @@
 			]
 		},
 		{
+			"name": "getAccountPlatformCodeHash",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"uint256"}
+			]
+		},
+		{
 			"name": "upgrade",
 			"inputs": [
 				{"name":"code","type":"cell"}

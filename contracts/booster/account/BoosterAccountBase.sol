@@ -133,9 +133,10 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
     /// @param amount Amount of LP to request
     function requestFarmingLP(
         uint128 amount
-    ) external override onlyOwnerOrManager {
+    ) external override onlyOwner reserveBalance {
         IEverFarmPool(farming_pool).withdraw{
-            value: Gas.FARMING_WITHDRAW_LP,
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
         }(amount, _me(), 0);
     }

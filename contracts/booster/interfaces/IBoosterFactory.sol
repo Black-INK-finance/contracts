@@ -17,6 +17,7 @@ interface IBoosterFactory is IBoosterBase {
         TvmCell code
     ) external;
 
+    function getAccountPlatformCodeHash() external returns(uint);
 
     function addFarming(
         address dex,

@@ -6,7 +6,15 @@
 		{
 			"name": "constructor",
 			"inputs": [
-				{"name":"_owner","type":"address"}
+				{"name":"_key","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ping",
+			"inputs": [
+				{"name":"accounts","type":"address[]"}
 			],
 			"outputs": [
 			]
@@ -14,14 +22,7 @@
 		{
 			"name": "transferOwnership",
 			"inputs": [
-				{"name":"newOwner","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "renounceOwnership",
-			"inputs": [
+				{"name":"newOwner","type":"uint256"}
 			],
 			"outputs": [
 			]
@@ -31,7 +32,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"owner","type":"address"}
+				{"name":"owner","type":"uint256"}
 			]
 		},
 		{
@@ -50,8 +51,8 @@
 		{
 			"name": "OwnershipTransferred",
 			"inputs": [
-				{"name":"previousOwner","type":"address"},
-				{"name":"newOwner","type":"address"}
+				{"name":"previousOwner","type":"uint256"},
+				{"name":"newOwner","type":"uint256"}
 			],
 			"outputs": [
 			]
@@ -61,7 +62,7 @@
 		{"name":"_pubkey","type":"uint256"},
 		{"name":"_timestamp","type":"uint64"},
 		{"name":"_constructorFlag","type":"bool"},
-		{"name":"owner","type":"address"},
+		{"name":"owner","type":"uint256"},
 		{"name":"_randomNonce","type":"uint256"}
 	]
 }

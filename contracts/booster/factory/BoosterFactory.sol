@@ -44,7 +44,7 @@ contract BoosterFactory is IBoosterFactory, BoosterFactoryBase, RandomNonce {
         address farming_pool
     ) external override reserveBalance {
         require(farmings.exists(farming_pool));
-        require(msg.value >= Gas.DEPLOY_BOOSTER_ACCOUNT);
+        require(msg.value >= Gas.BOOSTER_DEPLOY_ACCOUNT);
 
         TvmCell stateInit = _buildAccountPlatformStateInit(msg.sender, farming_pool);
 
@@ -80,13 +80,17 @@ contract BoosterFactory is IBoosterFactory, BoosterFactoryBase, RandomNonce {
         address[] accounts
     ) external override reserveBalance onlyOwner {
         require(accounts.length <= 100);
-        require(msg.value >= accounts.length * Gas.UPGRADE_ACCOUNT + 10 ton);
+        require(msg.value >= accounts.length * Gas.BOOSTER_UPGRADE_ACCOUNT + 10 ton);
 
         for (address account_: accounts) {
             IBoosterAccount(account_).acceptUpgrade{
-                value: Gas.UPGRADE_ACCOUNT
+                value: Gas.BOOSTER_UPGRADE_ACCOUNT
             }(account, account_version);
         }
+    }
+
+    function getAccountPlatformCodeHash() external override returns (uint) {
+        return tvm.hash(account_platform);
     }
 
     /// @notice Upgrade booster factory

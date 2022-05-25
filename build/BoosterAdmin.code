@@ -9,16 +9,11 @@ IFREF {
 }
 GETGLOB 6
 THROWIF 51
-OVER
-PUSHCONT {
-	LDREF
-	ENDS
-	CTOS
-}
-IF
-LDMSGADDR
+LDU 256
 ENDS
-.loc ../contracts/booster/admin/BoosterAdmin.sol, 12
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 16
+ACCEPT
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 18
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
@@ -28,33 +23,106 @@ CALLREF {
 }
 THROW 0
 
+.macro ping
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 21
+LDU 32
+LDDICT
+ROTREV
+PAIR
+SWAP
+ENDS
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 0
+CALLREF {
+	CALL $ping_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro ping_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 14
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+GETGLOB 10
+EQUAL
+THROWIFNOT 1101
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 24
+ACCEPT
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 26
+SECOND
+PUSHINT 0
+NULL
+PUSHCONT {
+	PUSH2 S1, S2
+	PUSHINT 32
+	DICTUGET
+	NULLSWAPIFNOT
+	DROP
+	DUP
+	POP S2
+	ISNULL
+	NOT
+}
+PUSHCONT {
+	.loc ../contracts/booster/admin/BoosterAdmin.sol, 27
+	DUP
+	FALSE
+	NEWC
+	STSLICECONST x6_
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	PUSHSLICE x41dcd6500000000000000000000000000000c3884e05_
+	STSLICER
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+	.loc ../contracts/booster/admin/BoosterAdmin.sol, 0
+	OVER
+	INC
+	POP S2
+}
+WHILE
+BLKDROP 3
+.loc ../contracts/booster/admin/BoosterAdmin.sol, 0
+
 .globl	setOwnership_internal
 .type	setOwnership_internal, @function
 CALL $setOwnership_internal_macro$
 
 .macro setOwnership_internal_macro
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 24
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 23
 GETGLOB 10
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 26
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 25
 OVER
 SETGLOB 10
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 28
-PUSHSLICE xc0000000000000000000000001
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 27
+PUSHSLICE xc0000000000000000000000000536cd3f2
 NEWC
 STSLICE
-ROTREV
-NEWC
-STSLICECONST x6115f072
-STSLICE
-SWAP
-NEWC
-STSLICE
-STBREFR
-STBREFR
+STU 256
+STU 256
 ENDC
 PUSHINT 0
 SENDRAWMSG
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 0
 
 .macro transferOwnership
 DROP
@@ -65,17 +133,10 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 34
-OVER
-PUSHCONT {
-	LDREF
-	ENDS
-	CTOS
-}
-IF
-LDMSGADDR
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 33
+LDU 256
 ENDS
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 0
 CALLREF {
 	CALL $transferOwnership_internal_macro$
 }
@@ -86,60 +147,28 @@ CALLREF {
 THROW 0
 
 .macro transferOwnership_internal_macro
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
-GETGLOB 9
-GETGLOB 10
-SDEQ
-THROWIFNOT 1101
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 37
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 14
+GETGLOB 5
 DUP
-PUSHREFSLICE {
-	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-}
-SDEQ
-THROWIF 1102
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 39
-CALLREF {
-	CALL $setOwnership_internal_macro$
-}
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
-
-.macro renounceOwnership
-DROP
-GETGLOB 6
-THROWIFNOT 76
-GETGLOB 2
 ISNULL
-IFREF {
-	CALL $c4_to_c7$
+PUSHCONT {
+	DROP
+	PUSHINT 0
 }
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 45
-ENDS
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
-CALLREF {
-	CALL $renounceOwnership_internal_macro$
-}
-DROP
-CALLREF {
-	CALL $c7_to_c4$
-}
-THROW 0
-
-.macro renounceOwnership_internal_macro
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
-GETGLOB 9
+IF
 GETGLOB 10
-SDEQ
+EQUAL
 THROWIFNOT 1101
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 46
-PUSHREFSLICE {
-	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-}
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 48
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 36
+DUP
+THROWIFNOT 1102
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 37
+ACCEPT
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 39
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+.loc ../node_modules/@broxus/contracts/contracts/access/ExternalOwner.sol, 0
 
 .macro c4_to_c7
 PUSHROOT
@@ -148,10 +177,7 @@ LDU 256 ; pubkey c4
 LDU 64 ; pubkey timestamp c4
 LDU 1 ; ctor flag
 NIP
-LDMSGADDR
-LDREF
-ENDS
-CTOS
+LDU 256
 LDU 256
 ENDS
 SETGLOB 11
@@ -169,9 +195,7 @@ PUSHCONT {
 	PUSHROOT
 	CTOS
 	PLDDICT ; D
-	PUSHREFSLICE {
-		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-	}
+	PUSHINT 0
 	PUSHINT 1
 	PUSH S2
 	PUSHINT 64
@@ -198,6 +222,7 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
+GETGLOB 11
 GETGLOB 10
 GETGLOB 3
 GETGLOB 2
@@ -205,11 +230,8 @@ NEWC
 STU 256
 STU 64
 STONE
-STSLICE
-GETGLOB 11
-NEWC
 STU 256
-STBREFR
+STU 256
 ENDC
 POPROOT
 
@@ -237,10 +259,7 @@ NEQINT 1
 SETGLOB 6
 PUSH S2
 CTOS
-LDU 4 ; bounced tail
-LDMSGADDR ; bounced src tail
-DROP
-SETGLOB 9
+PLDU 4
 MODPOW2 1
 IFRET
 OVER
@@ -270,10 +289,6 @@ CTOS
 SBITS
 NEQINT 1
 SETGLOB 6
-PUSHREFSLICE {
-	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-}
-SETGLOB 9
 OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
@@ -287,6 +302,8 @@ PUSHCONT {
 	HASHSU ; signatureSlice msgSlice hashMsgSlice
 	ROT
 	GETGLOB 2
+	DUP
+	SETGLOB 5
 	CHKSIGNU ; msgSlice isSigned
 	THROWIFNOT 40
 }
@@ -310,10 +327,10 @@ CALLREF {
 GETGLOB 10
 OVER
 PUSHCONT {
-	PUSHSLICE xc0000000000000000000000000df0bcfde
+	PUSHSLICE xc00000000000000000000000009178e9bd
 	NEWC
 	STSLICE
-	STSLICE
+	STU 256
 	ENDC
 	PUSHINT 0
 	SENDRAWMSG
@@ -343,14 +360,20 @@ THROW 0
 
 .macro public_function_selector
 DUP
-PUSHINT 1594609630
+PUSHINT 1016193477
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 235197086
+	PUSHINT 293136829
 	EQUAL
 	IFJMPREF {
-		CALL $transferOwnership$
+		CALL $owner$
+	}
+	DUP
+	PUSHINT 711008779
+	EQUAL
+	IFJMPREF {
+		CALL $ping$
 	}
 	DUP
 	PUSHINT 995308319
@@ -359,22 +382,16 @@ IFJMPREF {
 		CALL $_randomNonce$
 	}
 	DUP
-	PUSHINT 1196840156
+	PUSHINT 1016193477
 	EQUAL
 	IFJMPREF {
 		CALL $constructor$
 	}
-	DUP
-	PUSHINT 1594609630
-	EQUAL
-	IFJMPREF {
-		CALL $owner$
-	}
 }
 DUP
-PUSHINT 1729444094
+PUSHINT 1482330212
 EQUAL
 IFJMPREF {
-	CALL $renounceOwnership$
+	CALL $transferOwnership$
 }
 

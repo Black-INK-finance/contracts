@@ -73,13 +73,20 @@ contract BoosterAccount is
         }
     }
 
-    /// @notice Keeper method for reinvesting
-    /// Can be called only by `owner` or `admin`
+    /// @notice Keeper method for claiming farming reward
+    /// Can be called only by `owner` or `manager`
     /// Multiple steps can be executed at once:
     /// - If enough time passed since last claim - claim rewards
     /// - If dex account has some left / right tokens - deposit them into pool to receive LP
-    function ping() external override onlyOwnerOrManager cashBackAttached {
+    function ping() external override onlyOwnerOrManager {
         last_ping = now;
+
+        if (msg.sender == manager) {
+            manager.transfer({
+                value: msg.value + Gas.BOOSTER_CASHBACK_MANAGER_EXTRA,
+                bounce: false
+            });
+        }
 
         _claimReward();
     }
@@ -98,7 +105,8 @@ contract BoosterAccount is
     ) external override {
         // Transfer tokens to the owner (not sender!) in case:
         // - token root not initialized (eg some third party token was sent)
-        // - msg.sender is different from the actual token wallet (eg token wallet is still not initialized)
+        // - msg.sender is different from the actual token wallet (eg booster token wallet is still not initialized)
+        // - reinvesting is paused
         if (!tokens.exists(root) || msg.sender != tokens[root].wallet || paused == true) {
             TvmCell empty;
 

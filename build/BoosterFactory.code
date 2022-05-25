@@ -193,7 +193,7 @@ CALLREF {
 THROW 0
 
 .macro deployAccount_internal_macro
-.loc ../contracts/booster/TransferUtils.sol, 18
+.loc ../contracts/booster/TransferUtils.sol, 12
 GETPARAM 7
 FIRST
 DEPTH
@@ -458,7 +458,7 @@ CALLREF {
 THROW 0
 
 .macro upgradeAccounts_internal_macro
-.loc ../contracts/booster/TransferUtils.sol, 18
+.loc ../contracts/booster/TransferUtils.sol, 12
 GETPARAM 7
 FIRST
 DEPTH
@@ -533,6 +533,55 @@ WHILE
 BLKDROP 3
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 
+.macro getAccountPlatformCodeHash
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 92
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+CALLREF {
+	CALL $getAccountPlatformCodeHash_internal_macro$
+}
+OVER
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHSLICE x0000000000000000000000003e4dbb406_
+	STSLICER
+	STU 256
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	DROP
+}
+IFELSE
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro getAccountPlatformCodeHash_internal_macro
+.loc ../contracts/booster/factory/BoosterFactory.sol, 93
+GETGLOB 14
+HASHCU
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+
 .macro upgrade
 DROP
 GETGLOB 6
@@ -542,7 +591,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 95
+.loc ../contracts/booster/factory/BoosterFactory.sol, 99
 LDREF
 ENDS
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
@@ -561,7 +610,7 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
-.loc ../contracts/booster/factory/BoosterFactory.sol, 98
+.loc ../contracts/booster/factory/BoosterFactory.sol, 102
 GETGLOB 13
 GETGLOB 16
 GETGLOB 15
@@ -586,10 +635,10 @@ STDICT
 STBREFR
 STBREFR
 ENDC
-.loc ../contracts/booster/factory/BoosterFactory.sol, 109
+.loc ../contracts/booster/factory/BoosterFactory.sol, 113
 OVER
 SETCODE
-.loc ../contracts/booster/factory/BoosterFactory.sol, 110
+.loc ../contracts/booster/factory/BoosterFactory.sol, 114
 SWAP
 CTOS
 DUP
@@ -604,7 +653,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/booster/factory/BoosterFactory.sol, 112
+.loc ../contracts/booster/factory/BoosterFactory.sol, 116
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
@@ -612,7 +661,7 @@ CALLREF {
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-.loc ../contracts/booster/factory/BoosterFactory.sol, 116
+.loc ../contracts/booster/factory/BoosterFactory.sol, 120
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -635,7 +684,7 @@ PUSHINT 0
 SETGLOB 16
 PUSHINT 0
 SETGLOB 17
-.loc ../contracts/booster/factory/BoosterFactory.sol, 118
+.loc ../contracts/booster/factory/BoosterFactory.sol, 122
 CTOS
 LDU 256
 LDMSGADDR
@@ -652,31 +701,31 @@ CTOS
 LDU 256
 LDDICT
 ENDS
-.loc ../contracts/booster/factory/BoosterFactory.sol, 136
+.loc ../contracts/booster/factory/BoosterFactory.sol, 140
 ROLL 7
 SETGLOB 17
-.loc ../contracts/booster/factory/BoosterFactory.sol, 137
+.loc ../contracts/booster/factory/BoosterFactory.sol, 141
 ROLL 6
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 138
+.loc ../contracts/booster/factory/BoosterFactory.sol, 142
 ROLL 5
 SETGLOB 12
-.loc ../contracts/booster/factory/BoosterFactory.sol, 139
+.loc ../contracts/booster/factory/BoosterFactory.sol, 143
 ROLL 4
 INC
 SETGLOB 11
-.loc ../contracts/booster/factory/BoosterFactory.sol, 141
+.loc ../contracts/booster/factory/BoosterFactory.sol, 145
 ROLL 3
 SETGLOB 14
-.loc ../contracts/booster/factory/BoosterFactory.sol, 142
+.loc ../contracts/booster/factory/BoosterFactory.sol, 146
 ROT
 SETGLOB 15
-.loc ../contracts/booster/factory/BoosterFactory.sol, 143
+.loc ../contracts/booster/factory/BoosterFactory.sol, 147
 SWAP
 SETGLOB 16
-.loc ../contracts/booster/factory/BoosterFactory.sol, 144
+.loc ../contracts/booster/factory/BoosterFactory.sol, 148
 SETGLOB 13
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 CALLREF {
@@ -1665,8 +1714,19 @@ IFJMPREF {
 }
 DUP
 PUSHINT 2099274339
-EQUAL
+LEQ
 IFJMPREF {
-	CALL $upgradeAccounts$
+	DUP
+	PUSHINT 2033642753
+	EQUAL
+	IFJMPREF {
+		CALL $getAccountPlatformCodeHash$
+	}
+	DUP
+	PUSHINT 2099274339
+	EQUAL
+	IFJMPREF {
+		CALL $upgradeAccounts$
+	}
 }
 

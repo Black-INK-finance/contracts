@@ -110,7 +110,15 @@
 			]
 		},
 		{
-			"name": "initialized",
+			"name": "isNeedPing",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"bool"}
+			]
+		},
+		{
+			"name": "isInitialized",
 			"inputs": [
 			],
 			"outputs": [
@@ -180,6 +188,14 @@
 			]
 		},
 		{
+			"name": "ping_frequency",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"ping_frequency","type":"uint256"}
+			]
+		},
+		{
 			"name": "paused",
 			"inputs": [
 			],
@@ -242,6 +258,8 @@
 		{"name":"factory","type":"address"},
 		{"name":"farming_pool","type":"address"},
 		{"name":"last_ping","type":"uint256"},
+		{"name":"ping_frequency","type":"uint256"},
+		{"name":"ping_balance","type":"uint128"},
 		{"name":"paused","type":"bool"},
 		{"name":"manager","type":"address"},
 		{"name":"user_data","type":"address"},

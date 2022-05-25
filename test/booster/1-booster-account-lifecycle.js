@@ -502,7 +502,7 @@ describe('Test booster lifecycle', async function() {
         });
 
         it('Check Alice booster account initialized', async () => {
-            const initialized = await alice_booster_account.call({ method: 'initialized' });
+            const initialized = await alice_booster_account.call({ method: 'isInitialized' });
 
             expect(initialized)
                 .to.be.equal(true, 'Alice account not initialized');
@@ -657,7 +657,8 @@ describe('Test booster lifecycle', async function() {
                     method: 'requestFarmingLP',
                     params: {
                         amount: lp_to_withdraw
-                    }
+                    },
+                    value: locklift.utils.convertCrystal(5, 'nano')
                 });
 
                 logger.log(`Request farming LP from booster tx: ${tx.transaction.id}`);

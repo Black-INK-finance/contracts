@@ -9,13 +9,14 @@ import "@broxus/contracts/contracts/access/InternalOwner.sol";
 abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, TransferUtils {
     uint128 constant BPS  = 1_000_000;
 
-    // TODO: add public modifiers
     uint public version; // Account code version
 
     address public factory; // Factory
     address public farming_pool; // Farming pool
 
     uint public last_ping; // Last ping timestamp
+    uint public ping_frequency; // How often manager should ping booster
+    uint128 ping_balance; // How many tokens available as manager reward
     bool public paused; // Booster account paused flag
 
     address public manager; // Manager address. Can only press `ping`
@@ -90,7 +91,21 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         );
     }
 
-    function initialized() external override view returns(bool) {
+    /// @notice Keeper method for ensuring ping is needed
+    function isNeedPing() external override view returns(bool) {
+        // Booster not initialized
+        if (!isInitialized()) return false;
+
+//        // Ping balance is too low
+//        if (ping_balance < ping_cost) return false;
+
+        // Not enough time passed since last ping
+        if (last_ping + ping_frequency > now) return false;
+
+        return false;
+    }
+
+    function isInitialized() public override view returns(bool) {
         bool _initialized = true;
 
         address zero_address = address.makeAddrStd(0, 0);
