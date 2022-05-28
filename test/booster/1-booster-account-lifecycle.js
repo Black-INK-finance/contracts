@@ -687,7 +687,10 @@ describe('Test booster lifecycle', async function() {
                 const tx = await manager.run({
                     method: 'ping',
                     params: {
-                        accounts: [alice_booster_account.address]
+                        pings: [{
+                            account: alice_booster_account.address,
+                            skim: false
+                        }]
                     }
                 });
 
@@ -787,7 +790,10 @@ describe('Test booster lifecycle', async function() {
                 const tx = await manager.run({
                     method: 'ping',
                     params: {
-                        accounts: [alice_booster_account.address]
+                        pings: [{
+                            account: alice_booster_account.address,
+                            skim: false
+                        }]
                     }
                 });
 
@@ -799,6 +805,55 @@ describe('Test booster lifecycle', async function() {
                     .to.be.bignumber.greaterThan(0, 'Alice should receive QUBE reward');
                 expect(await alice_bridge.balance())
                     .to.be.bignumber.greaterThan(0, 'Alice should receive BRIDGE reward');
+            });
+        });
+
+        describe('Claim rewarder fees', async () => {
+            let details_before_skim;
+
+            it('Check booster recorded fees', async () => {
+                details_before_skim = await alice_booster_account.call({ method: 'getDetails' });
+
+                expect(details_before_skim._tokens[QUBE.address].fee)
+                    .to.be.bignumber.greaterThan(0, 'QUBE fees should be non-zero');
+                expect(details_before_skim._tokens[BRIDGE.address].fee)
+                    .to.be.bignumber.greaterThan(0, 'BRIDGE fees should be non-zero');
+
+                expect(details_before_skim._tokens[USDT.address].fee)
+                    .to.be.bignumber.equal(0, 'USDT fees should be zero');
+                expect(details_before_skim._tokens[USDC.address].fee)
+                    .to.be.bignumber.equal(0, 'USDC fees should be zero');
+                expect(details_before_skim._tokens[LP.address].fee)
+                    .to.be.bignumber.equal(0, 'LP fees should be zero');
+            });
+
+            it('Claim fees', async () => {
+                const tx = await manager.run({
+                    method: 'ping',
+                    params: {
+                        pings: [{
+                            account: alice_booster_account.address,
+                            skim: true
+                        }]
+                    }
+                });
+
+                logger.success(`Third ping tx (claim rewards and skim fees): ${tx.transaction.id}`);
+            });
+
+            it('Check fees are zero after skim', async () => {
+                const details = await alice_booster_account.call({ method: 'getDetails' });
+
+                expect(details._tokens[QUBE.address].fee)
+                    .to.be.bignumber.equal(0, 'QUBE fees should be zero');
+                expect(details._tokens[BRIDGE.address].fee)
+                    .to.be.bignumber.equal(0, 'BRIDGE fees should be zero');
+                expect(details._tokens[USDT.address].fee)
+                    .to.be.bignumber.equal(0, 'USDT fees should be zero');
+                expect(details._tokens[USDC.address].fee)
+                    .to.be.bignumber.equal(0, 'USDC fees should be zero');
+                expect(details._tokens[LP.address].fee)
+                    .to.be.bignumber.equal(0, 'LP fees should be zero');
             });
         });
     });

@@ -882,8 +882,7 @@ GEQ
 THROWIFNOT 100
 .loc ../contracts/booster/factory/BoosterFactoryBase.sol, 61
 DUP
-PUSHINT 500000
-LEQ
+LESSINT 51
 THROWIFNOT 100
 .loc ../contracts/booster/factory/BoosterFactoryBase.sol, 63
 ROLL 10

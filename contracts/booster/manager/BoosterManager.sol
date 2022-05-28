@@ -24,16 +24,16 @@ contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
     }
 
     function ping(
-        address[] accounts
+        Ping[] pings
     ) external override onlyOwner {
         // TODO: add batching
         tvm.accept();
 
-        for (address account: accounts) {
-            IBoosterAccount(account).ping{
+        for (Ping _ping: pings) {
+            IBoosterAccount(_ping.account).ping{
                 bounce: false,
                 value: ping_value
-            }();
+            }(_ping.skim);
         }
     }
 }

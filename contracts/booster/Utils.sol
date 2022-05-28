@@ -2,7 +2,7 @@ pragma ton-solidity ^0.57.1;
 
 
 library Utils {
-    uint128 constant BPS  = 1_000_000;
+    uint128 constant BPS  = 100;
 
     // Constant gas values
     uint128 constant DEPLOY_TOKEN_WALLET = 0.2 ton;
@@ -16,13 +16,14 @@ library Utils {
     uint128 constant FARMING_REQUEST_USER_DATA = 1 ton;
     uint128 constant FARMING_WITHDRAW_LP = 5 ton;
     uint128 constant FARMING_DEPOSIT_LP = 5 ton;
+    uint128 constant FARMING_SKIM_FEES = 0.5 ton;
 
     // - Booster-dex interactions
     uint128 constant DEX_DEPOSIT_LIQUIDITY = 5 ton;
     uint128 constant DEX_SWAP = 5 ton;
 
-    // Restrictions
-    uint128 constant MAX_FEE = 500_000;
+    // - Restrictions
+    uint128 constant MAX_FEE = 50;
     uint constant MIN_PING_FREQUENCY = 60 * 15; // 15 minutes
 
     // Errors

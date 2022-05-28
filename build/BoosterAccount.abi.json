@@ -6,6 +6,7 @@
 		{
 			"name": "ping",
 			"inputs": [
+				{"name":"skim","type":"bool"}
 			],
 			"outputs": [
 			]
@@ -106,7 +107,7 @@
 				{"name":"_manager","type":"address"},
 				{"name":"_user_data","type":"address"},
 				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"_settings","type":"tuple"},
-				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"}],"name":"_tokens","type":"map(address,tuple)"}
+				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"},{"name":"fee","type":"uint128"}],"name":"_tokens","type":"map(address,tuple)"}
 			]
 		},
 		{
@@ -232,7 +233,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"}],"name":"tokens","type":"map(address,tuple)"}
+				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"},{"name":"fee","type":"uint128"}],"name":"tokens","type":"map(address,tuple)"}
 			]
 		}
 	],
@@ -264,6 +265,6 @@
 		{"name":"manager","type":"address"},
 		{"name":"user_data","type":"address"},
 		{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"},
-		{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"}],"name":"tokens","type":"map(address,tuple)"}
+		{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"},{"name":"fee","type":"uint128"}],"name":"tokens","type":"map(address,tuple)"}
 	]
 }

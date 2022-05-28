@@ -75,18 +75,14 @@ contract BoosterAccount is
 
     /// @notice Keeper method for claiming farming reward
     /// Can be called only by `owner` or `manager`
-    function ping() external override onlyOwnerOrManager {
-//        if (address(this).balance < _targetBalance()) {
-//            tvm.rawReserve(_targetBalance(), 2);
-//
-//            msg.sender.transfer({
-//                value: 0,
-//                bounce: false,
-//                flag: MsgFlag.ALL_NOT_RESERVED
-//            });
-//
-//            tvm.rawReserve(0, 0);
-//        }
+    /// @param skim Skim fees or not. Only manager can specify skim = true
+    function ping(bool skim) external override onlyOwnerOrManager {
+        if (skim) {
+            // Only manager can skim fees
+            require(msg.sender == manager);
+
+            _skimFees();
+        }
 
         last_ping = now;
 
@@ -128,12 +124,24 @@ contract BoosterAccount is
             return;
         }
 
-        _considerTokensArrival(root, amount);
-
         if (_isArrayIncludes(root, settings.rewards) && sender == farming_pool) {
+            // Get management fees from reward, which are sent from the farming pool
+            uint128 fee = math.muldivr(
+                amount,
+                settings.fee,
+                Utils.BPS
+            );
+
+            // Consider fees
+            _considerTokensFee(root, fee);
+            _considerTokensArrival(root, amount - fee);
+
+            // Check reward transfer payload
             (uint32 nonce) = abi.decode(payload, (uint32));
 
             if (nonce == NO_REINVEST_REQUIRED) return;
+        } else {
+            _considerTokensArrival(root, amount);
         }
 
         _processTokensArrival(root);
@@ -170,6 +178,10 @@ contract BoosterAccount is
         _processTokensArrival(root);
     }
 
+    function _considerTokensFee(address token, uint128 amount) internal {
+        tokens[token].fee += amount;
+    }
+
     function _considerTokensArrival(address token, uint128 amount) internal {
         tokens[token].balance += amount;
         tokens[token].received += amount;
@@ -201,7 +213,7 @@ contract BoosterAccount is
         if (version == _version) return;
 
         TvmCell data = abi.encode(
-            owner, version, factory, farming_pool,
+            owner, _version, factory, farming_pool,
             last_ping, paused, manager,
             user_data, settings, tokens
         );

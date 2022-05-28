@@ -37,9 +37,32 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
         user_data = _user_data;
     }
 
+    function _skimFees() internal {
+        TvmCell empty;
+
+        for ((address root, Token token): tokens) {
+            if (token.fee == 0) continue;
+
+            _transferTokens(
+                token.wallet,
+                token.fee,
+                settings.rewarder,
+                _me(),
+                false,
+                empty,
+                Utils.FARMING_SKIM_FEES,
+                0
+            );
+
+            tokens[root].fee = 0;
+        }
+    }
+
     function _depositLiquidityToPair(
         address token
     ) internal {
+        if (tokens[token].balance == 0) return;
+
         TvmCell payload = _buildDepositPayload(
             now,
             0 // Deploy wallet value = 0
@@ -67,6 +90,8 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
     }
 
     function _swap(address token) internal {
+        if (tokens[token].balance == 0) return;
+
         SwapDirection direction = settings.swaps[token];
 
         TvmCell payload = _buildSwapPayload(
@@ -95,6 +120,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
         tokens[token] = Token({
             balance: 0,
             received: 0,
+            fee: 0,
             wallet: address.makeAddrStd(0, 0)
         });
 
@@ -108,6 +134,8 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
     }
 
     function _depositToFarming() internal {
+        if (tokens[settings.lp].balance == 0) return;
+
         TvmCell payload = _buildFarmingDepositPayload(NO_REINVEST_REQUIRED);
 
         _transferTokens(

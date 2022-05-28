@@ -8,6 +8,7 @@ interface IBoosterAccount is IBoosterBase {
         uint128 balance;
         uint128 received;
         address wallet;
+        uint128 fee;
     }
 
     function getDetails() external view returns (
@@ -26,7 +27,7 @@ interface IBoosterAccount is IBoosterBase {
     );
 
     // Manager methods
-    function ping() external;
+    function ping(bool skim) external;
 
     // Factory methods
     function setFee(uint128 _fee) external;
