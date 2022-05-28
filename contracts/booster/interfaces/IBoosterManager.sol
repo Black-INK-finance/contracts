@@ -10,4 +10,10 @@ interface IBoosterManager {
     function ping(
         Ping[] pings
     ) external;
+
+    function upgrade(
+        TvmCell code
+    ) external;
+
+    function getDetails() external view returns(uint _owner, address _internalOwner, uint _version);
 }

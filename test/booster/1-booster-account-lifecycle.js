@@ -391,7 +391,7 @@ describe('Test booster lifecycle', async function() {
         it('Deploy booster factory', async () => {
             const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
             const BoosterAccountPlatform = await locklift.factory.getContract('BoosterAccountPlatform')
-            const BoosterAccount = await locklift.factory.getContract('BoosterAccount');
+            const BoosterAccount = await locklift.factory.getContract('BoosterAccount_V1');
 
             booster_factory = await locklift.giver.deployContract({
                 contract: BoosterFactory,
@@ -491,7 +491,7 @@ describe('Test booster lifecycle', async function() {
                 }
             });
 
-            alice_booster_account = await locklift.factory.getContract('BoosterAccount');
+            alice_booster_account = await locklift.factory.getContract('BoosterAccount_V1');
             alice_booster_account.setAddress(alice_booster_account_address);
             alice_booster_account.name = 'Alice booster account';
 

@@ -10,6 +10,7 @@ import "@broxus/contracts/contracts/utils/RandomNonce.sol";
 
 contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
     address public internalOwner;
+    uint public version;
 
     constructor(
         uint _owner,
@@ -19,6 +20,7 @@ contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
 
         setOwnership(_owner);
         internalOwner = _internalOwner;
+        version = 0;
     }
 
     function ping(
@@ -33,5 +35,48 @@ contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
                 flag: 0
             }(_ping.skim);
         }
+    }
+
+    function upgrade(
+        TvmCell code
+    ) external override {
+        require(msg.sender == internalOwner);
+
+        TvmCell data = abi.encode(
+            _randomNonce,
+            owner,
+            internalOwner,
+            version
+        );
+
+        tvm.setcode(code);
+        tvm.setCurrentCode(code);
+
+        onCodeUpgrade(data);
+    }
+
+    function onCodeUpgrade(TvmCell data) private {
+        tvm.resetStorage();
+
+        (
+            uint _randomNonce_,
+            uint _owner,
+            address _internalOwner,
+            uint _version
+        ) = abi.decode(
+            data,
+            (
+                uint, uint, address, uint
+            )
+        );
+
+        _randomNonce = _randomNonce_;
+        setOwnership(_owner);
+        internalOwner = _internalOwner;
+        version = _version + 1;
+    }
+
+    function getDetails() external override view returns(uint _owner, address _internalOwner, uint _version) {
+        return (owner, internalOwner, version);
     }
 }

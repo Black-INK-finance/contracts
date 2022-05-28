@@ -1,0 +1,260 @@
+{
+	"ABI version": 2,
+	"version": "2.2",
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "acceptUpgrade",
+			"inputs": [
+				{"name":"code","type":"cell"},
+				{"name":"_version","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ping",
+			"inputs": [
+				{"name":"skim","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onAcceptTokensTransfer",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"sender","type":"address"},
+				{"name":"value3","type":"address"},
+				{"name":"value4","type":"address"},
+				{"name":"payload","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onAcceptTokensMint",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"value2","type":"address"},
+				{"name":"value3","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "receiveTokenWallet",
+			"inputs": [
+				{"name":"wallet","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "receiveFarmingUserData",
+			"inputs": [
+				{"name":"_user_data","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "requestFarmingLP",
+			"inputs": [
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setPaused",
+			"inputs": [
+				{"name":"_paused","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setFee",
+			"inputs": [
+				{"name":"_fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "withdraw",
+			"inputs": [
+				{"name":"token","type":"address"},
+				{"name":"_amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getDetails",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_owner","type":"address"},
+				{"name":"_version","type":"uint256"},
+				{"name":"_factory","type":"address"},
+				{"name":"_farming_pool","type":"address"},
+				{"name":"_last_ping","type":"uint256"},
+				{"name":"_paused","type":"bool"},
+				{"name":"_manager","type":"address"},
+				{"name":"_user_data","type":"address"},
+				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"_settings","type":"tuple"},
+				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"},{"name":"fee","type":"uint128"}],"name":"_tokens","type":"map(address,tuple)"}
+			]
+		},
+		{
+			"name": "isNeedPing",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"bool"}
+			]
+		},
+		{
+			"name": "isInitialized",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"value0","type":"bool"}
+			]
+		},
+		{
+			"name": "transferOwnership",
+			"inputs": [
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "renounceOwnership",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"owner","type":"address"}
+			]
+		},
+		{
+			"name": "version",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"version","type":"uint256"}
+			]
+		},
+		{
+			"name": "factory",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"factory","type":"address"}
+			]
+		},
+		{
+			"name": "farming_pool",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"farming_pool","type":"address"}
+			]
+		},
+		{
+			"name": "last_ping",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"last_ping","type":"uint256"}
+			]
+		},
+		{
+			"name": "paused",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"paused","type":"bool"}
+			]
+		},
+		{
+			"name": "manager",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"manager","type":"address"}
+			]
+		},
+		{
+			"name": "user_data",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"user_data","type":"address"}
+			]
+		},
+		{
+			"name": "settings",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"}
+			]
+		},
+		{
+			"name": "tokens",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"},{"name":"fee","type":"uint128"}],"name":"tokens","type":"map(address,tuple)"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+		{
+			"name": "OwnershipTransferred",
+			"inputs": [
+				{"name":"previousOwner","type":"address"},
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"owner","type":"address"},
+		{"name":"version","type":"uint256"},
+		{"name":"factory","type":"address"},
+		{"name":"farming_pool","type":"address"},
+		{"name":"last_ping","type":"uint256"},
+		{"name":"paused","type":"bool"},
+		{"name":"manager","type":"address"},
+		{"name":"user_data","type":"address"},
+		{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"},
+		{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"},{"name":"fee","type":"uint128"}],"name":"tokens","type":"map(address,tuple)"}
+	]
+}

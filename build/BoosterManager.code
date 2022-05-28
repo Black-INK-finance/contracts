@@ -19,15 +19,18 @@ IF
 LDU 256
 LDMSGADDR
 ENDS
-.loc ../contracts/booster/manager/BoosterManager.sol, 18
+.loc ../contracts/booster/manager/BoosterManager.sol, 19
 ACCEPT
-.loc ../contracts/booster/manager/BoosterManager.sol, 20
+.loc ../contracts/booster/manager/BoosterManager.sol, 21
 SWAP
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
-.loc ../contracts/booster/manager/BoosterManager.sol, 21
+.loc ../contracts/booster/manager/BoosterManager.sol, 22
 SETGLOB 12
+.loc ../contracts/booster/manager/BoosterManager.sol, 23
+PUSHINT 0
+SETGLOB 13
 .loc ../contracts/booster/manager/BoosterManager.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
@@ -43,7 +46,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/manager/BoosterManager.sol, 24
+.loc ../contracts/booster/manager/BoosterManager.sol, 26
 LDU 32
 LDDICT
 ROTREV
@@ -73,9 +76,9 @@ IF
 GETGLOB 10
 EQUAL
 THROWIFNOT 1101
-.loc ../contracts/booster/manager/BoosterManager.sol, 28
-ACCEPT
 .loc ../contracts/booster/manager/BoosterManager.sol, 30
+ACCEPT
+.loc ../contracts/booster/manager/BoosterManager.sol, 32
 SECOND
 PUSHINT 0
 NULL
@@ -96,7 +99,7 @@ PUSHCONT {
 	NOT
 }
 PUSHCONT {
-	.loc ../contracts/booster/manager/BoosterManager.sol, 31
+	.loc ../contracts/booster/manager/BoosterManager.sol, 33
 	DUP
 	SECOND
 	OVER
@@ -121,6 +124,174 @@ PUSHCONT {
 }
 WHILE
 BLKDROP 3
+.loc ../contracts/booster/manager/BoosterManager.sol, 0
+
+.macro upgrade
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/manager/BoosterManager.sol, 40
+LDREF
+ENDS
+.loc ../contracts/booster/manager/BoosterManager.sol, 0
+CALLREF {
+	CALL $upgrade_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro upgrade_internal_macro
+.loc ../contracts/booster/manager/BoosterManager.sol, 43
+GETGLOB 9
+GETGLOB 12
+SDEQ
+THROWIFNOT 100
+.loc ../contracts/booster/manager/BoosterManager.sol, 45
+GETGLOB 13
+GETGLOB 12
+GETGLOB 10
+GETGLOB 11
+NEWC
+STU 256
+STU 256
+ROTREV
+NEWC
+STSLICE
+STU 256
+STBREFR
+ENDC
+.loc ../contracts/booster/manager/BoosterManager.sol, 52
+OVER
+SETCODE
+.loc ../contracts/booster/manager/BoosterManager.sol, 53
+SWAP
+CTOS
+DUP
+PUSHSLICE x8adb35
+SDEQ
+PUSHCONT {
+	PLDREFIDX 1
+	CTOS
+}
+IF
+PLDREF
+CTOS
+BLESS
+POP C3
+.loc ../contracts/booster/manager/BoosterManager.sol, 55
+CALLREF {
+	CALL $:onCodeUpgrade$
+}
+.loc ../contracts/booster/manager/BoosterManager.sol, 0
+
+.internal-alias :onCodeUpgrade, 2
+.internal :onCodeUpgrade
+.loc ../contracts/booster/manager/BoosterManager.sol, 59
+PUSHINT 0
+SETGLOB 10
+PUSHINT 0
+SETGLOB 11
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 12
+PUSHINT 0
+SETGLOB 13
+.loc ../contracts/booster/manager/BoosterManager.sol, 61
+CTOS
+LDU 256
+LDU 256
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 256
+ENDS
+.loc ../contracts/booster/manager/BoosterManager.sol, 73
+ROLL 3
+SETGLOB 11
+.loc ../contracts/booster/manager/BoosterManager.sol, 74
+ROT
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../contracts/booster/manager/BoosterManager.sol, 75
+SWAP
+SETGLOB 12
+.loc ../contracts/booster/manager/BoosterManager.sol, 76
+INC
+SETGLOB 13
+.loc ../contracts/booster/manager/BoosterManager.sol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+COMMIT
+THROW 0
+
+.macro getDetails
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/manager/BoosterManager.sol, 79
+ENDS
+.loc ../contracts/booster/manager/BoosterManager.sol, 0
+CALLREF {
+	CALL $getDetails_internal_macro$
+}
+PUSH S3
+PUSHCONT {
+	PUSH S5
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHINT 1
+	STUR 98
+	REVERSE 4, 0
+	NEWC
+	STSLICECONST x8d6f61ce
+	STU 256
+	STSLICE
+	SWAP
+	NEWC
+	STU 256
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	BLKDROP 3
+}
+IFELSE
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.macro getDetails_internal_macro
+.loc ../contracts/booster/manager/BoosterManager.sol, 80
+GETGLOB 10
+GETGLOB 12
+GETGLOB 13
 .loc ../contracts/booster/manager/BoosterManager.sol, 0
 
 .globl	setOwnership_internal
@@ -210,7 +381,9 @@ LDREF
 ENDS
 CTOS
 LDMSGADDR
+LDU 256
 ENDS
+SETGLOB 13
 SETGLOB 12
 SETGLOB 11
 SETGLOB 10
@@ -239,7 +412,11 @@ PUSHCONT {
 		PUSHINT 0
 	}
 	IFELSE
-	PUSHSLICE x8000000000000000000000000000000000000000000000000000000000000000001_
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	PUSHINT 0
+	SETGLOB 13
 	SETGLOB 12
 	SETGLOB 11
 	SETGLOB 10
@@ -256,6 +433,8 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
+GETGLOB 13
+GETGLOB 12
 GETGLOB 11
 GETGLOB 10
 GETGLOB 3
@@ -266,9 +445,10 @@ STU 64
 STONE
 STU 256
 STU 256
-GETGLOB 12
+ROTREV
 NEWC
 STSLICE
+STU 256
 STBREFR
 ENDC
 POPROOT
@@ -297,7 +477,10 @@ NEQINT 1
 SETGLOB 6
 PUSH S2
 CTOS
-PLDU 4
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
+DROP
+SETGLOB 9
 MODPOW2 1
 IFRET
 OVER
@@ -327,6 +510,10 @@ CTOS
 SBITS
 NEQINT 1
 SETGLOB 6
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 9
 OVER
 CALLREF {
 	CALL $c4_to_c7_with_init_storage$
@@ -432,9 +619,29 @@ PUSHCONT {
 IF
 THROW 0
 
+.macro version
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 13
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000cd793224
+	NEWC
+	STSLICE
+	STU 256
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
 .macro public_function_selector
 DUP
-PUSHINT 534435895
+PUSHINT 388172858
 LEQ
 IFJMPREF {
 	DUP
@@ -444,11 +651,28 @@ IFJMPREF {
 		CALL $constructor$
 	}
 	DUP
+	PUSHINT 225403342
+	EQUAL
+	IFJMPREF {
+		CALL $getDetails$
+	}
+	DUP
 	PUSHINT 293136829
 	EQUAL
 	IFJMPREF {
 		CALL $owner$
 	}
+	DUP
+	PUSHINT 388172858
+	EQUAL
+	IFJMPREF {
+		CALL $upgrade$
+	}
+}
+DUP
+PUSHINT 1299788324
+LEQ
+IFJMPREF {
 	DUP
 	PUSHINT 511363403
 	EQUAL
@@ -461,11 +685,6 @@ IFJMPREF {
 	IFJMPREF {
 		CALL $ping$
 	}
-}
-DUP
-PUSHINT 1482330212
-LEQ
-IFJMPREF {
 	DUP
 	PUSHINT 995308319
 	EQUAL
@@ -473,10 +692,16 @@ IFJMPREF {
 		CALL $_randomNonce$
 	}
 	DUP
-	PUSHINT 1482330212
+	PUSHINT 1299788324
 	EQUAL
 	IFJMPREF {
-		CALL $transferOwnership$
+		CALL $version$
 	}
+}
+DUP
+PUSHINT 1482330212
+EQUAL
+IFJMPREF {
+	CALL $transferOwnership$
 }
 

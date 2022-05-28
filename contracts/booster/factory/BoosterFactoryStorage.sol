@@ -6,13 +6,13 @@ import "@broxus/contracts/contracts/access/InternalOwner.sol";
 
 
 abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
-    uint version;
-    address manager;
-    mapping (address => FarmingPoolSettings) farmings;
+    uint public version;
+    address public manager;
+    mapping (address => FarmingPoolSettings) public farmings;
 
-    TvmCell account_platform;
-    TvmCell account;
-    uint account_version;
+    TvmCell public account_platform;
+    TvmCell public account;
+    uint public account_version;
 
     function getDetails() external override returns (
         uint _version,

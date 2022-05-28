@@ -7,21 +7,13 @@ import "@broxus/contracts/contracts/access/InternalOwner.sol";
 
 
 abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, TransferUtils {
-    uint128 constant BPS  = 1_000_000;
-
-    uint32 constant REINVEST_REQUIRED = 11;
-    uint32 constant NO_REINVEST_REQUIRED = 22;
-
     uint public version; // Account code version
 
     address public factory; // Factory
     address public farming_pool; // Farming pool
 
     uint public last_ping; // Last time ping was called, timestamp
-    uint public ping_frequency; // How often manager should ping booster
-    uint128 ping_balance; // How many tokens available as manager reward
     bool public paused; // Booster account paused flag
-
     address public manager; // Manager address. Can only press `ping`
 
     address public user_data; // Booster farming user data
@@ -109,7 +101,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
 //        if (ping_balance < ping_cost) return false;
 
         // Not enough time passed since last ping
-        if (last_ping + ping_frequency > now) return false;
+        if (last_ping + settings.ping_frequency > now) return false;
 
         return false;
     }

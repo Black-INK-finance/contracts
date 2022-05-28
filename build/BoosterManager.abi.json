@@ -21,6 +21,24 @@
 			]
 		},
 		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"code","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "getDetails",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_owner","type":"uint256"},
+				{"name":"_internalOwner","type":"address"},
+				{"name":"_version","type":"uint256"}
+			]
+		},
+		{
 			"name": "transferOwnership",
 			"inputs": [
 				{"name":"newOwner","type":"uint256"}
@@ -51,6 +69,14 @@
 			"outputs": [
 				{"name":"internalOwner","type":"address"}
 			]
+		},
+		{
+			"name": "version",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"version","type":"uint256"}
+			]
 		}
 	],
 	"data": [
@@ -73,6 +99,7 @@
 		{"name":"_constructorFlag","type":"bool"},
 		{"name":"owner","type":"uint256"},
 		{"name":"_randomNonce","type":"uint256"},
-		{"name":"internalOwner","type":"address"}
+		{"name":"internalOwner","type":"address"},
+		{"name":"version","type":"uint256"}
 	]
 }

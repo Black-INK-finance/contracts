@@ -6,7 +6,7 @@ import '@broxus/contracts/contracts/utils/RandomNonce.sol';
 import "./../interfaces/IBoosterFactory.sol";
 import "./BoosterFactoryBase.sol";
 
-import "./../account/BoosterAccount.sol";
+import "./../account/BoosterAccount_V1.sol";
 import "./../account/BoosterAccountPlatform.sol";
 
 

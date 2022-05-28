@@ -25,7 +25,7 @@ const main = async () => {
     ]);
 
     const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
-    const BoosterAccount = await locklift.factory.getContract('BoosterAccount');
+    const BoosterAccount = await locklift.factory.getContract('BoosterAccount_V1');
     const BoosterAccountPlatform = await locklift.factory.getContract('BoosterAccountPlatform');
 
     const spinner = ora('Deploying temp owner').start();

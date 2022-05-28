@@ -18,7 +18,10 @@ library Utils {
     uint128 constant FARMING_DEPOSIT_LP = 5 ton;
     uint128 constant FARMING_SKIM_FEES = 0.5 ton;
 
-    // - Booster-dex interactions
+    uint32 constant REINVEST_REQUIRED = 11;
+    uint32 constant NO_REINVEST_REQUIRED = 22;
+
+// - Booster-dex interactions
     uint128 constant DEX_DEPOSIT_LIQUIDITY = 5 ton;
     uint128 constant DEX_SWAP = 5 ton;
 
