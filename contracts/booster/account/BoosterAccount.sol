@@ -77,6 +77,8 @@ contract BoosterAccount is
     /// Can be called only by `owner` or `manager`
     /// @param skim Skim fees or not. Only manager can specify skim = true
     function ping(bool skim) external override onlyOwnerOrManager {
+        tvm.accept();
+
         if (skim) {
             // Only manager can skim fees
             require(msg.sender == manager);

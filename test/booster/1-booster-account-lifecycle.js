@@ -694,15 +694,11 @@ describe('Test booster lifecycle', async function() {
                     }
                 });
 
-                logger.success(`First ping tx (reinvest rewards): ${tx.transaction.id}`);
+                logger.success(`First ping tx (claim & reinvest rewards): ${tx.transaction.id}`);
 
                 logger.log('Sleep a little');
                 await sleep(5 * 1000);
             });
-
-            // it('Disable metric manager', async () => {
-            //     metricManager = undefined;
-            // });
 
             it('Check booster virtual balances', async () => {
                 const details = await alice_booster_account.call({ method: 'getDetails' });
@@ -811,6 +807,16 @@ describe('Test booster lifecycle', async function() {
         describe('Claim rewarder fees', async () => {
             let details_before_skim;
 
+            it('Deploy rewarder wallets', async () => {
+                const rewarder_qube = await QUBE.deployWallet(rewarder);
+                rewarder_qube.wallet.name = 'Rewarder QUBE wallet';
+                const rewarder_bridge = await BRIDGE.deployWallet(rewarder);
+                rewarder_bridge.wallet.name = 'Rewarder BRIDGE wallet';
+
+                metricManager.addContract(rewarder_qube.wallet);
+                metricManager.addContract(rewarder_bridge.wallet);
+            });
+
             it('Check booster recorded fees', async () => {
                 details_before_skim = await alice_booster_account.call({ method: 'getDetails' });
 
@@ -841,7 +847,24 @@ describe('Test booster lifecycle', async function() {
                 logger.success(`Third ping tx (claim rewards and skim fees): ${tx.transaction.id}`);
             });
 
-            it('Check fees are zero after skim', async () => {
+            it('Check rewarder received fees', async () => {
+                const rewarder_qube = await QUBE.wallet(rewarder);
+                const rewarder_bridge = await BRIDGE.wallet(rewarder);
+
+                expect(await rewarder_qube.balance())
+                    .to.be.bignumber.equal(
+                        details_before_skim._tokens[QUBE.address].fee,
+                        'Rewarder QUBE balance should be non-zero'
+                    );
+
+                expect(await rewarder_bridge.balance())
+                    .to.be.bignumber.equal(
+                        details_before_skim._tokens[BRIDGE.address].fee,
+                        'Rewarder BRIDGE balance should be non-zero'
+                    );
+            });
+
+            it('Check booster recorded fees are zero after skim', async () => {
                 const details = await alice_booster_account.call({ method: 'getDetails' });
 
                 expect(details._tokens[QUBE.address].fee)

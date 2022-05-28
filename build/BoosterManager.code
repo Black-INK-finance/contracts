@@ -19,14 +19,14 @@ IF
 LDU 256
 LDMSGADDR
 ENDS
-.loc ../contracts/booster/manager/BoosterManager.sol, 20
+.loc ../contracts/booster/manager/BoosterManager.sol, 18
 ACCEPT
-.loc ../contracts/booster/manager/BoosterManager.sol, 22
+.loc ../contracts/booster/manager/BoosterManager.sol, 20
 SWAP
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
-.loc ../contracts/booster/manager/BoosterManager.sol, 23
+.loc ../contracts/booster/manager/BoosterManager.sol, 21
 SETGLOB 12
 .loc ../contracts/booster/manager/BoosterManager.sol, 0
 CALLREF {
@@ -43,7 +43,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/manager/BoosterManager.sol, 26
+.loc ../contracts/booster/manager/BoosterManager.sol, 24
 LDU 32
 LDDICT
 ROTREV
@@ -73,9 +73,9 @@ IF
 GETGLOB 10
 EQUAL
 THROWIFNOT 1101
-.loc ../contracts/booster/manager/BoosterManager.sol, 30
+.loc ../contracts/booster/manager/BoosterManager.sol, 28
 ACCEPT
-.loc ../contracts/booster/manager/BoosterManager.sol, 32
+.loc ../contracts/booster/manager/BoosterManager.sol, 30
 SECOND
 PUSHINT 0
 NULL
@@ -96,7 +96,7 @@ PUSHCONT {
 	NOT
 }
 PUSHCONT {
-	.loc ../contracts/booster/manager/BoosterManager.sol, 33
+	.loc ../contracts/booster/manager/BoosterManager.sol, 31
 	DUP
 	SECOND
 	OVER
@@ -108,7 +108,7 @@ PUSHCONT {
 	PUSHINT 3
 	STZEROES
 	STSLICE
-	PUSHSLICE x47735940000000000000000000000000000072dfd519_
+	PUSHSLICE x398968000000000000000000000000000072dfd519_
 	STSLICER
 	STI 1
 	ENDC

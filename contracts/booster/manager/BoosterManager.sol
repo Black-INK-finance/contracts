@@ -9,8 +9,6 @@ import "@broxus/contracts/contracts/utils/RandomNonce.sol";
 
 
 contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
-    uint128 constant ping_value = 2 ton;
-
     address public internalOwner;
 
     constructor(
@@ -32,7 +30,7 @@ contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
         for (Ping _ping: pings) {
             IBoosterAccount(_ping.account).ping{
                 bounce: false,
-                value: ping_value
+                flag: 0
             }(_ping.skim);
         }
     }
