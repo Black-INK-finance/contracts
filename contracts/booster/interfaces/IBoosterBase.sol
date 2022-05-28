@@ -16,6 +16,7 @@ interface IBoosterBase {
         address[] rewards;
         mapping (address => SwapDirection) swaps;
 //        uint128 ping_cost;
+        uint256 ping_frequency;
         address rewarder;
         uint128 fee;
         bool paused;

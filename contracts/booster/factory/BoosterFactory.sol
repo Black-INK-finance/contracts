@@ -39,16 +39,22 @@ contract BoosterFactory is IBoosterFactory, BoosterFactoryBase, RandomNonce {
     }
 
     /// @notice Deploy booster account
+    /// @param _owner Booster account owner
     /// @param farming_pool Farming pool address
+    /// @param ping_frequency Ping frequency, chosen by user
     function deployAccount(
-        address farming_pool
+        address _owner,
+        address farming_pool,
+        uint256 ping_frequency
     ) external override reserveBalance {
         require(farmings.exists(farming_pool));
-        require(msg.value >= Gas.BOOSTER_DEPLOY_ACCOUNT);
+        require(msg.value >= Utils.BOOSTER_DEPLOY_ACCOUNT);
+        require(ping_frequency >= Utils.MIN_PING_FREQUENCY);
 
-        TvmCell stateInit = _buildAccountPlatformStateInit(msg.sender, farming_pool);
+        TvmCell stateInit = _buildAccountPlatformStateInit(_owner, farming_pool);
 
         FarmingPoolSettings settings = farmings[farming_pool];
+        settings.ping_frequency = ping_frequency;
 
         require(settings.paused == false);
 
@@ -67,6 +73,7 @@ contract BoosterFactory is IBoosterFactory, BoosterFactoryBase, RandomNonce {
 
     /// @notice Upgrade booster account code
     /// Can be called only by `owner`
+    /// @param _account New booster account code
     function upgradeAccountCode(
         TvmCell _account
     ) external override cashBack onlyOwner {
@@ -80,11 +87,11 @@ contract BoosterFactory is IBoosterFactory, BoosterFactoryBase, RandomNonce {
         address[] accounts
     ) external override reserveBalance onlyOwner {
         require(accounts.length <= 100);
-        require(msg.value >= accounts.length * Gas.BOOSTER_UPGRADE_ACCOUNT + 10 ton);
+        require(msg.value >= accounts.length * Utils.BOOSTER_UPGRADE_ACCOUNT + 10 ton);
 
         for (address account_: accounts) {
             IBoosterAccount(account_).acceptUpgrade{
-                value: Gas.BOOSTER_UPGRADE_ACCOUNT
+                value: Utils.BOOSTER_UPGRADE_ACCOUNT
             }(account, account_version);
         }
     }

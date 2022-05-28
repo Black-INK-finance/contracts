@@ -6,8 +6,6 @@ import "@broxus/contracts/contracts/access/InternalOwner.sol";
 
 
 abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
-    uint128 constant BPS  = 1_000_000;
-
     uint version;
     address manager;
     mapping (address => FarmingPoolSettings) farmings;

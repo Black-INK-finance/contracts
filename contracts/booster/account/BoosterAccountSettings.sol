@@ -2,7 +2,7 @@ pragma ton-solidity ^0.57.1;
 
 
 import "./BoosterAccountStorage.sol";
-import "./../Gas.sol";
+import "./../Utils.sol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
@@ -80,7 +80,7 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         }(
             amount,
             recipient,
-            Gas.DEPLOY_TOKEN_WALLET,
+            Utils.DEPLOY_TOKEN_WALLET,
             remainingGasTo,
             notify,
             payload

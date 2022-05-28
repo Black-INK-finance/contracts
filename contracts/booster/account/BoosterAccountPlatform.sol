@@ -17,10 +17,10 @@ contract BoosterAccountPlatform is IBoosterBase {
         require(msg.sender == factory);
 
         TvmCell data = abi.encode(
-            owner,
             factory,
             farming_pool,
             version,
+            owner,
             manager,
             settings
         );

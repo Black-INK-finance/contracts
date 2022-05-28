@@ -1,26 +1,32 @@
 pragma ton-solidity ^0.57.1;
+pragma AbiHeader pubkey;
 
-import "../interfaces/IBoosterAdmin.sol";
+import "../interfaces/IBoosterManager.sol";
 import "../interfaces/IBoosterAccount.sol";
 
 import "@broxus/contracts/contracts/access/ExternalOwner.sol";
 import "@broxus/contracts/contracts/utils/RandomNonce.sol";
 
 
-contract BoosterAdmin is IBoosterAdmin, ExternalOwner, RandomNonce {
-    uint128 constant ping_value = 0.5 ton;
+contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
+    uint128 constant ping_value = 2 ton;
+
+    address public internalOwner;
 
     constructor(
-        uint _key
+        uint _owner,
+        address _internalOwner
     ) public {
         tvm.accept();
 
-        setOwnership(_key);
+        setOwnership(_owner);
+        internalOwner = _internalOwner;
     }
 
     function ping(
         address[] accounts
     ) external override onlyOwner {
+        // TODO: add batching
         tvm.accept();
 
         for (address account: accounts) {

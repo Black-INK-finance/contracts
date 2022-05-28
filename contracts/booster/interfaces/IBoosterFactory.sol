@@ -9,7 +9,12 @@ interface IBoosterFactory is IBoosterBase {
         address farming_pool
     ) external responsible returns(address);
 
-    function deployAccount(address farming_pool) external;
+    function deployAccount(
+        address _owner,
+        address farming_pool,
+        uint256 ping_frequency
+    ) external;
+
     function upgradeAccountCode(TvmCell _account) external;
     function upgradeAccounts(address[] accounts) external;
 
@@ -28,6 +33,7 @@ interface IBoosterFactory is IBoosterBase {
         address right,
         address[] rewards,
         mapping (address => SwapDirection) swaps,
+        uint recommended_ping_frequency,
         address rewarder,
         uint128 fee
     ) external;

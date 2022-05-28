@@ -4,11 +4,10 @@ pragma ton-solidity ^0.57.1;
 import "./BoosterFactoryStorage.sol";
 import "./../account/BoosterAccountPlatform.sol";
 import "../TransferUtils.sol";
+import "./../Utils.sol";
 
 
 abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
-    uint128 constant MAX_FEE = BPS / 2;
-
     constructor(
         address _owner
     ) public {
@@ -41,6 +40,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     /// @param right Pair right token
     /// @param rewards Reward tokens
     /// @param swaps, (token_from => (token_to, pair))
+    /// @param recommended_ping_frequency Recommended ping frequency
     /// @param rewarder Rewarder address
     /// @param fee Fee amount
     function addFarming(
@@ -52,11 +52,13 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address right,
         address[] rewards,
         mapping (address => SwapDirection) swaps,
+        uint recommended_ping_frequency,
         address rewarder,
         uint128 fee
     ) external override onlyOwner cashBack {
         require(!farmings.exists(farming_pool));
-        require(fee <= MAX_FEE);
+        require(recommended_ping_frequency >= Utils.MIN_PING_FREQUENCY);
+        require(fee <= Utils.MAX_FEE);
 
         farmings[farming_pool] = FarmingPoolSettings({
             dex: dex,
@@ -67,8 +69,9 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
             rewards: rewards,
             rewarder: rewarder,
             swaps: swaps,
+            ping_frequency: recommended_ping_frequency,
             fee: fee,
-            paused: true
+            paused: false
         });
     }
 

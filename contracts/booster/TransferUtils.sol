@@ -12,4 +12,8 @@ abstract contract TransferUtils {
         tvm.rawReserve(address(this).balance - msg.value, 2);
         _;
     }
+
+    function _targetBalance() internal pure virtual returns(uint128) {
+        return 10 ton;
+    }
 }

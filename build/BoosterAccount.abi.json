@@ -15,10 +15,10 @@
 			"inputs": [
 				{"name":"root","type":"address"},
 				{"name":"amount","type":"uint128"},
-				{"name":"value2","type":"address"},
+				{"name":"sender","type":"address"},
 				{"name":"value3","type":"address"},
 				{"name":"value4","type":"address"},
-				{"name":"value5","type":"cell"}
+				{"name":"payload","type":"cell"}
 			],
 			"outputs": [
 			]
@@ -105,7 +105,7 @@
 				{"name":"_paused","type":"bool"},
 				{"name":"_manager","type":"address"},
 				{"name":"_user_data","type":"address"},
-				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"_settings","type":"tuple"},
+				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"_settings","type":"tuple"},
 				{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"}],"name":"_tokens","type":"map(address,tuple)"}
 			]
 		},
@@ -224,7 +224,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"}
+				{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"}
 			]
 		},
 		{
@@ -263,7 +263,7 @@
 		{"name":"paused","type":"bool"},
 		{"name":"manager","type":"address"},
 		{"name":"user_data","type":"address"},
-		{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"},
+		{"components":[{"name":"dex","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"ping_frequency","type":"uint256"},{"name":"rewarder","type":"address"},{"name":"fee","type":"uint128"},{"name":"paused","type":"bool"}],"name":"settings","type":"tuple"},
 		{"components":[{"name":"balance","type":"uint128"},{"name":"received","type":"uint128"},{"name":"wallet","type":"address"}],"name":"tokens","type":"map(address,tuple)"}
 	]
 }

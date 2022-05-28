@@ -4,7 +4,7 @@ pragma AbiHeader expire;
 
 import "./../interfaces/IBoosterAccount.sol";
 import "./BoosterAccountBase.sol";
-import "./../Gas.sol";
+import "./../Utils.sol";
 
 import "broxus-ton-tokens-contracts/contracts/interfaces/IAcceptTokensTransferCallback.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/IAcceptTokensMintCallback.sol";
@@ -23,26 +23,26 @@ contract BoosterAccount is
         tvm.resetStorage();
 
         (
-            address _owner,
             address _factory,
             address _farming_pool,
             uint _version,
 
+            address _owner,
             address _manager,
             FarmingPoolSettings _settings
         ) = abi.decode(
             data,
             (
-                address, address, address,
-                uint, address, FarmingPoolSettings
+                address, address, uint,
+                address, address, FarmingPoolSettings
             )
         );
 
-        setOwnership(_owner);
         factory = _factory;
         farming_pool = _farming_pool;
         version = _version;
 
+        setOwnership(_owner);
         manager = _manager;
         settings = _settings;
 
@@ -75,18 +75,20 @@ contract BoosterAccount is
 
     /// @notice Keeper method for claiming farming reward
     /// Can be called only by `owner` or `manager`
-    /// Multiple steps can be executed at once:
-    /// - If enough time passed since last claim - claim rewards
-    /// - If dex account has some left / right tokens - deposit them into pool to receive LP
     function ping() external override onlyOwnerOrManager {
-        last_ping = now;
+//        if (address(this).balance < _targetBalance()) {
+//            tvm.rawReserve(_targetBalance(), 2);
+//
+//            msg.sender.transfer({
+//                value: 0,
+//                bounce: false,
+//                flag: MsgFlag.ALL_NOT_RESERVED
+//            });
+//
+//            tvm.rawReserve(0, 0);
+//        }
 
-        if (msg.sender == manager) {
-            manager.transfer({
-                value: msg.value + Gas.BOOSTER_CASHBACK_MANAGER_EXTRA,
-                bounce: false
-            });
-        }
+        last_ping = now;
 
         _claimReward();
     }
@@ -95,13 +97,15 @@ contract BoosterAccount is
     /// Only few tokens are acceptable, any other token will be sent to the owner
     /// @param root Transferred token root
     /// @param amount Transfer amount
+    /// @param sender Token sender
+    /// @param payload Cell-encoded payload
     function onAcceptTokensTransfer(
         address root,
         uint128 amount,
+        address sender,
         address,
         address,
-        address,
-        TvmCell
+        TvmCell payload
     ) external override {
         // Transfer tokens to the owner (not sender!) in case:
         // - token root not initialized (eg some third party token was sent)
@@ -124,7 +128,15 @@ contract BoosterAccount is
             return;
         }
 
-        _processTokensArrival(root, amount);
+        _considerTokensArrival(root, amount);
+
+        if (_isArrayIncludes(root, settings.rewards) && sender == farming_pool) {
+            (uint32 nonce) = abi.decode(payload, (uint32));
+
+            if (nonce == NO_REINVEST_REQUIRED) return;
+        }
+
+        _processTokensArrival(root);
     }
 
     /// @notice Accepts tokens mint
@@ -154,13 +166,16 @@ contract BoosterAccount is
             return;
         }
 
-        _processTokensArrival(root, amount);
+        _considerTokensArrival(root, amount);
+        _processTokensArrival(root);
     }
 
-    function _processTokensArrival(address token, uint128 amount) internal {
+    function _considerTokensArrival(address token, uint128 amount) internal {
         tokens[token].balance += amount;
         tokens[token].received += amount;
+    }
 
+    function _processTokensArrival(address token) internal {
         // Handle received token
         if (token == settings.lp) {
             // - Received token is LP, deposit it into farming

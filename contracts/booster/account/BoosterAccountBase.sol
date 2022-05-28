@@ -13,7 +13,7 @@ import "flatqube/contracts/libraries/DexOperationTypes.sol";
 import "./../../v3/interfaces/IEverFarmPool.sol";
 
 import "./BoosterAccountSettings.sol";
-import "./../Gas.sol";
+import "./../Utils.sol";
 
 
 abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
@@ -42,7 +42,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
     ) internal {
         TvmCell payload = _buildDepositPayload(
             now,
-            Gas.DEPLOY_TOKEN_WALLET
+            0 // Deploy wallet value = 0
         );
 
         _transferTokens(
@@ -52,7 +52,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
             _me(),
             true,
             payload,
-            Gas.DEX_DEPOSIT_LIQUIDITY,
+            Utils.DEX_DEPOSIT_LIQUIDITY,
             0
         );
 
@@ -61,9 +61,9 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
 
     function _claimReward() internal view {
         IEverFarmPool(farming_pool).claimReward{
-            value: Gas.FARMING_CLAIM_REWARD,
+            value: Utils.FARMING_CLAIM_REWARD,
             bounce: false
-        }(_me(), now);
+        }(_me(), REINVEST_REQUIRED);
     }
 
     function _swap(address token) internal {
@@ -71,8 +71,8 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
 
         TvmCell payload = _buildSwapPayload(
             uint64(tokens[token].balance),
-            Gas.DEPLOY_TOKEN_WALLET,
-            0
+            0, // Deploy wallet value = 0
+            0 // Expected amount = 0
         );
 
         _transferTokens(
@@ -82,7 +82,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
             _me(),
             true,
             payload,
-            Gas.DEX_SWAP,
+            Utils.DEX_SWAP,
             0
         );
 
@@ -99,20 +99,16 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
         });
 
         ITokenRoot(token).deployWallet{
-            value: Gas.DEPLOY_TOKEN_WALLET * 2,
+            value: Utils.DEPLOY_TOKEN_WALLET * 2,
             callback: BoosterAccountBase.receiveTokenWallet
         }(
-            address(this),
-            Gas.DEPLOY_TOKEN_WALLET
+            _me(),
+            Utils.DEPLOY_TOKEN_WALLET
         );
     }
 
     function _depositToFarming() internal {
-        TvmBuilder builder;
-        builder.store(_me());
-        builder.store(now);
-
-        TvmCell payload = builder.toCell();
+        TvmCell payload = _buildFarmingDepositPayload(NO_REINVEST_REQUIRED);
 
         _transferTokens(
             tokens[settings.lp].wallet,
@@ -121,7 +117,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
             _me(),
             true,
             payload,
-            Gas.FARMING_DEPOSIT_LP,
+            Utils.FARMING_DEPOSIT_LP,
             0
         );
 
@@ -133,7 +129,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
     /// @param amount Amount of LP to request
     function requestFarmingLP(
         uint128 amount
-    ) external override onlyOwner reserveBalance {
+    ) external override onlyOwner onlyPaused reserveBalance {
         IEverFarmPool(farming_pool).withdraw{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
@@ -143,7 +139,7 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
 
     function _requestFarmingUserData() internal view {
         IEverFarmPool(farming_pool).getUserDataAddress{
-            value: Gas.FARMING_REQUEST_USER_DATA,
+            value: Utils.FARMING_REQUEST_USER_DATA,
             bounce: false,
             callback: BoosterAccountBase.receiveFarmingUserData
         }(_me());
@@ -179,5 +175,20 @@ abstract contract BoosterAccountBase is InternalOwner, BoosterAccountSettings {
         builder.store(empty);
 
         return builder.toCell();
+    }
+
+    function _buildFarmingDepositPayload(
+        uint32 nonce
+    ) internal pure returns (TvmCell) {
+        TvmBuilder builder;
+        builder.store(_me());
+        builder.store(nonce);
+
+        return builder.toCell();
+    }
+
+
+    function _targetBalance() internal override pure returns(uint128) {
+        return Utils.BOOSTER_DEPLOY_ACCOUNT;
     }
 }

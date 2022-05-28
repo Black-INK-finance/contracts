@@ -16,7 +16,7 @@ const {
 
 
 describe('Test booster lifecycle', async function() {
-    this.timeout(30000000);
+    this.timeout(3000000000000);
 
     let metricManager;
 
@@ -57,6 +57,8 @@ describe('Test booster lifecycle', async function() {
     let booster_factory;
 
     afterEach(async function() {
+        if (metricManager === undefined) return;
+
         const lastCheckPoint = metricManager.lastCheckPointName();
         const currentName = this.currentTest.title;
 
@@ -76,15 +78,22 @@ describe('Test booster lifecycle', async function() {
     it('Setup actors', async () => {
         god = await deployUser('God');
         alice = await deployUser('Alice');
-        manager = await deployUser('Manager');
         rewarder = await deployUser('Rewarder');
 
-        metricManager = new MetricManager(
-            // god,
-            alice,
-            manager,
-            rewarder
-        );
+        const [keyPair] = await locklift.keys.getKeyPairs();
+
+        const BoosterManager = await locklift.factory.getContract('BoosterManager');
+        manager = await locklift.giver.deployContract({
+            contract: BoosterManager,
+            constructorParams: {
+                _owner: `0x${keyPair.public}`,
+                _internalOwner: god.address
+            }
+        }, locklift.utils.convertCrystal(100, 'nano'));
+        manager.name = 'Manager';
+        manager.setKeyPair(keyPair);
+
+        await logContract(manager);
     });
 
     describe('Setup tokens', async () => {
@@ -93,11 +102,6 @@ describe('Test booster lifecycle', async function() {
             USDT = await setupTokenRoot('Tether', 'USDT', god);
             BRIDGE = await setupTokenRoot('Bridge', 'BRIDGE', god);
             QUBE = await setupTokenRoot('FlatQube', 'QUBE', god);
-
-            // metricManager.addContract(USDC.token);
-            // metricManager.addContract(USDT.token);
-            // metricManager.addContract(BRIDGE.token);
-            // metricManager.addContract(QUBE.token);
         });
 
         it('Mint tokens to God', async () => {
@@ -111,26 +115,19 @@ describe('Test booster lifecycle', async function() {
     describe('Setup Dex', async () => {
         it('Deploy token factory, dex root, dex vault', async () => {
             [dex_token_factory, dex_root, dex_vault] = await setupDex(god);
-
-            // metricManager.addContract(dex_root);
-            // metricManager.addContract(dex_vault);
         });
 
         it('Deploy pairs', async () => {
             [dex_pair_USDT_USDC] = await deployDexPair(god, dex_root, USDT, USDC);
             [dex_pair_QUBE_USDC] = await deployDexPair(god, dex_root, QUBE, USDC);
             [dex_pair_BRIDGE_USDT] = await deployDexPair(god, dex_root, BRIDGE, USDT);
-
-            // metricManager.addContract(dex_pair_USDT_USDC);
-            // metricManager.addContract(dex_pair_QUBE_USDC);
-            // metricManager.addContract(dex_pair_BRIDGE_USDT);
         });
 
         describe('Supply initial liquidity to pairs (all pairs have 1:1 initial liquidity)', async () => {
             let god_dex_account;
 
             it('Deploy God DEX account', async () => {
-                const tx = await god.runTarget({
+                await god.runTarget({
                     contract: dex_root,
                     method: 'deployAccount',
                     params: {
@@ -206,6 +203,8 @@ describe('Test booster lifecycle', async function() {
                         value: locklift.utils.convertCrystal(5, 'nano')
                     });
                 }
+
+                await sleep(1000);
             });
 
             it('Check pair reserves', async () => {
@@ -248,8 +247,6 @@ describe('Test booster lifecycle', async function() {
                 vestingRatio: 0,
                 withdrawAllLockPeriod: 0
             });
-
-            // metricManager.addContract(farming_pool.pool);
         });
 
         it('Fill farming pool with QUBE', async () => {
@@ -379,9 +376,10 @@ describe('Test booster lifecycle', async function() {
 
             // console.log(tx);
 
-            // logger.log(`Alice deposit to USDC/USDT pool tx: ${tx.transaction.id}`);
+            logger.log(`Alice deposit to USDC/USDT pool tx: ${tx.transaction.id}`);
 
             LP = await Token.from_addr(lp_address, alice);
+            LP.token.name = 'Token root [LP USDT/USDC]';
             const wallet = await LP.wallet(alice);
 
             expect(await wallet.balance())
@@ -404,8 +402,6 @@ describe('Test booster lifecycle', async function() {
                     _account: BoosterAccount.code
                 },
             });
-
-            // metricManager.addContract(booster_factory);
 
             await logContract(booster_factory);
 
@@ -443,6 +439,7 @@ describe('Test booster lifecycle', async function() {
                             pair: dex_pair_QUBE_USDC.address
                         }
                     },
+                    recommended_ping_frequency: 20 * 60, // 1 minute
                     rewarder: rewarder.address,
                     fee: 10
                 }
@@ -453,35 +450,37 @@ describe('Test booster lifecycle', async function() {
             expect(details._farmings[farming_pool.address].fee)
                 .to.be.bignumber.equal(10, 'Wrong fee in farming');
             expect(details._farmings[farming_pool.address].paused)
-                .to.be.equal(true, 'Farming should be paused');
+                .to.be.equal(false, 'Farming should be paused');
             expect(details._farmings[farming_pool.address].rewarder)
                 .to.be.equal(rewarder.address, 'Wrong rewarder in farming');
         });
 
-        it('Unpause farming pool', async () => {
-            await god.runTarget({
-                contract: booster_factory,
-                method: 'setFarmingPaused',
-                params: {
-                    farming_pool: farming_pool.address,
-                    paused: false
-                }
-            });
-
-            const details = await booster_factory.call({ method: 'getDetails' });
-
-            expect(details._farmings[farming_pool.address].paused)
-                .to.be.equal(false, 'Farming should be unpaused');
-        });
+        // it('Unpause farming pool', async () => {
+        //     await god.runTarget({
+        //         contract: booster_factory,
+        //         method: 'setFarmingPaused',
+        //         params: {
+        //             farming_pool: farming_pool.address,
+        //             paused: false
+        //         }
+        //     });
+        //
+        //     const details = await booster_factory.call({ method: 'getDetails' });
+        //
+        //     expect(details._farmings[farming_pool.address].paused)
+        //         .to.be.equal(false, 'Farming should be unpaused');
+        // });
 
         it('Deploy Alice booster account', async () => {
             await alice.runTarget({
                 contract: booster_factory,
                 method: 'deployAccount',
                 params: {
-                    farming_pool: farming_pool.address
+                    _owner: alice.address,
+                    farming_pool: farming_pool.address,
+                    ping_frequency: 60 * 20
                 },
-                value: locklift.utils.convertCrystal(105, 'nano')
+                value: locklift.utils.convertCrystal(11, 'nano')
             });
 
             const alice_booster_account_address = await booster_factory.call({
@@ -495,8 +494,6 @@ describe('Test booster lifecycle', async function() {
             alice_booster_account = await locklift.factory.getContract('BoosterAccount');
             alice_booster_account.setAddress(alice_booster_account_address);
             alice_booster_account.name = 'Alice booster account';
-
-            metricManager.addContract(alice_booster_account);
 
             await logContract(alice_booster_account);
         });
@@ -519,6 +516,8 @@ describe('Test booster lifecycle', async function() {
                 .to.be.equal(booster_factory.address, 'Wrong booster factory');
             expect(details._farming_pool)
                 .to.be.equal(farming_pool.address, 'Wrong booster farming pool');
+            expect(details._settings.ping_frequency)
+                .to.be.bignumber.equal(60 * 20, 'Wrong booster ping frequency');
 
             logger.log(`Booster USDT wallet: ${details._tokens[USDT.address].wallet}`);
             logger.log(`Booster USDC wallet: ${details._tokens[USDC.address].wallet}`);
@@ -539,6 +538,8 @@ describe('Test booster lifecycle', async function() {
                 (await wallet.balance()),
                 alice_booster_account.address
             );
+
+            await sleep(1000);
 
             logger.log(`Alice first LP deposit to booster tx: ${tx.transaction.id}`);
 
@@ -577,6 +578,102 @@ describe('Test booster lifecycle', async function() {
         describe('First ping', async () => {
             let _details, _position;
 
+            it('Setup metric manager', async () => {
+                // Farming token wallets
+                const farming_qube = (await QUBE.wallet(farming_pool)).wallet;
+                farming_qube.name = 'Farming QUBE wallet';
+                const farming_bridge = (await BRIDGE.wallet(farming_pool)).wallet;
+                farming_bridge.name = 'Farming BRIDGE wallet';
+                const farming_lp = (await LP.wallet(farming_pool)).wallet;
+                farming_lp.name = 'Farming LP wallet';
+
+                // Booster token wallets
+                const booster_qube = (await QUBE.wallet(alice_booster_account)).wallet;
+                booster_qube.name = 'Booster QUBE wallet';
+                const booster_bridge = (await BRIDGE.wallet(alice_booster_account)).wallet;
+                booster_bridge.name = 'Booster BRIDGE wallet';
+                const booster_lp = (await LP.wallet(alice_booster_account)).wallet;
+                booster_lp.name = 'Booster LP wallet';
+                const booster_usdt = (await LP.wallet(alice_booster_account)).wallet;
+                booster_usdt.name = 'Booster USDT wallet';
+                const booster_usdc = (await LP.wallet(alice_booster_account)).wallet;
+                booster_usdc.name = 'Booster USDC wallet';
+
+                // Dex vault token wallets
+                const dex_vault_qube = (await QUBE.wallet(dex_vault)).wallet;
+                dex_vault_qube.name = 'DEX Vault QUBE wallet';
+                const dex_vault_bridge = (await BRIDGE.wallet(dex_vault)).wallet;
+                dex_vault_bridge.name = 'DEX Vault BRIDGE wallet';
+                const dex_vault_lp = (await LP.wallet(dex_vault)).wallet;
+                dex_vault_lp.name = 'DEX Vault LP wallet';
+                const dex_vault_usdt = (await LP.wallet(dex_vault)).wallet;
+                dex_vault_usdt.name = 'DEX Vault USDT wallet';
+                const dex_vault_usdc = (await LP.wallet(dex_vault)).wallet;
+                dex_vault_usdc.name = 'DEX Vault USDC wallet';
+
+                // Dex pairs token wallets
+                const dex_pair_QUBE_USDC_qube = (await QUBE.wallet(dex_pair_QUBE_USDC)).wallet;
+                dex_pair_QUBE_USDC_qube.name = 'Pair QUBE/USDC QUBE wallet';
+                const dex_pair_QUBE_USDC_usdc = (await USDC.wallet(dex_pair_QUBE_USDC)).wallet;
+                dex_pair_QUBE_USDC_usdc.name = 'Pair QUBE/USDC USDC wallet';
+
+                const dex_pair_USDT_USDC_usdt = (await USDT.wallet(dex_pair_USDT_USDC)).wallet;
+                dex_pair_USDT_USDC_usdt.name = 'Pair USDT/USDC USDT wallet';
+                const dex_pair_USDT_USDC_usdc = (await USDC.wallet(dex_pair_USDT_USDC)).wallet;
+                dex_pair_USDT_USDC_usdc.name = 'Pair USDT/USDC USDC wallet';
+
+                const dex_pair_BRIDGE_USDT_bridge = (await BRIDGE.wallet(dex_pair_BRIDGE_USDT)).wallet;
+                dex_pair_BRIDGE_USDT_bridge.name = 'Pair BRIDGE/USDT BRIDGE wallet';
+                const dex_pair_BRIDGE_USDT_usdt = (await USDT.wallet(dex_pair_BRIDGE_USDT)).wallet;
+                dex_pair_BRIDGE_USDT_usdt.name = 'Pair BRIDGE/USDT USDT wallet';
+
+                metricManager = new MetricManager(
+                    god,
+                    alice,
+                    manager,
+                    rewarder,
+
+                    dex_root,
+                    dex_vault,
+                    dex_pair_QUBE_USDC,
+                    dex_pair_USDT_USDC,
+                    dex_pair_BRIDGE_USDT,
+
+                    farming_pool.pool,
+                    farming_qube,
+                    farming_bridge,
+                    farming_lp,
+
+                    booster_qube,
+                    booster_bridge,
+                    booster_lp,
+                    booster_usdt,
+                    booster_usdc,
+
+                    dex_vault_qube,
+                    dex_vault_bridge,
+                    dex_vault_lp,
+                    dex_vault_usdt,
+                    dex_vault_usdc,
+
+                    dex_pair_QUBE_USDC_qube,
+                    dex_pair_QUBE_USDC_usdc,
+                    dex_pair_USDT_USDC_usdt,
+                    dex_pair_USDT_USDC_usdc,
+                    dex_pair_BRIDGE_USDT_bridge,
+                    dex_pair_BRIDGE_USDT_usdt,
+
+                    USDC.token,
+                    USDT.token,
+                    BRIDGE.token,
+                    QUBE.token,
+                    LP.token,
+
+                    alice_booster_account,
+                    alice_booster_account_user_data,
+                );
+            });
+
             it('Sleep 10 seconds to achieve farming rewards', async () => {
                 await sleep(10 * 1000);
             });
@@ -587,16 +684,22 @@ describe('Test booster lifecycle', async function() {
             });
 
             it('Ping', async () => {
-                const tx = await manager.runTarget({
-                    contract: alice_booster_account,
-                    method: 'ping'
+                const tx = await manager.run({
+                    method: 'ping',
+                    params: {
+                        accounts: [alice_booster_account.address]
+                    }
                 });
 
-                logger.log(`First ping tx: ${tx.transaction.id}`);
+                logger.success(`First ping tx (reinvest rewards): ${tx.transaction.id}`);
 
                 logger.log('Sleep a little');
                 await sleep(5 * 1000);
             });
+
+            // it('Disable metric manager', async () => {
+            //     metricManager = undefined;
+            // });
 
             it('Check booster virtual balances', async () => {
                 const details = await alice_booster_account.call({ method: 'getDetails' });
@@ -622,7 +725,6 @@ describe('Test booster lifecycle', async function() {
                     .to.be.bignumber.greaterThan(_details._tokens[details._settings.lp].received, 'Booster should receive LP after ping')
                     .to.be.bignumber.greaterThan(0, 'Booster should receive LP')
                     .to.be.bignumber.equal(position.amount, 'Booster should deposit all LP to farming');
-
             });
         });
 
@@ -682,10 +784,14 @@ describe('Test booster lifecycle', async function() {
 
                 await sleep(10 * 1000);
 
-                await manager.runTarget({
-                    contract: alice_booster_account,
-                    method: 'ping'
+                const tx = await manager.run({
+                    method: 'ping',
+                    params: {
+                        accounts: [alice_booster_account.address]
+                    }
                 });
+
+                logger.success(`Second ping tx (claim rewards): ${tx.transaction.id}`);
 
                 await sleep(2 * 1000);
 
