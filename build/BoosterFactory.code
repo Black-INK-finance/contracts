@@ -22,31 +22,111 @@ ENDS
 CTOS
 LDMSGADDR
 LDREF
+ENDS
+CTOS
+LDMSGADDR
 LDREF
 ENDS
-ROLL 3
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 14
+CTOS
+LDMSGADDR
+LDU 128
+LDREF
+LDREF
+ENDS
+ROLL 6
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 16
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 20
-ACCEPT
-.loc ../contracts/booster/factory/BoosterFactory.sol, 22
-ROT
-SETGLOB 12
-.loc ../contracts/booster/factory/BoosterFactory.sol, 23
-SWAP
-SETGLOB 14
-.loc ../contracts/booster/factory/BoosterFactory.sol, 24
-SETGLOB 15
 .loc ../contracts/booster/factory/BoosterFactory.sol, 26
-PUSHINT 0
+ACCEPT
+.loc ../contracts/booster/factory/BoosterFactory.sol, 28
+ROLL 3
+SETGLOB 14
+.loc ../contracts/booster/factory/BoosterFactory.sol, 29
+ROT
 SETGLOB 16
+.loc ../contracts/booster/factory/BoosterFactory.sol, 30
+ROLL 3
+SETGLOB 12
+.loc ../contracts/booster/factory/BoosterFactory.sol, 31
+ROT
+SETGLOB 13
+.loc ../contracts/booster/factory/BoosterFactory.sol, 32
+SWAP
+SETGLOB 18
+.loc ../contracts/booster/factory/BoosterFactory.sol, 33
+SETGLOB 19
+.loc ../contracts/booster/factory/BoosterFactory.sol, 35
+PUSHINT 0
+SETGLOB 20
+.loc ../contracts/booster/factory/BoosterFactory.sol, 37
+PUSHINT 200000000
+MYADDR
+PUSHINT 400000000
+UFITS 128
+GETGLOB 14
+NEWC
+STSLICECONST x62_
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 1
+STUR 107
+ROTREV
+PUSHSLICE x31edd4c72e5607a7
+NEWC
+STSLICE
+STSLICE
+STU 128
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
 THROW 0
+
+.macro receiveTokenWallet
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 46
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+CALLREF {
+	CALL $receiveTokenWallet_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro receiveTokenWallet_internal_macro
+.loc ../contracts/booster/factory/BoosterFactory.sol, 49
+GETGLOB 9
+GETGLOB 14
+SDEQ
+THROWIFNOT 100
+.loc ../contracts/booster/factory/BoosterFactory.sol, 51
+SETGLOB 15
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
 
 .macro deriveAccount
 DROP
@@ -57,7 +137,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 32
+.loc ../contracts/booster/factory/BoosterFactory.sol, 57
 LDU 32
 GETGLOB 4
 ROT
@@ -142,11 +222,11 @@ CALLREF {
 THROW 0
 
 .macro deriveAccount_internal_macro
-.loc ../contracts/booster/factory/BoosterFactory.sol, 36
+.loc ../contracts/booster/factory/BoosterFactory.sol, 61
 CALLREF {
 	CALL $_buildAccountPlatformStateInit_internal_macro$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 38
+.loc ../contracts/booster/factory/BoosterFactory.sol, 63
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -163,6 +243,184 @@ ENDC
 CTOS
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 
+.macro onAcceptTokensTransfer
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 67
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+CALLREF {
+	CALL $onAcceptTokensTransfer_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro onAcceptTokensTransfer_internal_macro
+.loc ../contracts/booster/TransferUtils.sol, 13
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/factory/BoosterFactory.sol, 76
+ROLL 5
+GETGLOB 14
+SDEQ
+NOT
+GETGLOB 9
+GETGLOB 15
+SDEQ
+NOT
+DEPTH
+ADDCONST -2
+PICK
+PUSHINT 3000000000
+LESS
+OR
+OR
+PUSHCONT {
+	.loc ../contracts/booster/factory/BoosterFactory.sol, 77
+	GETGLOB 9
+	BLKPUSH 2, 5
+	PUSH S4
+	TRUE
+	PUSH S5
+	PUSHINT 0
+	PUSHINT 128
+	FALSE
+	CALLREF {
+		CALL $_transferTokens_internal_macro$
+	}
+	.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+}
+IF
+.loc ../contracts/booster/factory/BoosterFactory.sol, 93
+GETGLOB 15
+PUSH S5
+GETGLOB 13
+PUSH S4
+FALSE
+PUSHREF {
+}
+PUSHINT 1000000000
+PUSHINT 0
+TRUE
+CALLREF {
+	CALL $_transferTokens_internal_macro$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 106
+CTOS
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 108
+ROLL 4
+SWAP
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 1
+STUR 111
+ROTREV
+NEWC
+STSLICECONST x0d8c3609
+STU 128
+STSLICE
+STBREFR
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+DROP2
+
+.macro withdrawPingTokens
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 118
+LDU 128
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+CALLREF {
+	CALL $withdrawPingTokens_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro withdrawPingTokens_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../contracts/booster/TransferUtils.sol, 13
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/factory/BoosterFactory.sol, 123
+GETGLOB 15
+SWAP
+GETGLOB 10
+GETGLOB 9
+FALSE
+PUSHREF {
+}
+PUSHINT 0
+PUSHINT 128
+TRUE
+CALLREF {
+	CALL $_transferTokens_internal_macro$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+
 .macro deployAccount
 DROP
 GETGLOB 6
@@ -172,7 +430,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 45
+.loc ../contracts/booster/factory/BoosterFactory.sol, 139
 OVER
 PUSHCONT {
 	LDREF
@@ -185,7 +443,6 @@ LDREF
 ENDS
 CTOS
 LDMSGADDR
-LDU 256
 ENDS
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 CALLREF {
@@ -198,7 +455,7 @@ CALLREF {
 THROW 0
 
 .macro deployAccount_internal_macro
-.loc ../contracts/booster/TransferUtils.sol, 12
+.loc ../contracts/booster/TransferUtils.sol, 13
 GETPARAM 7
 FIRST
 DEPTH
@@ -208,44 +465,34 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/booster/factory/BoosterFactory.sol, 50
-OVER
-GETGLOB 13
+.loc ../contracts/booster/factory/BoosterFactory.sol, 143
+DUP
+GETGLOB 17
 PUSHINT 267
 DICTGET
 NULLSWAPIFNOT
 NIP
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactory.sol, 51
+.loc ../contracts/booster/factory/BoosterFactory.sol, 144
 DEPTH
 ADDCONST -2
 PICK
-PUSHINT 10000000000
+PUSHINT 20000000000
 GEQ
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactory.sol, 52
-DUP
-PUSHINT 900
-GEQ
-THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactory.sol, 54
-ROT
-PUSH S2
+.loc ../contracts/booster/factory/BoosterFactory.sol, 146
+TUCK
 CALLREF {
 	CALL $_buildAccountPlatformStateInit_internal_macro$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 56
-ROT
-GETGLOB 13
+.loc ../contracts/booster/factory/BoosterFactory.sol, 148
+SWAP
+GETGLOB 17
 PUSHINT 267
 DICTGETREF
 PUSHCONT {
 	CTOS
 	CALLREF {
-		LDMSGADDR
-		LDREF
-		ENDS
-		CTOS
 		LDMSGADDR
 		LDREF
 		ENDS
@@ -271,6 +518,7 @@ PUSHCONT {
 		CTOS
 		LDMSGADDR
 		LDU 128
+		LDU 128
 		LDI 1
 		ENDS
 		TUPLE 11
@@ -280,7 +528,7 @@ PUSHCONT {
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
-	BLKPUSH 4, 0
+	BLKPUSH 3, 0
 	PUSHINT 0
 	NEWDICT
 	PAIR
@@ -290,24 +538,22 @@ PUSHCONT {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	PUSHINT 0
-	DUP
+	BLKPUSH 2, 0
 	TUPLE 11
 }
 IFELSE
-.loc ../contracts/booster/factory/BoosterFactory.sol, 57
-ROT
-SETINDEX 7
-.loc ../contracts/booster/factory/BoosterFactory.sol, 59
+.loc ../contracts/booster/factory/BoosterFactory.sol, 149
 DUP
 INDEX 10
 FALSE
 EQUAL
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactory.sol, 61
-GETGLOB 12
+.loc ../contracts/booster/factory/BoosterFactory.sol, 151
 GETGLOB 16
-GETGLOB 15
-ROLL 4
+GETGLOB 12
+GETGLOB 20
+GETGLOB 19
+ROLL 5
 DUP
 HASHCU
 NEWC
@@ -343,12 +589,13 @@ CALLREF {
 }
 STREF
 STSLICECONST 1
-ROLLREV 4
+ROLLREV 5
 NEWC
-STSLICECONST x5b945bdc
+STSLICECONST x48180d18
 STREF
 STU 256
 STSLICE
+STU 128
 SWAP
 UNTUPLE 11
 REVERSE 12, 0
@@ -364,9 +611,6 @@ STSLICE
 ROLLREV 8
 NEWC
 STSLICE
-ROLLREV 7
-NEWC
-STSLICE
 SWAP
 UNPAIR
 XCHG S2
@@ -374,12 +618,12 @@ STU 32
 STDICT
 STDICT
 STU 256
-ROLLREV 3
+ROLLREV 4
 NEWC
 STSLICE
 STU 128
+STU 128
 STI 1
-STBREFR
 STBREFR
 STBREFR
 STBREFR
@@ -391,6 +635,42 @@ PUSHINT 128
 SENDRAWMSG
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 
+.macro setRecommendedPriceLimit
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/factory/BoosterFactory.sol, 167
+LDU 128
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+CALLREF {
+	CALL $setRecommendedPriceLimit_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setRecommendedPriceLimit_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../contracts/booster/factory/BoosterFactory.sol, 170
+DUP
+GTINT 0
+THROWIFNOT 100
+.loc ../contracts/booster/factory/BoosterFactory.sol, 172
+SETGLOB 16
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+
 .macro upgradeAccountCode
 DROP
 GETGLOB 6
@@ -400,7 +680,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 77
+.loc ../contracts/booster/factory/BoosterFactory.sol, 178
 LDREF
 ENDS
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
@@ -414,6 +694,13 @@ CALLREF {
 THROW 0
 
 .macro upgradeAccountCode_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+GETGLOB 10
 .loc ../contracts/booster/TransferUtils.sol, 6
 GETPARAM 7
 FIRST
@@ -424,19 +711,15 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
-GETGLOB 9
-GETGLOB 10
-SDEQ
-THROWIFNOT 1101
-.loc ../contracts/booster/factory/BoosterFactory.sol, 80
-SETGLOB 15
-.loc ../contracts/booster/factory/BoosterFactory.sol, 81
-GETGLOB 16
+.loc ../contracts/booster/TransferUtils.sol, 7
+SWAP
+.loc ../contracts/booster/factory/BoosterFactory.sol, 181
+SETGLOB 19
+.loc ../contracts/booster/factory/BoosterFactory.sol, 182
+GETGLOB 20
 INC
-SETGLOB 16
-.loc ../contracts/booster/TransferUtils.sol, 8
-GETGLOB 9
+SETGLOB 20
+.loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -456,7 +739,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 86
+.loc ../contracts/booster/factory/BoosterFactory.sol, 187
 LDU 32
 LDDICT
 ROTREV
@@ -474,7 +757,7 @@ CALLREF {
 THROW 0
 
 .macro upgradeAccounts_internal_macro
-.loc ../contracts/booster/TransferUtils.sol, 12
+.loc ../contracts/booster/TransferUtils.sol, 13
 GETPARAM 7
 FIRST
 DEPTH
@@ -489,12 +772,12 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
-.loc ../contracts/booster/factory/BoosterFactory.sol, 89
+.loc ../contracts/booster/factory/BoosterFactory.sol, 190
 DUP
 FIRST
 LESSINT 101
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactory.sol, 90
+.loc ../contracts/booster/factory/BoosterFactory.sol, 191
 DEPTH
 ADDCONST -2
 PICK
@@ -506,7 +789,7 @@ PUSHINT 10000000000
 ADD
 GEQ
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactory.sol, 92
+.loc ../contracts/booster/factory/BoosterFactory.sol, 193
 SECOND
 PUSHINT 0
 NULL
@@ -522,9 +805,9 @@ PUSHCONT {
 	NOT
 }
 PUSHCONT {
-	.loc ../contracts/booster/factory/BoosterFactory.sol, 93
-	GETGLOB 16
-	GETGLOB 15
+	.loc ../contracts/booster/factory/BoosterFactory.sol, 194
+	GETGLOB 20
+	GETGLOB 19
 	PUSH S2
 	NEWC
 	STSLICECONST x62_
@@ -558,7 +841,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 99
+.loc ../contracts/booster/factory/BoosterFactory.sol, 200
 ENDS
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 CALLREF {
@@ -593,9 +876,61 @@ CALLREF {
 THROW 0
 
 .macro getAccountPlatformCodeHash_internal_macro
-.loc ../contracts/booster/factory/BoosterFactory.sol, 100
-GETGLOB 14
+.loc ../contracts/booster/factory/BoosterFactory.sol, 201
+GETGLOB 18
 HASHCU
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+
+.macro encodePingTopUp
+DROP
+GETGLOB 6
+THROWIFNOT 76
+.loc ../contracts/booster/factory/BoosterFactory.sol, 204
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/factory/BoosterFactory.sol, 0
+CALLREF {
+	CALL $encodePingTopUp_internal_macro$
+}
+OVER
+PUSHCONT {
+	PUSH S3
+	CTOS
+	LDU 2
+	LDMSGADDR
+	DROP
+	NIP
+	NEWC
+	STSLICECONST xc
+	STSLICE
+	PUSHSLICE x0000000000000000000000003522147ea_
+	STSLICER
+	STREF
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+PUSHCONT {
+	DROP
+}
+IFELSE
+IFREF {
+	CALL $upd_only_time_in_c4$
+}
+THROW 0
+
+.macro encodePingTopUp_internal_macro
+.loc ../contracts/booster/factory/BoosterFactory.sol, 207
+NEWC
+STSLICE
+ENDC
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 
 .macro upgrade
@@ -607,7 +942,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 106
+.loc ../contracts/booster/factory/BoosterFactory.sol, 213
 LDREF
 ENDS
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
@@ -626,17 +961,29 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
-.loc ../contracts/booster/factory/BoosterFactory.sol, 109
-GETGLOB 13
-GETGLOB 16
+.loc ../contracts/booster/factory/BoosterFactory.sol, 216
+GETGLOB 17
+GETGLOB 20
+GETGLOB 19
+GETGLOB 18
+GETGLOB 11
 GETGLOB 15
 GETGLOB 14
-GETGLOB 11
+GETGLOB 13
 GETGLOB 12
 GETGLOB 10
-GETGLOB 17
+GETGLOB 21
 NEWC
 STU 256
+STSLICE
+ROLLREV 9
+NEWC
+STSLICE
+ROLLREV 8
+NEWC
+STSLICE
+ROLLREV 7
+NEWC
 STSLICE
 ROLLREV 6
 NEWC
@@ -650,11 +997,14 @@ STU 256
 STDICT
 STBREFR
 STBREFR
+STBREFR
+STBREFR
+STBREFR
 ENDC
-.loc ../contracts/booster/factory/BoosterFactory.sol, 120
+.loc ../contracts/booster/factory/BoosterFactory.sol, 230
 OVER
 SETCODE
-.loc ../contracts/booster/factory/BoosterFactory.sol, 121
+.loc ../contracts/booster/factory/BoosterFactory.sol, 231
 SWAP
 CTOS
 DUP
@@ -669,7 +1019,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/booster/factory/BoosterFactory.sol, 123
+.loc ../contracts/booster/factory/BoosterFactory.sol, 233
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
@@ -677,7 +1027,7 @@ CALLREF {
 
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
-.loc ../contracts/booster/factory/BoosterFactory.sol, 127
+.loc ../contracts/booster/factory/BoosterFactory.sol, 237
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -688,21 +1038,47 @@ PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 SETGLOB 12
-NEWDICT
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
 SETGLOB 13
-PUSHREF {
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 SETGLOB 14
-PUSHREF {
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
 SETGLOB 15
 PUSHINT 0
 SETGLOB 16
-PUSHINT 0
+NEWDICT
 SETGLOB 17
-.loc ../contracts/booster/factory/BoosterFactory.sol, 129
+PUSHREF {
+}
+SETGLOB 18
+PUSHREF {
+}
+SETGLOB 19
+PUSHINT 0
+SETGLOB 20
+PUSHINT 0
+SETGLOB 21
+.loc ../contracts/booster/factory/BoosterFactory.sol, 239
 CTOS
 LDU 256
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
 LDMSGADDR
 LDREF
 ENDS
@@ -717,32 +1093,41 @@ CTOS
 LDU 256
 LDDICT
 ENDS
-.loc ../contracts/booster/factory/BoosterFactory.sol, 147
-ROLL 7
-SETGLOB 17
-.loc ../contracts/booster/factory/BoosterFactory.sol, 148
-ROLL 6
+.loc ../contracts/booster/factory/BoosterFactory.sol, 261
+ROLL 10
+SETGLOB 21
+.loc ../contracts/booster/factory/BoosterFactory.sol, 262
+ROLL 9
 CALLREF {
 	CALL $setOwnership_internal_macro$
 }
-.loc ../contracts/booster/factory/BoosterFactory.sol, 149
-ROLL 5
+.loc ../contracts/booster/factory/BoosterFactory.sol, 263
+ROLL 8
 SETGLOB 12
-.loc ../contracts/booster/factory/BoosterFactory.sol, 150
+.loc ../contracts/booster/factory/BoosterFactory.sol, 264
+ROLL 7
+SETGLOB 13
+.loc ../contracts/booster/factory/BoosterFactory.sol, 266
+ROLL 6
+SETGLOB 14
+.loc ../contracts/booster/factory/BoosterFactory.sol, 267
+ROLL 5
+SETGLOB 15
+.loc ../contracts/booster/factory/BoosterFactory.sol, 268
 ROLL 4
 INC
 SETGLOB 11
-.loc ../contracts/booster/factory/BoosterFactory.sol, 152
+.loc ../contracts/booster/factory/BoosterFactory.sol, 270
 ROLL 3
-SETGLOB 14
-.loc ../contracts/booster/factory/BoosterFactory.sol, 153
+SETGLOB 18
+.loc ../contracts/booster/factory/BoosterFactory.sol, 271
 ROT
-SETGLOB 15
-.loc ../contracts/booster/factory/BoosterFactory.sol, 154
+SETGLOB 19
+.loc ../contracts/booster/factory/BoosterFactory.sol, 272
 SWAP
-SETGLOB 16
-.loc ../contracts/booster/factory/BoosterFactory.sol, 155
-SETGLOB 13
+SETGLOB 20
+.loc ../contracts/booster/factory/BoosterFactory.sol, 273
+SETGLOB 17
 .loc ../contracts/booster/factory/BoosterFactory.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
@@ -750,12 +1135,61 @@ CALLREF {
 COMMIT
 THROW 0
 
+.globl	_transferTokens_internal
+.type	_transferTokens_internal, @function
+CALL $_transferTokens_internal_macro$
+
+.macro _transferTokens_internal_macro
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 32
+BLKSWAP 3, 3
+REVERSE 4, 0
+TRUE
+EQUAL
+PUSHCONT {
+	PUSHINT 200000000
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+ROLL 6
+BLKSWAP 3, 5
+XCHG S8
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+PUSHINT 3
+STZEROES
+STSLICE
+SWAP
+STGRAMS
+PUSHINT 1
+STUR 107
+ROLLREV 6
+NEWC
+STSLICECONST x73e22143
+STU 128
+STSLICE
+STU 128
+ROLLREV 3
+NEWC
+STSLICE
+STI 1
+STREF
+STBREFR
+STBREFR
+ENDC
+SWAP
+SENDRAWMSG
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 0
+
 .globl	_buildAccountPlatformStateInit_internal
 .type	_buildAccountPlatformStateInit_internal, @function
 CALL $_buildAccountPlatformStateInit_internal_macro$
 
 .macro _buildAccountPlatformStateInit_internal_macro
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 21
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 50
 PUSHINT 0
 NEWC
 STU 256
@@ -781,7 +1215,7 @@ DICTUSET
 NEWC
 STDICT
 ENDC
-GETGLOB 14
+GETGLOB 18
 NEWC
 STSLICECONST x2_
 STOPTREF
@@ -799,7 +1233,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 46
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 75
 OVER
 PUSHCONT {
 	LDREF
@@ -807,10 +1241,6 @@ PUSHCONT {
 	CTOS
 }
 IF
-LDMSGADDR
-LDREF
-ENDS
-CTOS
 LDMSGADDR
 LDREF
 ENDS
@@ -840,6 +1270,7 @@ ENDS
 CTOS
 LDMSGADDR
 LDU 128
+LDU 128
 ENDS
 .loc ../contracts/booster/factory/BoosterFactoryBase.sol, 0
 CALLREF {
@@ -857,6 +1288,8 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+GETGLOB 10
 .loc ../contracts/booster/TransferUtils.sol, 6
 GETPARAM 7
 FIRST
@@ -867,29 +1300,31 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 59
-PUSH S9
-GETGLOB 13
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROLLREV 11
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 88
+PUSH S10
+GETGLOB 17
 PUSHINT 267
 DICTGET
 NULLSWAPIFNOT
 NIP
 THROWIF 100
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 60
-PUSH S2
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 89
+PUSH S3
 PUSHINT 900
 GEQ
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 61
-DUP
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 90
+PUSH2 S0, S1
+ADD
+UFITS 128
 LESSINT 51
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 63
-ROLL 10
-ROLLREV 9
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 92
 FALSE
 TUPLE 11
-GETGLOB 13
+GETGLOB 17
 SWAP
 CALLREF {
 	UNTUPLE 11
@@ -905,9 +1340,6 @@ CALLREF {
 	ROLLREV 8
 	NEWC
 	STSLICE
-	ROLLREV 7
-	NEWC
-	STSLICE
 	SWAP
 	UNPAIR
 	XCHG S2
@@ -915,12 +1347,12 @@ CALLREF {
 	STDICT
 	STDICT
 	STU 256
-	ROLLREV 3
+	ROLLREV 4
 	NEWC
 	STSLICE
 	STU 128
+	STU 128
 	STI 1
-	STBREFR
 	STBREFR
 	STBREFR
 	STBREFR
@@ -930,9 +1362,8 @@ ENDC
 ROTREV
 PUSHINT 267
 DICTSETREF
-SETGLOB 13
-.loc ../contracts/booster/TransferUtils.sol, 8
-GETGLOB 9
+SETGLOB 17
+.loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -952,7 +1383,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 82
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 111
 OVER
 PUSHCONT {
 	LDREF
@@ -979,6 +1410,8 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+GETGLOB 10
 .loc ../contracts/booster/TransferUtils.sol, 6
 GETPARAM 7
 FIRST
@@ -989,29 +1422,27 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 86
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROTREV
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 115
 OVER
-GETGLOB 13
+GETGLOB 17
 PUSHINT 267
 DICTGET
 NULLSWAPIFNOT
 NIP
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 87
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 116
 DUP
 NOT
 PUSH S2
-GETGLOB 13
+GETGLOB 17
 DUP2
 PUSHINT 267
 DICTGETREF
 PUSHCONT {
 	CTOS
 	CALLREF {
-		LDMSGADDR
-		LDREF
-		ENDS
-		CTOS
 		LDMSGADDR
 		LDREF
 		ENDS
@@ -1037,6 +1468,7 @@ PUSHCONT {
 		CTOS
 		LDMSGADDR
 		LDU 128
+		LDU 128
 		LDI 1
 		ENDS
 		TUPLE 11
@@ -1046,7 +1478,7 @@ PUSHCONT {
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
-	BLKPUSH 4, 0
+	BLKPUSH 3, 0
 	PUSHINT 0
 	NEWDICT
 	PAIR
@@ -1056,7 +1488,7 @@ PUSHCONT {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	PUSHINT 0
-	DUP
+	BLKPUSH 2, 0
 	TUPLE 11
 }
 IFELSE
@@ -1076,9 +1508,6 @@ CALLREF {
 	ROLLREV 8
 	NEWC
 	STSLICE
-	ROLLREV 7
-	NEWC
-	STSLICE
 	SWAP
 	UNPAIR
 	XCHG S2
@@ -1086,12 +1515,12 @@ CALLREF {
 	STDICT
 	STDICT
 	STU 256
-	ROLLREV 3
+	ROLLREV 4
 	NEWC
 	STSLICE
 	STU 128
+	STU 128
 	STI 1
-	STBREFR
 	STBREFR
 	STBREFR
 	STBREFR
@@ -1101,21 +1530,17 @@ ENDC
 ROTREV
 PUSHINT 267
 DICTSETREF
-SETGLOB 13
+SETGLOB 17
 THROWIFNOT 100
-.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 89
+.loc ../contracts/booster/factory/BoosterFactoryBase.sol, 118
 SWAP
-GETGLOB 13
+GETGLOB 17
 DUP2
 PUSHINT 267
 DICTGETREF
 PUSHCONT {
 	CTOS
 	CALLREF {
-		LDMSGADDR
-		LDREF
-		ENDS
-		CTOS
 		LDMSGADDR
 		LDREF
 		ENDS
@@ -1141,6 +1566,7 @@ PUSHCONT {
 		CTOS
 		LDMSGADDR
 		LDU 128
+		LDU 128
 		LDI 1
 		ENDS
 		TUPLE 11
@@ -1150,7 +1576,7 @@ PUSHCONT {
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
-	BLKPUSH 4, 0
+	BLKPUSH 3, 0
 	PUSHINT 0
 	NEWDICT
 	PAIR
@@ -1160,7 +1586,7 @@ PUSHCONT {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
 	PUSHINT 0
-	DUP
+	BLKPUSH 2, 0
 	TUPLE 11
 }
 IFELSE
@@ -1180,9 +1606,6 @@ CALLREF {
 	ROLLREV 8
 	NEWC
 	STSLICE
-	ROLLREV 7
-	NEWC
-	STSLICE
 	SWAP
 	UNPAIR
 	XCHG S2
@@ -1190,12 +1613,12 @@ CALLREF {
 	STDICT
 	STDICT
 	STU 256
-	ROLLREV 3
+	ROLLREV 4
 	NEWC
 	STSLICE
 	STU 128
+	STU 128
 	STI 1
-	STBREFR
 	STBREFR
 	STBREFR
 	STBREFR
@@ -1205,9 +1628,8 @@ ENDC
 ROTREV
 PUSHINT 267
 DICTSETREF
-SETGLOB 13
-.loc ../contracts/booster/TransferUtils.sol, 8
-GETGLOB 9
+SETGLOB 17
+.loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
 STSLICE
@@ -1223,7 +1645,7 @@ SENDRAWMSG
 CALL $_targetBalance_internal_macro$
 
 .macro _targetBalance_internal_macro
-.loc ../contracts/booster/TransferUtils.sol, 17
+.loc ../contracts/booster/TransferUtils.sol, 18
 PUSHINT 10000000000
 .loc ../contracts/booster/TransferUtils.sol, 0
 
@@ -1236,15 +1658,15 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 17
+.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 21
 ENDS
 .loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 0
 CALLREF {
 	CALL $getDetails_internal_macro$
 }
-PUSH S6
+PUSH S10
 PUSHCONT {
-	PUSH S8
+	PUSH S12
 	CTOS
 	LDU 2
 	LDMSGADDR
@@ -1255,17 +1677,27 @@ PUSHCONT {
 	STSLICE
 	PUSHINT 1
 	STUR 98
-	REVERSE 7, 0
+	REVERSE 11, 0
 	NEWC
-	STSLICECONST xc4476480
+	STSLICECONST xab0c495a
 	STU 256
 	STSLICE
+	ROLLREV 8
+	NEWC
+	STSLICE
+	ROLLREV 7
+	NEWC
+	STSLICE
+	ROLLREV 6
+	NEWC
+	STSLICE
+	STU 128
 	STDICT
 	STREF
 	STREF
-	SWAP
-	NEWC
 	STU 256
+	STBREFR
+	STBREFR
 	STBREFR
 	STBREFR
 	ENDC
@@ -1273,7 +1705,7 @@ PUSHCONT {
 	SENDRAWMSG
 }
 PUSHCONT {
-	BLKDROP 6
+	BLKDROP 10
 }
 IFELSE
 DROP
@@ -1283,13 +1715,17 @@ CALLREF {
 THROW 0
 
 .macro getDetails_internal_macro
-.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 25
+.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 33
 GETGLOB 11
 GETGLOB 12
 GETGLOB 13
 GETGLOB 14
 GETGLOB 15
 GETGLOB 16
+GETGLOB 17
+GETGLOB 18
+GETGLOB 19
+GETGLOB 20
 .loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 0
 
 .globl	setOwnership_internal
@@ -1418,15 +1854,32 @@ ENDS
 CTOS
 LDU 256
 LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 128
 LDDICT
 LDREF
 LDREF
+LDU 256
 LDREF
 ENDS
 CTOS
 LDU 256
-LDU 256
 ENDS
+SETGLOB 21
+SETGLOB 20
+SETGLOB 19
+SETGLOB 18
 SETGLOB 17
 SETGLOB 16
 SETGLOB 15
@@ -1455,13 +1908,15 @@ PUSHCONT {
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
+	BLKPUSH 3, 0
+	PUSHINT 0
 	NEWDICT
 	PUSHREF {
 	}
 	DUP
 	PUSHINT 0
 	PUSHINT 1
-	PUSH S8
+	PUSH S12
 	PUSHINT 64
 	DICTUGET
 	PUSHCONT {
@@ -1471,6 +1926,10 @@ PUSHCONT {
 		PUSHINT 0
 	}
 	IFELSE
+	SETGLOB 21
+	SETGLOB 20
+	SETGLOB 19
+	SETGLOB 18
 	SETGLOB 17
 	SETGLOB 16
 	SETGLOB 15
@@ -1492,6 +1951,10 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
+GETGLOB 21
+GETGLOB 20
+GETGLOB 19
+GETGLOB 18
 GETGLOB 17
 GETGLOB 16
 GETGLOB 15
@@ -1507,17 +1970,30 @@ STU 256
 STU 64
 STONE
 STSLICE
-ROLLREV 7
+ROLLREV 11
 NEWC
 STU 256
 STSLICE
+ROLLREV 9
+NEWC
+STSLICE
+ROLLREV 8
+NEWC
+STSLICE
+ROLLREV 7
+NEWC
+STSLICE
+STU 128
 STDICT
 STREF
 STREF
-ROTREV
+STU 256
+SWAP
 NEWC
 STU 256
-STU 256
+STBREFR
+STBREFR
+STBREFR
 STBREFR
 STBREFR
 ENDC
@@ -1681,7 +2157,7 @@ PUSHCONT {
 IF
 THROW 0
 
-.macro farmings
+.macro rewarder
 DROP
 ENDS
 CALLREF {
@@ -1690,7 +2166,87 @@ CALLREF {
 GETGLOB 13
 OVER
 PUSHCONT {
-	PUSHSLICE xc0000000000000000000000000ffeb83b5
+	PUSHSLICE xc0000000000000000000000000c504c8fa
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro ping_token_root
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 14
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000cb0cae65
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro ping_token_wallet
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 15
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000ea1e0058
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro recommended_ping_price_limit
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 16
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000ae77d495
+	NEWC
+	STSLICE
+	STU 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro farmings
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 17
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000d8bcec02
 	NEWC
 	STSLICE
 	STDICT
@@ -1707,7 +2263,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 14
+GETGLOB 18
 OVER
 PUSHCONT {
 	PUSHSLICE xc00000000000000000000000008848dc20
@@ -1727,7 +2283,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 15
+GETGLOB 19
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000c0a6aefc
@@ -1747,7 +2303,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 16
+GETGLOB 20
 OVER
 PUSHCONT {
 	PUSHSLICE xc00000000000000000000000008184f5fe
@@ -1767,7 +2323,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 17
+GETGLOB 21
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000bb53331f
@@ -1783,11 +2339,11 @@ THROW 0
 
 .macro public_function_selector
 DUP
-PUSHINT 1729444094
+PUSHINT 1299788324
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 305523138
+	PUSHINT 344666799
 	LEQ
 	IFJMPREF {
 		DUP
@@ -1809,22 +2365,16 @@ IFJMPREF {
 			CALL $transferOwnership$
 		}
 		DUP
-		PUSHINT 305523138
-		EQUAL
-		IFJMPREF {
-			CALL $addFarming$
-		}
-	}
-	DUP
-	PUSHINT 995308319
-	LEQ
-	IFJMPREF {
-		DUP
 		PUSHINT 344666799
 		EQUAL
 		IFJMPREF {
 			CALL $deriveAccount$
 		}
+	}
+	DUP
+	PUSHINT 722225498
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 388172858
 		EQUAL
@@ -1838,14 +2388,49 @@ IFJMPREF {
 			CALL $upgradeAccountCode$
 		}
 		DUP
+		PUSHINT 720190441
+		EQUAL
+		IFJMPREF {
+			CALL $deployAccount$
+		}
+		DUP
+		PUSHINT 722225498
+		EQUAL
+		IFJMPREF {
+			CALL $getDetails$
+		}
+	}
+	DUP
+	PUSHINT 1074951997
+	LEQ
+	IFJMPREF {
+		DUP
+		PUSHINT 777389991
+		EQUAL
+		IFJMPREF {
+			CALL $receiveTokenWallet$
+		}
+		DUP
+		PUSHINT 779605141
+		EQUAL
+		IFJMPREF {
+			CALL $recommended_ping_price_limit$
+		}
+		DUP
 		PUSHINT 995308319
 		EQUAL
 		IFJMPREF {
 			CALL $_randomNonce$
 		}
+		DUP
+		PUSHINT 1074951997
+		EQUAL
+		IFJMPREF {
+			CALL $addFarming$
+		}
 	}
 	DUP
-	PUSHINT 1456190600
+	PUSHINT 1299788324
 	LEQ
 	IFJMPREF {
 		DUP
@@ -1855,10 +2440,16 @@ IFJMPREF {
 			CALL $account$
 		}
 		DUP
-		PUSHINT 1145529472
+		PUSHINT 1157941498
 		EQUAL
 		IFJMPREF {
-			CALL $getDetails$
+			CALL $rewarder$
+		}
+		DUP
+		PUSHINT 1259122277
+		EQUAL
+		IFJMPREF {
+			CALL $ping_token_root$
 		}
 		DUP
 		PUSHINT 1299788324
@@ -1866,15 +2457,43 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $version$
 		}
+	}
+}
+DUP
+PUSHINT 2099274339
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1540772277
+	LEQ
+	IFJMPREF {
 		DUP
-		PUSHINT 1456190600
+		PUSHINT 1418220026
+		EQUAL
+		IFJMPREF {
+			CALL $encodePingTopUp$
+		}
+		DUP
+		PUSHINT 1488776194
+		EQUAL
+		IFJMPREF {
+			CALL $farmings$
+		}
+		DUP
+		PUSHINT 1534821068
 		EQUAL
 		IFJMPREF {
 			CALL $constructor$
 		}
+		DUP
+		PUSHINT 1540772277
+		EQUAL
+		IFJMPREF {
+			CALL $setRecommendedPriceLimit$
+		}
 	}
 	DUP
-	PUSHINT 1729444094
+	PUSHINT 1607969097
 	LEQ
 	IFJMPREF {
 		DUP
@@ -1890,46 +2509,52 @@ IFJMPREF {
 			CALL $owner$
 		}
 		DUP
+		PUSHINT 1601545415
+		EQUAL
+		IFJMPREF {
+			CALL $withdrawPingTokens$
+		}
+		DUP
 		PUSHINT 1607969097
 		EQUAL
 		IFJMPREF {
 			CALL $manager$
 		}
+	}
+	DUP
+	PUSHINT 2033642753
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1729444094
 		EQUAL
 		IFJMPREF {
 			CALL $renounceOwnership$
 		}
-	}
-}
-DUP
-PUSHINT 2146141109
-LEQ
-IFJMPREF {
-	DUP
-	PUSHINT 1753905755
-	EQUAL
-	IFJMPREF {
-		CALL $deployAccount$
-	}
-	DUP
-	PUSHINT 2033642753
-	EQUAL
-	IFJMPREF {
-		CALL $getAccountPlatformCodeHash$
+		DUP
+		PUSHINT 1780351064
+		EQUAL
+		IFJMPREF {
+			CALL $ping_token_wallet$
+		}
+		DUP
+		PUSHINT 1893244873
+		EQUAL
+		IFJMPREF {
+			CALL $onAcceptTokensTransfer$
+		}
+		DUP
+		PUSHINT 2033642753
+		EQUAL
+		IFJMPREF {
+			CALL $getAccountPlatformCodeHash$
+		}
 	}
 	DUP
 	PUSHINT 2099274339
 	EQUAL
 	IFJMPREF {
 		CALL $upgradeAccounts$
-	}
-	DUP
-	PUSHINT 2146141109
-	EQUAL
-	IFJMPREF {
-		CALL $farmings$
 	}
 }
 

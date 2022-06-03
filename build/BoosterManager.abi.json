@@ -1,7 +1,7 @@
 {
 	"ABI version": 2,
 	"version": "2.2",
-	"header": ["pubkey", "time"],
+	"header": ["pubkey", "time", "expire"],
 	"functions": [
 		{
 			"name": "constructor",
@@ -15,7 +15,15 @@
 		{
 			"name": "ping",
 			"inputs": [
-				{"components":[{"name":"account","type":"address"},{"name":"skim","type":"bool"}],"name":"pings","type":"tuple[]"}
+				{"components":[{"name":"account","type":"address"},{"name":"price","type":"uint128"},{"name":"skim","type":"bool"}],"name":"pings","type":"tuple[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "skim",
+			"inputs": [
+				{"name":"accounts","type":"address[]"}
 			],
 			"outputs": [
 			]

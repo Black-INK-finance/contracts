@@ -1,5 +1,7 @@
 pragma ton-solidity ^0.57.1;
 pragma AbiHeader pubkey;
+pragma AbiHeader expire;
+pragma AbiHeader time;
 
 import "../interfaces/IBoosterManager.sol";
 import "../interfaces/IBoosterAccount.sol";
@@ -8,7 +10,7 @@ import "@broxus/contracts/contracts/access/ExternalOwner.sol";
 import "@broxus/contracts/contracts/utils/RandomNonce.sol";
 
 
-contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
+contract BoosterManager is IBoosterManager, ExternalOwner, RandomNonce {
     address public internalOwner;
     uint public version;
 
@@ -26,14 +28,24 @@ contract BoosterAdmin is IBoosterManager, ExternalOwner, RandomNonce {
     function ping(
         Ping[] pings
     ) external override onlyOwner {
-        // TODO: add batching
         tvm.accept();
 
         for (Ping _ping: pings) {
             IBoosterAccount(_ping.account).ping{
+                bounce: true,
+                value: 3 ton
+            }(_ping.price, _ping.skim);
+        }
+    }
+
+    function skim(address[] accounts) external override onlyOwner {
+        tvm.accept();
+
+        for (address account: accounts) {
+            IBoosterAccount(account).skim{
                 bounce: false,
                 flag: 0
-            }(_ping.skim);
+            }();
         }
     }
 

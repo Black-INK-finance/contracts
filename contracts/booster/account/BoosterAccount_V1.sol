@@ -22,8 +22,11 @@ contract BoosterAccount_V1 is
 
         TvmCell data = abi.encode(
             owner, _version, factory, farming_pool,
-            last_ping, paused, manager,
-            user_data, settings, tokens
+            last_ping, ping_counter, ping_balance, ping_price_limit,
+            paused, manager, user_data,
+            balances, received, wallets, fees,
+            lp, pair, left, right, rewards,
+            swaps, ping_frequency, rewarder, reward_fee, lp_fee
         );
 
         tvm.setcode(code);
@@ -38,51 +41,65 @@ contract BoosterAccount_V1 is
         tvm.resetStorage();
 
         (
+            address _owner,
             address _factory,
             address _farming_pool,
-            uint _version,
 
-            address _owner,
+            uint _version,
             address _manager,
-            FarmingPoolSettings _settings
+            uint128 _ping_price_limit,
+            FarmingPoolSettings settings
         ) = abi.decode(
             data,
             (
-                address, address, uint,
-                address, address, FarmingPoolSettings
+                address, address, address,
+                uint, address, uint128, FarmingPoolSettings
             )
         );
 
+        setOwnership(_owner);
         factory = _factory;
         farming_pool = _farming_pool;
-        version = _version;
 
-        setOwnership(_owner);
+        version = _version;
         manager = _manager;
-        settings = _settings;
+        ping_price_limit = _ping_price_limit;
+
+        lp = settings.lp;
+        pair = settings.pair;
+        left = settings.left;
+        right = settings.right;
+        rewards = settings.rewards;
+
+        swaps = settings.swaps;
+
+        ping_frequency = settings.ping_frequency;
+        rewarder = settings.rewarder;
+        reward_fee = settings.reward_fee;
+        lp_fee = settings.lp_fee;
 
         _requestFarmingUserData();
 
         // Setup token wallets for involved tokens
         // - Pair LP
-        _deployTokenWallet(settings.lp);
+        _deployTokenWallet(lp);
         // - Pair left
-        _deployTokenWallet(settings.left);
+        _deployTokenWallet(left);
         // - Pair right
-        _deployTokenWallet(settings.right);
+        _deployTokenWallet(right);
 
         // - Farming pool rewards
-        for (address reward: settings.rewards) {
+        for (address reward: rewards) {
             _deployTokenWallet(reward);
         }
 
         // - Tokens involved in swaps
-        for ((address _from, SwapDirection direction): settings.swaps) {
-            if (!tokens.exists(_from)) {
+        for ((address _from, SwapDirection direction): swaps) {
+            if (!wallets.exists(_from)) {
                 _deployTokenWallet(_from);
             }
 
-            if (!tokens.exists(direction.token)) {
+            if (!wallets.exists(direction.token)) {
                 _deployTokenWallet(direction.token);
             }
         }

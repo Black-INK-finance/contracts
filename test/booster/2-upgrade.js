@@ -14,7 +14,7 @@ describe('Test booster updatability', async function() {
     let god, alice, rewarder;
     let manager;
 
-    let left,right,lp,reward;
+    let left, right, lp, reward, ping;
     let farming_factory, farming_pool;
 
     let booster_factory, alice_booster_account;
@@ -44,6 +44,14 @@ describe('Test booster updatability', async function() {
         await logContract(manager);
     });
 
+    it('Setup tokens', async () => {
+        left = await setupTokenRoot('Dummy Left', 'DUMMY_LEFT', god);
+        right = await setupTokenRoot('Dummy Right', 'DUMMY_RIGHT', god);
+        lp = await setupTokenRoot('Dummy LP', 'DUMMY_LP', god);
+        reward = await setupTokenRoot('Dummy Reward', 'DUMMY_REWARD', god);
+        ping = await setupTokenRoot('Dummy ping', 'DUMMY_PING', god);
+    });
+
     it('Setup booster factory', async () => {
         const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
         const BoosterAccountPlatform = await locklift.factory.getContract('BoosterAccountPlatform')
@@ -54,6 +62,7 @@ describe('Test booster updatability', async function() {
             constructorParams: {
                 _owner: god.address,
                 _manager: manager.address,
+                _ping_token_root: ping.address,
                 _account_platform: BoosterAccountPlatform.code,
                 _account: BoosterAccount.code
             },
@@ -63,11 +72,6 @@ describe('Test booster updatability', async function() {
     });
 
     it('Add dummy farming', async () => {
-        left = await setupTokenRoot('Dummy Left', 'DUMMY_LEFT', god);
-        right = await setupTokenRoot('Dummy Right', 'DUMMY_RIGHT', god);
-        lp = await setupTokenRoot('Dummy LP', 'DUMMY_LP', god);
-        reward = await setupTokenRoot('Dummy Reward', 'DUMMY_REWARD', god);
-
         farming_factory = await setupFabric(god, 2, 2, 2);
         farming_pool = await farming_factory.deployPool({
             pool_owner: god,
@@ -103,7 +107,8 @@ describe('Test booster updatability', async function() {
                 },
                 recommended_ping_frequency: 20 * 60, // 20 minutes
                 rewarder: rewarder.address,
-                fee: 10
+                reward_fee: 10,
+                lp_fee: 0
             }
         });
     });
@@ -192,7 +197,7 @@ describe('Test booster updatability', async function() {
                     farming_pool: farming_pool.address,
                     ping_frequency: 60 * 20
                 },
-                value: locklift.utils.convertCrystal(11, 'nano')
+                value: locklift.utils.convertCrystal(21, 'nano')
             });
 
             const alice_booster_account_address = await booster_factory.call({
@@ -247,10 +252,26 @@ describe('Test booster updatability', async function() {
         it('Check new booster account state', async () => {
             const details = await alice_booster_account.call({ method: 'getDetails' });
 
-            console.log(details);
-
             expect(details._version)
-                .to.be.bignumber.equal(details_before_upgrade._version.plus(1), 'Wrong booster account version after upgrade');
+                .to.be.bignumber.equal(details_before_upgrade._version.plus(1), 'Wrong booster account version');
+            expect(details._factory)
+                .to.be.equal(details_before_upgrade._factory, 'Wrong booster account factory');
+            expect(details._farming_pool)
+                .to.be.equal(details_before_upgrade._farming_pool, 'Wrong booster account farming pool');
+            expect(details._manager)
+                .to.be.equal(details_before_upgrade._manager, 'Wrong booster account manager');
+            expect(details._user_data)
+                .to.be.equal(details_before_upgrade._user_data, 'Wrong booster account user data');
+            expect(details._rewards)
+                .to.be.eql(details_before_upgrade._rewards, 'Wrong booster account reward tokens');
+            expect(details._ping_frequency)
+                .to.be.bignumber.equal(details_before_upgrade._ping_frequency, 'Wrong booster account ping frequency');
+            expect(details._rewarder)
+                .to.be.equal(details_before_upgrade._rewarder, 'Wrong booster account rewarder');
+            expect(details._reward_fee)
+                .to.be.bignumber.equal(details_before_upgrade._reward_fee, 'Wrong booster account reward fee');
+            expect(details._lp_fee)
+                .to.be.bignumber.equal(details_before_upgrade._lp_fee, 'Wrong booster account reward fee');
         });
     });
 });

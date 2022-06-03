@@ -24,22 +24,60 @@ abstract contract BoosterAccountBase is
     IAcceptTokensMintCallback,
     BoosterAccountSettings
 {
+    /// @notice Returns all exceeding balance to the manager
+    /// `_targetBalance()` is used as a baseline
+    receive() external view {
+        tvm.rawReserve(_targetBalance(), 0);
+
+        manager.transfer({ value: 0, bounce: false, flag: MsgFlag.ALL_NOT_RESERVED });
+    }
+
+    constructor() public {
+        revert();
+    }
+
+    /// @notice Accept ping token top up
+    /// Can be called only by `factory`
+    /// @param amount Amount of ping tokens to accept
+    function acceptPingTokens(
+        uint128 amount,
+        address remainingGasTo
+    ) external override onlyFactory cashBack(remainingGasTo) {
+        ping_balance += amount;
+    }
+
     /// @notice Keeper method for claiming farming reward
     /// Can be called only by `owner` or `manager`
-    /// @param skim Skim fees or not. Only manager can specify skim = true
-    function ping(bool skim) external override onlyOwnerOrManager {
+    /// @param price Ping price in PING tokens, needs to compensate keeper charges
+    /// @param skim Boolean, skim requested or not. If `false`, then fees won't be skimmed, use `skim` method.
+    /// Otherwise, fees will be skimmed each `Utils.PINGS_PER_SKIM` ping.
+    function ping(
+        uint128 price,
+        bool skim
+    ) external override onlyOwnerOrManager {
+        require(price <= ping_price_limit);
         tvm.accept();
 
-        if (skim) {
-            // Only manager can skim fees
-            require(msg.sender == manager);
+        last_ping = now;
+        ping_counter++;
 
+        if (msg.sender == manager) {
+            ping_balance -= price;
+        }
+
+        if (skim && ping_counter % Utils.PINGS_PER_SKIM == 0) {
             _skimFees();
         }
 
-        last_ping = now;
-
         _claimReward();
+    }
+
+    /// @notice Keeper method for skimming fees
+    /// Can be called only by `manager`
+    function skim() external override onlyManager {
+        tvm.accept();
+
+        _skimFees();
     }
 
     /// @notice Receive tokens
@@ -60,7 +98,7 @@ abstract contract BoosterAccountBase is
         // - token root not initialized (eg some third party token was sent)
         // - msg.sender is different from the actual token wallet (eg booster token wallet is still not initialized)
         // - reinvesting is paused
-        if (!tokens.exists(root) || msg.sender != tokens[root].wallet || paused == true) {
+        if (!wallets.exists(root) || msg.sender != wallets[root] || paused == true) {
             TvmCell empty;
 
             _transferTokens(
@@ -68,22 +106,19 @@ abstract contract BoosterAccountBase is
                 amount,
                 owner,
                 _me(),
-                false,
+                true,
                 empty,
                 0,
-                MsgFlag.REMAINING_GAS
+                MsgFlag.REMAINING_GAS,
+                true
             );
 
             return;
         }
 
-        if (_isArrayIncludes(root, settings.rewards) && sender == farming_pool) {
+        if (_isArrayIncludes(root, rewards) && sender == farming_pool) {
             // Get management fees from reward, which are sent from the farming pool
-            uint128 fee = math.muldivr(
-                amount,
-                settings.fee,
-                Utils.BPS
-            );
+            uint128 fee = math.muldivr(amount, reward_fee, Utils.BPS);
 
             // Consider fees
             _considerTokensFee(root, fee);
@@ -110,7 +145,7 @@ abstract contract BoosterAccountBase is
         address,
         TvmCell
     ) external override {
-        if (!tokens.exists(root) || tokens[root].wallet != msg.sender || paused == true) {
+        if (!wallets.exists(root) || wallets[root] != msg.sender || paused == true) {
             TvmCell empty;
 
             _transferTokens(
@@ -121,34 +156,49 @@ abstract contract BoosterAccountBase is
                 false,
                 empty,
                 0,
-                MsgFlag.REMAINING_GAS
+                MsgFlag.REMAINING_GAS,
+                true
             );
 
             return;
         }
 
-        _considerTokensArrival(root, amount);
+        if (root == lp) {
+            uint128 fee = math.muldivr(amount, lp_fee, Utils.BPS);
+
+            _considerTokensFee(lp, fee);
+            _considerTokensArrival(lp, amount - fee);
+        } else {
+            _considerTokensArrival(root, amount);
+        }
+
         _processTokensArrival(root);
     }
 
-    function _considerTokensFee(address token, uint128 amount) internal {
-        tokens[token].fee += amount;
+    function _considerTokensFee(
+        address token,
+        uint128 amount
+    ) internal {
+        fees[token] += amount;
     }
 
-    function _considerTokensArrival(address token, uint128 amount) internal {
-        tokens[token].balance += amount;
-        tokens[token].received += amount;
+    function _considerTokensArrival(
+        address token,
+        uint128 amount
+    ) internal {
+        balances[token] += amount;
+        received[token] += amount;
     }
 
     function _processTokensArrival(address token) internal {
         // Handle received token
-        if (token == settings.lp) {
+        if (token == lp) {
             // - Received token is LP, deposit it into farming
             _depositToFarming();
-        } else if (token == settings.left || token == settings.right) {
+        } else if (token == left || token == right) {
             // - Received token is pool left or right, deposit it to pair
             _depositLiquidityToPair(token);
-        } else if (settings.swaps.exists(token)) {
+        } else if (swaps.exists(token)) {
             // - Received token should be swapped
             _swap(token);
         }
@@ -159,9 +209,9 @@ abstract contract BoosterAccountBase is
     function receiveTokenWallet(
         address wallet
     ) external override {
-        require(tokens.exists(msg.sender));
+        require(wallets.exists(msg.sender));
 
-        tokens[msg.sender].wallet = wallet;
+        wallets[msg.sender] = wallet;
     }
 
     /// @notice Receives booster farming user data
@@ -177,28 +227,29 @@ abstract contract BoosterAccountBase is
     function _skimFees() internal {
         TvmCell empty;
 
-        for ((address root, Token token): tokens) {
-            if (token.fee == 0) continue;
+        for ((address root, uint128 fee): fees) {
+            if (fee == 0) continue;
 
             _transferTokens(
-                token.wallet,
-                token.fee,
-                settings.rewarder,
+                wallets[root],
+                fee,
+                rewarder,
                 _me(),
                 false,
                 empty,
                 Utils.FARMING_SKIM_FEES,
-                0
+                0,
+                true
             );
 
-            tokens[root].fee = 0;
+            fees[root] = 0;
         }
     }
 
     function _depositLiquidityToPair(
         address token
     ) internal {
-        if (tokens[token].balance == 0) return;
+        if (balances[token] == 0) return;
 
         TvmCell payload = _buildDepositPayload(
             now,
@@ -206,17 +257,18 @@ abstract contract BoosterAccountBase is
         );
 
         _transferTokens(
-            tokens[token].wallet,
-            tokens[token].balance,
-            settings.pair,
+            wallets[token],
+            balances[token],
+            pair,
             _me(),
             true,
             payload,
             Utils.DEX_DEPOSIT_LIQUIDITY,
-            0
+            0,
+            false
         );
 
-        tokens[token].balance = 0;
+        balances[token] = 0;
     }
 
     function _claimReward() internal view {
@@ -227,39 +279,38 @@ abstract contract BoosterAccountBase is
     }
 
     function _swap(address token) internal {
-        if (tokens[token].balance == 0) return;
+        if (balances[token] == 0) return;
 
-        SwapDirection direction = settings.swaps[token];
+        SwapDirection direction = swaps[token];
 
         TvmCell payload = _buildSwapPayload(
-            uint64(tokens[token].balance),
+            0,
             0, // Deploy wallet value = 0
             0 // Expected amount = 0
         );
 
         _transferTokens(
-            tokens[token].wallet,
-            tokens[token].balance,
+            wallets[token],
+            balances[token],
             direction.pair,
             _me(),
             true,
             payload,
             Utils.DEX_SWAP,
-            0
+            0,
+            false
         );
 
-        tokens[token].balance = 0;
+        balances[token] = 0;
     }
 
     function _deployTokenWallet(
         address token
     ) internal {
-        tokens[token] = Token({
-            balance: 0,
-            received: 0,
-            fee: 0,
-            wallet: address.makeAddrStd(0, 0)
-        });
+        balances[token] = 0;
+        received[token] = 0;
+        fees[token] = 0;
+        wallets[token] = address.makeAddrStd(0, 0);
 
         ITokenRoot(token).deployWallet{
             value: Utils.DEPLOY_TOKEN_WALLET * 2,
@@ -271,22 +322,23 @@ abstract contract BoosterAccountBase is
     }
 
     function _depositToFarming() internal {
-        if (tokens[settings.lp].balance == 0) return;
+        if (balances[lp] == 0) return;
 
         TvmCell payload = _buildFarmingDepositPayload(Utils.NO_REINVEST_REQUIRED);
 
         _transferTokens(
-            tokens[settings.lp].wallet,
-            tokens[settings.lp].balance,
+            wallets[lp],
+            balances[lp],
             farming_pool,
             _me(),
             true,
             payload,
             Utils.FARMING_DEPOSIT_LP,
-            0
+            0,
+            false
         );
 
-        tokens[settings.lp].balance = 0;
+        balances[lp] = 0;
     }
 
     /// @notice Rewards withdrawing LPs from farming to owner
@@ -351,7 +403,6 @@ abstract contract BoosterAccountBase is
 
         return builder.toCell();
     }
-
 
     function _targetBalance() internal override pure returns(uint128) {
         return Utils.BOOSTER_DEPLOY_ACCOUNT;

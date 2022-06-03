@@ -2,14 +2,15 @@ pragma ton-solidity ^0.57.1;
 
 
 library Utils {
-    uint128 constant BPS  = 100;
+    uint128 constant BPS = 100;
 
     // Constant gas values
     uint128 constant DEPLOY_TOKEN_WALLET = 0.2 ton;
 
     uint128 constant BOOSTER_UPGRADE_ACCOUNT = 0.5 ton;
-    uint128 constant BOOSTER_DEPLOY_ACCOUNT = 10 ton;
+    uint128 constant BOOSTER_DEPLOY_ACCOUNT = 20 ton;
     uint128 constant BOOSTER_CASHBACK_MANAGER_EXTRA = 0.03 ton;
+    uint128 constant BOOSTER_FACTORY_THROW_PING_TOKENS = 1 ton;
 
     // - Booster-farming interactions
     uint128 constant FARMING_CLAIM_REWARD = 8 ton;
@@ -21,13 +22,15 @@ library Utils {
     uint32 constant REINVEST_REQUIRED = 11;
     uint32 constant NO_REINVEST_REQUIRED = 22;
 
-// - Booster-dex interactions
+    // - Booster-dex interactions
     uint128 constant DEX_DEPOSIT_LIQUIDITY = 5 ton;
     uint128 constant DEX_SWAP = 5 ton;
 
     // - Restrictions
     uint128 constant MAX_FEE = 50;
+    uint128 constant BOOSTER_FACTORY_TOP_UP_MIN = 3 ton;
     uint constant MIN_PING_FREQUENCY = 60 * 15; // 15 minutes
+    uint constant PINGS_PER_SKIM = 10; // Skim fees every 10th ping
 
     // Errors
 }

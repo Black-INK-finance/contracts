@@ -641,12 +641,17 @@ const setupFabric = async (owner, fabric_version=2, pool_version=2, user_data_ve
 
 const setupTokenRoot = async function(token_name, token_symbol, owner) {
     const RootToken = await locklift.factory.getContract(
-        'TokenRoot',
+        'TokenRootUpgradeable',
+        'node_modules/broxus-ton-tokens-contracts/build'
+    );
+
+    const TokenWalletPlatform = await locklift.factory.getContract(
+        'TokenWalletPlatform',
         'node_modules/broxus-ton-tokens-contracts/build'
     );
 
     const TokenWallet = await locklift.factory.getContract(
-        'TokenWallet',
+        'TokenWalletUpgradeable',
         'node_modules/broxus-ton-tokens-contracts/build'
     );
 
@@ -657,20 +662,21 @@ const setupTokenRoot = async function(token_name, token_symbol, owner) {
         constructorParams: {
             initialSupplyTo: locklift.utils.zeroAddress,
             initialSupply: 0,
-            deployWalletValue: 0,
+            deployWalletValue: locklift.utils.convertCrystal(0.2, 'nano'),
             mintDisabled: false,
             burnByRootDisabled: false,
             burnPaused: false,
             remainingGasTo: owner.address
         },
         initParams: {
+            randomNonce_: locklift.utils.getRandomNonce(),
+            deployer_: locklift.utils.zeroAddress,
             name_: token_name,
             symbol_: token_symbol,
             decimals_: 9,
             rootOwner_: owner.address,
             walletCode_: TokenWallet.code,
-            randomNonce_: locklift.utils.getRandomNonce(),
-            deployer_: locklift.utils.zeroAddress
+            platformCode_: TokenWalletPlatform.code
         },
         keyPair,
     });

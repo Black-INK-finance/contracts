@@ -2,10 +2,11 @@ pragma ton-solidity ^0.57.1;
 
 
 abstract contract TransferUtils {
-    modifier cashBack() {
+    modifier cashBack(address receiver) {
         tvm.rawReserve(address(this).balance - msg.value, 2);
         _;
-        msg.sender.transfer({ value: 0, flag: 129 });
+
+        receiver.transfer({ value: 0, flag: 129 });
     }
 
     modifier reserveBalance() {

@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "bignumber.js": "^9.0.1",
-    "broxus-ton-tokens-contracts": "github:broxus/ton-eth-bridge-token-contracts#d3c1cd920c0320ffaab03b54c878dd0e06fed3c7",
+    "broxus-ton-tokens-contracts": "github:broxus/ton-eth-bridge-token-contracts#6503e61880c03fb45741c177c25f4955dca5f0df",
     "chai-as-promised": "^7.1.1",
     "flatqube": "github:broxus/ton-dex#bf83b1d7d18b8f0fb3b6b020540a6941ad2d90fe",
     "locklift": "^1.5.1",

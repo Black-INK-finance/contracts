@@ -1,9 +1,11 @@
 pragma ton-solidity ^0.57.1;
 
 
+import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
+
 import "./BoosterFactoryStorage.sol";
 import "./../account/BoosterAccountPlatform.sol";
-import "../TransferUtils.sol";
+import "./../TransferUtils.sol";
 import "./../Utils.sol";
 
 
@@ -12,6 +14,33 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address _owner
     ) public {
         setOwnership(_owner);
+    }
+
+    function _transferTokens(
+        address wallet,
+        uint128 amount,
+        address recipient,
+
+        address remainingGasTo,
+        bool notify,
+        TvmCell payload,
+
+        uint128 value,
+        uint8 flag,
+        bool deploy_wallet
+    ) internal pure {
+        ITokenWallet(wallet).transfer{
+            value: value,
+            flag: flag,
+            bounce: false
+        }(
+            amount,
+            recipient,
+            deploy_wallet == true ? Utils.DEPLOY_TOKEN_WALLET : 0,
+            remainingGasTo,
+            notify,
+            payload
+        );
     }
 
     function _buildAccountPlatformStateInit(
@@ -32,7 +61,6 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
 
     /// @notice Add new farming pool
     /// Can be called only by `owner`
-    /// @param dex Dex root
     /// @param farming_pool Farming pool
     /// @param pair DEX pair address
     /// @param lp Pair LP token
@@ -42,9 +70,9 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     /// @param swaps, (token_from => (token_to, pair))
     /// @param recommended_ping_frequency Recommended ping frequency
     /// @param rewarder Rewarder address
-    /// @param fee Fee amount
+    /// @param reward_fee Reward fee amount in BPS
+    /// @param lp_fee LP fee amount in BPS
     function addFarming(
-        address dex,
         address farming_pool,
         address lp,
         address pair,
@@ -54,14 +82,14 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         mapping (address => SwapDirection) swaps,
         uint recommended_ping_frequency,
         address rewarder,
-        uint128 fee
-    ) external override onlyOwner cashBack {
+        uint128 reward_fee,
+        uint128 lp_fee
+    ) external override onlyOwner cashBack(owner) {
         require(!farmings.exists(farming_pool));
         require(recommended_ping_frequency >= Utils.MIN_PING_FREQUENCY);
-        require(fee <= Utils.MAX_FEE);
+        require(lp_fee + reward_fee <= Utils.MAX_FEE);
 
         farmings[farming_pool] = FarmingPoolSettings({
-            dex: dex,
             lp: lp,
             pair: pair,
             left: left,
@@ -70,7 +98,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
             rewarder: rewarder,
             swaps: swaps,
             ping_frequency: recommended_ping_frequency,
-            fee: fee,
+            reward_fee: reward_fee,
+            lp_fee: lp_fee,
             paused: false
         });
     }
@@ -82,7 +111,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     function setFarmingPaused(
         address farming_pool,
         bool paused
-    ) external override onlyOwner cashBack {
+    ) external override onlyOwner cashBack(owner) {
         require(farmings.exists(farming_pool));
         require(farmings[farming_pool].paused = !paused);
 

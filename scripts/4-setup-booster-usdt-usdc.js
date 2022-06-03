@@ -16,12 +16,19 @@ const main = async () => {
             validate: value => isValidTonAddress(value) ? true : 'Invalid address',
             initial: '0:fafa4c591a83125c35d0f4c1b0bcf5fafdb6c8fea186df10e1e615f49336e342',
         },
-        // {
-        //     type: 'text',
-        //     name: 'manager',
-        //     message: 'Booster manager (pings booster accounts)',
-        //     validate: value => isValidTonAddress(value) ? true : 'Invalid address'
-        // }
+        {
+            type: 'text',
+            name: 'manager',
+            message: 'Booster manager (pings booster accounts)',
+            validate: value => isValidTonAddress(value) ? true : 'Invalid address',
+            initial: '0:fafa4c591a83125c35d0f4c1b0bcf5fafdb6c8fea186df10e1e615f49336e342',
+        },
+        {
+            type: 'number',
+            name: 'ping_frequency',
+            message: 'Booster account ping frequency (no less than 15 minutes)',
+            initial: 15 * 60
+        }
     ]);
 
     const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
@@ -47,7 +54,7 @@ const main = async () => {
         contract: BoosterFactory,
         constructorParams: {
             _owner: user.address,
-            _manager: response.owner,
+            _manager: response.manager,
             _account: BoosterAccount.code,
             _account_platform: BoosterAccountPlatform.code
         }
@@ -105,7 +112,8 @@ const main = async () => {
         method: 'deployAccount',
         params: {
             _owner: response.owner,
-            farming_pool
+            farming_pool,
+            ping_frequency: response.ping_frequency
         },
         value: locklift.utils.convertCrystal(10.5, 'nano')
     });

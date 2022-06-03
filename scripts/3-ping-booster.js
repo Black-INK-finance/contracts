@@ -1,5 +1,5 @@
 const booster_factory_address = process.env.BOOSTER_FACTORY;
-const booster_admin_address = process.env.BOOSTER_ADMIN;
+const manager_address = process.env.MANAGER;
 const ping_delay_seconds = process.env.PING_DELAY_SECONDS;
 const booster_account_min_balance = process.env.BOOSTER_ACCOUNT_MIN_BALANCE;
 
@@ -9,19 +9,21 @@ const main = async () => {
     const booster_factory = await locklift.factory.getContract('BoosterFactory');
     booster_factory.setAddress(booster_factory_address);
 
-    // Initialize booster admin
-    const booster_admin = await locklift.factory.getContract('BoosterAdmin');
-    booster_admin.setAddress(booster_admin_address);
+    // Initialize booster manager
+    const manager = await locklift.factory.getContract('Manager');
+    manager.setAddress(manager_address);
+
+    const [keyPair] = await locklift.keys.getKeyPairs();
+    manager.setKeyPair(keyPair);
 
     // Get all booster accounts by code hash
     const booster_account_code_hash = await booster_factory.call({
         method: 'getAccountPlatformHash'
     });
 
-    // Filter out booster accounts
-    // - Only initialized
-    // - Only ready to be pinged
-    // - Only non-recently pinged
+    // Get ping price in PING tokens
+
+    // Filter out booster accounts which are not "ready-to-be-pinged"
 
     // Ping all of them
     // - Split accounts in chunks, 100 accounts each
@@ -29,7 +31,9 @@ const main = async () => {
 
     // - Ping each chunk
     for (const chunk of chunks) {
+        await manager.run({
 
+        });
     }
 };
 

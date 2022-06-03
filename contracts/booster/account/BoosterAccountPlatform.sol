@@ -1,6 +1,7 @@
 pragma ton-solidity >= 0.39.0;
 
 import "../interfaces/IBoosterBase.sol";
+//import '@broxus/contracts/contracts/utils/RandomNonce.sol';
 
 
 contract BoosterAccountPlatform is IBoosterBase {
@@ -12,16 +13,19 @@ contract BoosterAccountPlatform is IBoosterBase {
         TvmCell code,
         uint version,
         address manager,
+        uint128 ping_price_limit,
         FarmingPoolSettings settings
     ) public {
         require(msg.sender == factory);
 
         TvmCell data = abi.encode(
+            owner,
             factory,
             farming_pool,
+
             version,
-            owner,
             manager,
+            ping_price_limit,
             settings
         );
 
