@@ -1,0 +1,191 @@
+{
+	"ABI version": 2,
+	"version": "2.2",
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"_owner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setPaused",
+			"inputs": [
+				{"name":"_paused","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "claim",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"_amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "receiveTokenWallet",
+			"inputs": [
+				{"name":"wallet","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "initializeTokens",
+			"inputs": [
+				{"name":"tokens","type":"address[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setTokenSwap",
+			"inputs": [
+				{"name":"token","type":"address"},
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"minToSwap","type":"uint128"}],"name":"swap","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "removeTokenSwap",
+			"inputs": [
+				{"name":"token","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "onAcceptTokensTransfer",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"value2","type":"address"},
+				{"name":"value3","type":"address"},
+				{"name":"remainingGasTo","type":"address"},
+				{"name":"value5","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "triggerSwap",
+			"inputs": [
+				{"name":"token","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "upgrade",
+			"inputs": [
+				{"name":"code","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transferOwnership",
+			"inputs": [
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "renounceOwnership",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"owner","type":"address"}
+			]
+		},
+		{
+			"name": "_randomNonce",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_randomNonce","type":"uint256"}
+			]
+		},
+		{
+			"name": "wallets",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"wallets","type":"map(address,address)"}
+			]
+		},
+		{
+			"name": "swaps",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"minToSwap","type":"uint128"}],"name":"swaps","type":"map(address,tuple)"}
+			]
+		},
+		{
+			"name": "balances",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"balances","type":"map(address,uint128)"}
+			]
+		},
+		{
+			"name": "received",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"received","type":"map(address,uint128)"}
+			]
+		},
+		{
+			"name": "paused",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"paused","type":"bool"}
+			]
+		}
+	],
+	"data": [
+		{"key":1,"name":"_randomNonce","type":"uint256"}
+	],
+	"events": [
+		{
+			"name": "OwnershipTransferred",
+			"inputs": [
+				{"name":"previousOwner","type":"address"},
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"owner","type":"address"},
+		{"name":"_randomNonce","type":"uint256"},
+		{"name":"wallets","type":"map(address,address)"},
+		{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"minToSwap","type":"uint128"}],"name":"swaps","type":"map(address,tuple)"},
+		{"name":"balances","type":"map(address,uint128)"},
+		{"name":"received","type":"map(address,uint128)"},
+		{"name":"paused","type":"bool"}
+	]
+}

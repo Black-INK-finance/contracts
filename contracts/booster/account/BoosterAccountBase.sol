@@ -94,10 +94,7 @@ abstract contract BoosterAccountBase is
         address,
         TvmCell payload
     ) external override {
-        // Transfer tokens to the owner (not sender!) in case:
-        // - token root not initialized (eg some third party token was sent)
-        // - msg.sender is different from the actual token wallet (eg booster token wallet is still not initialized)
-        // - reinvesting is paused
+        // Received unknown token, return back with all remaining gas
         if (!wallets.exists(root) || msg.sender != wallets[root] || paused == true) {
             TvmCell empty;
 
@@ -106,7 +103,7 @@ abstract contract BoosterAccountBase is
                 amount,
                 owner,
                 _me(),
-                true,
+                false,
                 empty,
                 0,
                 MsgFlag.REMAINING_GAS,
@@ -235,7 +232,7 @@ abstract contract BoosterAccountBase is
                 fee,
                 rewarder,
                 _me(),
-                false,
+                true,
                 empty,
                 Utils.FARMING_SKIM_FEES,
                 0,

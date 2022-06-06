@@ -79,8 +79,10 @@ describe('Test booster lifecycle', async function() {
     it('Setup actors', async () => {
         god = await deployUser('God');
         alice = await deployUser('Alice');
-        rewarder = await deployUser('Rewarder');
+        // rewarder = await deployUser('Rewarder');
+    });
 
+    it('Setup booster manager', async () => {
         const [keyPair] = await locklift.keys.getKeyPairs();
 
         const BoosterManager = await locklift.factory.getContract('BoosterManager');
@@ -232,12 +234,84 @@ describe('Test booster lifecycle', async function() {
                         .to.be.bignumber.equal(dex_pair_initial_supply, `Wrong right balance for ${pair.address}`);
                 }
             });
+
+            it('Setup USDT/USDC LP token', async () => {
+                const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
+
+                LP = await Token.from_addr(lp_address, alice);
+                LP.token.name = 'Token root [LP USDT/USDC]';
+            });
+        });
+    });
+
+    describe('Setup rewarder (buyback)', async () => {
+        it('Deploy booster buyback', async () => {
+            const BoosterBuyBack = await locklift.factory.getContract('BoosterBuyBack');
+
+            rewarder = await locklift.giver.deployContract({
+                contract: BoosterBuyBack,
+                constructorParams: {
+                    _owner: god.address
+                }
+            }, locklift.utils.convertCrystal(100, 'nano'));
+            rewarder.name = 'Rewarder (BuyBack)';
+
+            await logContract(rewarder);
+        });
+
+        it('Initialize PING and LP tokens without swap rules', async () => {
+            await god.runTarget({
+                contract: rewarder,
+                method: 'initializeTokens',
+                params: {
+                    tokens: [
+                        PING.address,
+                        LP.address,
+                        QUBE.address,
+                        BRIDGE.address,
+                        USDT.address,
+                        USDC.address
+                    ]
+                }
+            });
+        });
+
+        it('Initialize swap rules for QUBE and BRIDGE', async () => {
+            await god.runTarget({
+                contract: rewarder,
+                method: 'setTokenSwap',
+                params: {
+                    token: BRIDGE.address,
+                    swap: {
+                        token: USDT.address,
+                        pair: dex_pair_BRIDGE_USDT.address,
+                        minToSwap: 0
+                    },
+                }
+            });
+
+            await god.runTarget({
+                contract: rewarder,
+                method: 'setTokenSwap',
+                params: {
+                    token: QUBE.address,
+                    swap: {
+                        token: USDC.address,
+                        pair: dex_pair_QUBE_USDC.address,
+                        minToSwap: 0
+                    }
+                }
+            });
+        });
+
+        it('Check rewarder initialized', async () => {
+
         });
     });
 
     describe('Setup farming', async () => {
         it('Deploy farming factory', async () => {
-            farming_factory = await setupFabric(god, 2, 2, 2);
+            farming_factory = await setupFabric(god, 1, 1, 1);
         });
 
         it('Deploy farming pool', async () => {
@@ -393,8 +467,6 @@ describe('Test booster lifecycle', async function() {
 
             logger.success(`Alice deposit to USDC/USDT pool tx: ${tx.transaction.id}`);
 
-            LP = await Token.from_addr(lp_address, alice);
-            LP.token.name = 'Token root [LP USDT/USDC]';
             const wallet = await LP.wallet(alice);
 
             expect(await wallet.balance())
@@ -817,11 +889,11 @@ describe('Test booster lifecycle', async function() {
             let details_before_skim;
 
             it('Deploy rewarder wallets', async () => {
-                const rewarder_qube = await QUBE.deployWallet(rewarder);
+                const rewarder_qube = await QUBE.wallet(rewarder);
                 rewarder_qube.wallet.name = 'Rewarder QUBE wallet';
-                const rewarder_bridge = await BRIDGE.deployWallet(rewarder);
+                const rewarder_bridge = await BRIDGE.wallet(rewarder);
                 rewarder_bridge.wallet.name = 'Rewarder BRIDGE wallet';
-                const rewarder_lp = await LP.deployWallet(rewarder);
+                const rewarder_lp = await LP.wallet(rewarder);
                 rewarder_lp.wallet.name = 'Rewarder LP wallet';
 
                 metricManager.addContract(rewarder_qube.wallet);
@@ -857,23 +929,21 @@ describe('Test booster lifecycle', async function() {
             });
 
             it('Check rewarder received fees', async () => {
-                const rewarder_qube = await QUBE.wallet(rewarder);
-                const rewarder_bridge = await BRIDGE.wallet(rewarder);
-                const rewarder_lp = await LP.wallet(rewarder);
+                const rewarder_received = await rewarder.call({ method: 'received' });
 
-                expect(await rewarder_qube.balance())
+                expect(rewarder_received[QUBE.address])
                     .to.be.bignumber.equal(
                         details_before_skim._fees[QUBE.address],
                         'Rewarder QUBE balance should be non-zero'
                     );
 
-                expect(await rewarder_bridge.balance())
+                expect(rewarder_received[BRIDGE.address])
                     .to.be.bignumber.equal(
                         details_before_skim._fees[BRIDGE.address],
                         'Rewarder BRIDGE balance should be non-zero'
                     );
 
-                expect(await rewarder_lp.balance())
+                expect(rewarder_received[LP.address])
                     .to.be.bignumber.equal(
                         details_before_skim._fees[LP.address],
                         'Rewarder LP balance should be non-zero'
@@ -1023,6 +1093,7 @@ describe('Test booster lifecycle', async function() {
             it('Boosting', async () => {
                 await logContract(manager);
                 await logContract(alice_booster_account);
+                await logContract(rewarder);
             });
         });
     });

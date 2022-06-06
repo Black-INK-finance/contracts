@@ -62,7 +62,9 @@ describe('Test booster updatability', async function() {
             constructorParams: {
                 _owner: god.address,
                 _manager: manager.address,
+                _rewarder: rewarder.address,
                 _ping_token_root: ping.address,
+                _recommended_ping_price_limit: 1000,
                 _account_platform: BoosterAccountPlatform.code,
                 _account: BoosterAccount.code
             },
