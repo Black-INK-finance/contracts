@@ -50,6 +50,16 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         lp_fee = fee;
     }
 
+    /// @notice Set new rewarder
+    /// Can be called only by `factory`
+    /// @param _rewarder New rewarder
+    function setRewarder(
+        address _rewarder,
+        address remainingGasTo
+    ) external override onlyFactory cashBack(remainingGasTo) {
+        rewarder = _rewarder;
+    }
+
     /// @notice Set new ping frequency
     /// Can be called only by `owner`
     /// @param _ping_frequency New ping frequency

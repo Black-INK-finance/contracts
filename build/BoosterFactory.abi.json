@@ -45,6 +45,15 @@
 			]
 		},
 		{
+			"name": "setRewarder",
+			"inputs": [
+				{"name":"accounts","type":"address[]"},
+				{"name":"_rewarder","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "receiveTokenWallet",
 			"inputs": [
 				{"name":"wallet","type":"address"}

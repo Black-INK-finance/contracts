@@ -2,12 +2,10 @@ const logger = require('mocha-logger');
 const prompts = require('prompts');
 const ora = require('ora');
 const { isValidTonAddress, logContract } = require('../../test/utils');
+const BigNumber = require("bignumber.js");
 
 
 const main = async () => {
-    const [keyPair] = await locklift.keys.getKeyPairs();
-    const Account = await locklift.factory.getAccount('Wallet');
-
     const response = await prompts([
         {
             type: 'text',
@@ -45,7 +43,7 @@ const main = async () => {
     const manager = await locklift.giver.deployContract({
         contract: BoosterManager,
         constructorParams: {
-            _owner: response.manager_public_key,
+            _owner: `0x${response.manager_public_key}`,
             _internalOwner: response.owner
         }
     }, locklift.utils.convertCrystal(100, 'nano'));

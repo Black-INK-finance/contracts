@@ -121,6 +121,15 @@
 			]
 		},
 		{
+			"name": "setRewarder",
+			"inputs": [
+				{"name":"_rewarder","type":"address"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setPingFrequency",
 			"inputs": [
 				{"name":"_ping_frequency","type":"uint256"}

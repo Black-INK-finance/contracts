@@ -2005,7 +2005,7 @@ PUSHINT 129
 SENDRAWMSG
 .loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
 
-.macro setPingFrequency
+.macro setRewarder
 DROP
 GETGLOB 6
 THROWIFNOT 76
@@ -2015,6 +2015,74 @@ IFREF {
 	CALL $c4_to_c7$
 }
 .loc ../contracts/booster/account/BoosterAccountSettings.sol, 56
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
+CALLREF {
+	CALL $setRewarder_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setRewarder_internal_macro
+.loc ../contracts/booster/account/BoosterAccountStorage.sol, 66
+GETGLOB 9
+GETGLOB 12
+SDEQ
+THROWIFNOT 100
+.loc ../contracts/booster/account/BoosterAccountStorage.sol, 68
+DUP
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROTREV
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 60
+DROP
+PUSHINT 32
+SETGLOBVAR
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
+
+.macro setPingFrequency
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 66
 LDU 256
 ENDS
 .loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
@@ -2047,12 +2115,12 @@ PUSHINT 2
 RAWRESERVE
 .loc ../contracts/booster/TransferUtils.sol, 7
 SWAP
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 59
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 69
 DUP
 PUSHINT 900
 GEQ
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 61
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 71
 SETGLOB 31
 .loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
@@ -2074,7 +2142,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 68
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 78
 OVER
 PUSHCONT {
 	LDREF
@@ -2110,7 +2178,7 @@ DICTGET
 NULLSWAPIFNOT
 NIP
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 72
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 82
 OVER
 GETGLOB 23
 PUSHINT 267
@@ -2121,12 +2189,12 @@ PUSHCONT {
 	}
 }
 IFNOT
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 74
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 84
 OVER
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 76
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 86
 ROT
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountSettings.sol, 77
+	.loc ../contracts/booster/account/BoosterAccountSettings.sol, 87
 	PUSH S2
 	GETGLOB 21
 	PUSHINT 267
@@ -2142,7 +2210,7 @@ PUSHCONT {
 	.loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
 }
 IFNOT
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 82
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 92
 TUCK
 GETGLOB 10
 DUP
@@ -2155,7 +2223,7 @@ TRUE
 CALLREF {
 	CALL $_transferTokens_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 94
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 104
 SWAP
 GETGLOB 21
 DUP2
@@ -2184,7 +2252,7 @@ SETGLOB 21
 CALL $_transferTokens_internal_macro$
 
 .macro _transferTokens_internal_macro
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 110
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 120
 BLKSWAP 3, 3
 REVERSE 4, 0
 TRUE
@@ -3263,11 +3331,11 @@ THROW 0
 
 .macro public_function_selector
 DUP
-PUSHINT 1055747189
+PUSHINT 964075442
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 227292681
+	PUSHINT 224066674
 	LEQ
 	IFJMPREF {
 		DUP
@@ -3283,22 +3351,28 @@ IFJMPREF {
 			CALL $withdraw$
 		}
 		DUP
+		PUSHINT 150952694
+		EQUAL
+		IFJMPREF {
+			CALL $setRewarder$
+		}
+		DUP
 		PUSHINT 224066674
 		EQUAL
 		IFJMPREF {
 			CALL $setPaused$
 		}
+	}
+	DUP
+	PUSHINT 423246496
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 227292681
 		EQUAL
 		IFJMPREF {
 			CALL $acceptPingTokens$
 		}
-	}
-	DUP
-	PUSHINT 545403338
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 228572921
 		EQUAL
@@ -3317,17 +3391,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $ping_balance$
 		}
+	}
+	DUP
+	PUSHINT 777389991
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 545403338
 		EQUAL
 		IFJMPREF {
 			CALL $isNeedPing$
 		}
-	}
-	DUP
-	PUSHINT 814573265
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 690792533
 		EQUAL
@@ -3346,17 +3420,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $receiveTokenWallet$
 		}
+	}
+	DUP
+	PUSHINT 964075442
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 814573265
 		EQUAL
 		IFJMPREF {
 			CALL $paused$
 		}
-	}
-	DUP
-	PUSHINT 1055747189
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 859986061
 		EQUAL
@@ -3375,22 +3449,22 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $factory$
 		}
+	}
+}
+DUP
+PUSHINT 2057231915
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1345284824
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1055747189
 		EQUAL
 		IFJMPREF {
 			CALL $getDetails$
 		}
-	}
-}
-DUP
-PUSHINT 2117416875
-LEQ
-IFJMPREF {
-	DUP
-	PUSHINT 1382290624
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1082359095
 		EQUAL
@@ -3409,17 +3483,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $ping$
 		}
+	}
+	DUP
+	PUSHINT 1493926320
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1382290624
 		EQUAL
 		IFJMPREF {
 			CALL $setRewardFee$
 		}
-	}
-	DUP
-	PUSHINT 1594609630
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1414696963
 		EQUAL
@@ -3438,17 +3512,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $acceptUpgrade$
 		}
+	}
+	DUP
+	PUSHINT 1756716863
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1594609630
 		EQUAL
 		IFJMPREF {
 			CALL $owner$
 		}
-	}
-	DUP
-	PUSHINT 1885755830
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1607969097
 		EQUAL
@@ -3467,17 +3541,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $constructor$
 		}
+	}
+	DUP
+	PUSHINT 2057231915
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1885755830
 		EQUAL
 		IFJMPREF {
 			CALL $ping_price_limit$
 		}
-	}
-	DUP
-	PUSHINT 2117416875
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1893244873
 		EQUAL
@@ -3496,12 +3570,12 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $onAcceptTokensMint$
 		}
-		DUP
-		PUSHINT 2117416875
-		EQUAL
-		IFJMPREF {
-			CALL $requestFarmingLP$
-		}
 	}
+}
+DUP
+PUSHINT 2117416875
+EQUAL
+IFJMPREF {
+	CALL $requestFarmingLP$
 }
 

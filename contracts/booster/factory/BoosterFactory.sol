@@ -92,6 +92,19 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         }
     }
 
+    function setRewarder(
+        address[] accounts,
+        address _rewarder
+    ) external override reserveBalance onlyOwner {
+        require(_rewarder != address.makeAddrStd(0, 0));
+
+        for (address account: accounts) {
+            IBoosterAccount(account).setRewarder{
+                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+            }(_rewarder, msg.sender);
+        }
+    }
+
     function receiveTokenWallet(
         address wallet
     ) external override {

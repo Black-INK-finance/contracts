@@ -58,6 +58,11 @@ interface IBoosterFactory is IBoosterBase {
         uint128 fee
     ) external;
 
+    function setRewarder(
+        address[] accounts,
+        address _rewarder
+    ) external;
+
     function setRewardFee(
         address[] accounts,
         uint128 fee

@@ -56,6 +56,10 @@ interface IBoosterAccount is IBoosterBase {
         uint128 _fee,
         address remainingGasTo
     ) external;
+    function setRewarder(
+        address _rewarder,
+        address remainingGasTo
+    ) external;
     function acceptUpgrade(
         TvmCell code,
         uint version
