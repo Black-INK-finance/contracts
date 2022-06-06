@@ -1,7 +1,9 @@
+const _ = require('underscore');
+const logger = require('mocha-logger');
+
+
 const booster_factory_address = process.env.BOOSTER_FACTORY;
 const manager_address = process.env.MANAGER;
-const ping_delay_seconds = process.env.PING_DELAY_SECONDS;
-const booster_account_min_balance = process.env.BOOSTER_ACCOUNT_MIN_BALANCE;
 
 
 const main = async () => {
@@ -22,18 +24,29 @@ const main = async () => {
     });
 
     // Get ping price in PING tokens
+    const ping_price = 0;
 
     // Filter out booster accounts which are not "ready-to-be-pinged"
+    const accounts = [];
 
     // Ping all of them
     // - Split accounts in chunks, 100 accounts each
-    const chunks = [];
+    const chunks = _.chunk(accounts, 100);
 
     // - Ping each chunk
-    for (const chunk of chunks) {
-        await manager.run({
-
+    for (const [i, chunk] of chunks.entries()) {
+        const tx = await manager.run({
+            method: 'ping',
+            params: {
+                pings: chunk.map(a => Object({
+                    account: a,
+                    price: ping_price,
+                    skim: true
+                }))
+            }
         });
+
+        logger.log(`Ping ${i}, ${chunk.length} accounts tx: ${tx.transaction.id}`);
     }
 };
 

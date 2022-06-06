@@ -1,7 +1,7 @@
 const logger = require('mocha-logger');
 const prompts = require('prompts');
 const ora = require('ora');
-const { isValidTonAddress, logContract } = require('../test/utils');
+const { isValidTonAddress, logContract } = require('../../test/utils');
 
 
 const main = async () => {
@@ -32,6 +32,8 @@ const main = async () => {
     ]);
 
     const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
+    const BoosterManager = await locklift.factory.getContract('BoosterManager');
+    const BoosterBuyBack = await locklift.factory.getContract('BoosterBuyBack');
     const BoosterAccount = await locklift.factory.getContract('BoosterAccount_V1');
     const BoosterAccountPlatform = await locklift.factory.getContract('BoosterAccountPlatform');
 
@@ -81,7 +83,6 @@ const main = async () => {
         contract: factory,
         method: 'addFarming',
         params: {
-            dex: locklift.utils.zeroAddress,
             farming_pool,
             lp: lp_address,
             pair: dex_pair_USDT_USDC,
@@ -98,7 +99,7 @@ const main = async () => {
                     pair: dex_pair_WEVER_USDT
                 }
             },
-            recommended_ping_frequency: 60, // 1 minute
+            recommended_ping_frequency: 60 * 30, // 30 minutes
             rewarder: response.owner,
             fee: 10
         },
