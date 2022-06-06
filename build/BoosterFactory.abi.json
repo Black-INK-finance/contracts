@@ -18,6 +18,33 @@
 			]
 		},
 		{
+			"name": "setManager",
+			"inputs": [
+				{"name":"accounts","type":"address[]"},
+				{"name":"_manager","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setRewardFee",
+			"inputs": [
+				{"name":"accounts","type":"address[]"},
+				{"name":"fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setLpFee",
+			"inputs": [
+				{"name":"accounts","type":"address[]"},
+				{"name":"fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "receiveTokenWallet",
 			"inputs": [
 				{"name":"wallet","type":"address"}

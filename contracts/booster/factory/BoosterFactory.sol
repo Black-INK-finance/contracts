@@ -43,6 +43,55 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         );
     }
 
+    /// @notice Update manager on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    /// @param _manager New manager
+    function setManager(
+        address[] accounts,
+        address _manager
+    ) external override reserveBalance onlyOwner {
+        for (address account: accounts) {
+            IBoosterAccount(account).setManager{
+                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+            }(_manager, msg.sender);
+        }
+    }
+
+    /// @notice Update reward fee on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    /// @param fee Fee value in BPS
+    function setRewardFee(
+        address[] accounts,
+        uint128 fee
+    ) external override reserveBalance onlyOwner {
+        require(fee <= Utils.MAX_FEE);
+
+        for (address account: accounts) {
+            IBoosterAccount(account).setRewardFee{
+                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+            }(fee, msg.sender);
+        }
+    }
+
+    /// @notice Update LP fee on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    /// @param fee Fee value in BPS
+    function setLpFee(
+        address[] accounts,
+        uint128 fee
+    ) external override reserveBalance onlyOwner {
+        require(fee <= Utils.MAX_FEE);
+
+        for (address account: accounts) {
+            IBoosterAccount(account).setLpFee{
+                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+            }(fee, msg.sender);
+        }
+    }
+
     function receiveTokenWallet(
         address wallet
     ) external override {

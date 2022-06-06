@@ -53,6 +53,21 @@ interface IBoosterFactory is IBoosterBase {
         bool paused
     ) external;
 
+    function setLpFee(
+        address[] accounts,
+        uint128 fee
+    ) external;
+
+    function setRewardFee(
+        address[] accounts,
+        uint128 fee
+    ) external;
+
+    function setManager(
+        address[] accounts,
+        address _manager
+    ) external;
+
     function getDetails() external returns (
         uint _version,
         address _manager,

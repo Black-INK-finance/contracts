@@ -6,6 +6,7 @@ library Utils {
 
     // Constant gas values
     uint128 constant DEPLOY_TOKEN_WALLET = 0.2 ton;
+    uint128 constant BOOSTER_FACTORY_ACCOUNT_UPDATE = 0.5 ton;
 
     uint128 constant BOOSTER_UPGRADE_ACCOUNT = 0.5 ton;
     uint128 constant BOOSTER_DEPLOY_ACCOUNT = 20 ton;
