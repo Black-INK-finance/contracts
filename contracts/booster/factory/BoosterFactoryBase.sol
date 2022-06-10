@@ -5,8 +5,8 @@ import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
 
 import "./BoosterFactoryStorage.sol";
 import "./../account/BoosterAccountPlatform.sol";
+import "./../passport/BoosterPassportPlatform.sol";
 import "./../TransferUtils.sol";
-import "./../Utils.sol";
 
 
 abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
@@ -14,6 +14,43 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address _owner
     ) public {
         setOwnership(_owner);
+    }
+
+    modifier onlyBoosterPassport(address _owner) {
+        TvmCell stateInit = _buildPassportPlatformStateInit(_owner);
+
+        require(msg.sender == address(tvm.hash(stateInit)), Errors.WRONG_SENDER);
+
+        _;
+    }
+
+    /// @notice Ping booster account
+    /// Can be called only by booster passport
+    /// @param _owner Passport owner, used for address check
+    /// @param account Booster account address
+    /// @param required_top_up How many EVERs needs to be sent
+    function pingAccount(
+        address _owner,
+        uint counter,
+        address account,
+        uint128 required_top_up
+    ) external override onlyBoosterPassport(_owner) {
+        tvm.accept();
+
+        // Top up booster
+        if (required_top_up > 0) {
+            msg.sender.transfer({
+                value: required_top_up,
+                bounce: false,
+                flag: 0
+            });
+        }
+
+        IBoosterAccount(account).ping{
+            value: ping_cost,
+            bounce: false,
+            flag: 0
+        }(counter, _me());
     }
 
     function _transferTokens(
@@ -36,11 +73,25 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         }(
             amount,
             recipient,
-            deploy_wallet == true ? Utils.DEPLOY_TOKEN_WALLET : 0,
+            deploy_wallet == true ? Gas.DEPLOY_TOKEN_WALLET : 0,
             remainingGasTo,
             notify,
             payload
         );
+    }
+
+    function _buildPassportPlatformStateInit(
+        address _owner
+    ) internal view returns(TvmCell) {
+        return tvm.buildStateInit({
+            contr: BoosterPassportPlatform,
+            varInit: {
+                factory: address(this),
+                owner: _owner
+            },
+            pubkey: 0,
+            code: passport_platform
+        });
     }
 
     function _buildAccountPlatformStateInit(
@@ -86,8 +137,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         uint128 lp_fee
     ) external override onlyOwner cashBack(owner) {
         require(!farmings.exists(farming_pool));
-        require(recommended_ping_frequency >= Utils.MIN_PING_FREQUENCY);
-        require(lp_fee + reward_fee <= Utils.MAX_FEE);
+        require(recommended_ping_frequency >= Constants.MIN_PING_FREQUENCY);
+        require(lp_fee + reward_fee <= Constants.MAX_FEE);
 
         farmings[farming_pool] = FarmingPoolSettings({
             lp: lp,
@@ -99,22 +150,16 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
             swaps: swaps,
             ping_frequency: recommended_ping_frequency,
             reward_fee: reward_fee,
-            lp_fee: lp_fee,
-            paused: false
+            lp_fee: lp_fee
         });
     }
 
     /// @notice Pause / unpause farming pool
     /// Users can't create booster accounts for paused farming pools
     /// @param farming_pool Farming pool address
-    /// @param paused Paused status
-    function setFarmingPaused(
-        address farming_pool,
-        bool paused
+    function removeFarming(
+        address farming_pool
     ) external override onlyOwner cashBack(owner) {
-        require(farmings.exists(farming_pool));
-        require(farmings[farming_pool].paused = !paused);
-
-        farmings[farming_pool].paused = paused;
+        delete farmings[farming_pool];
     }
 }

@@ -18,6 +18,5 @@ interface IBoosterBase {
         address rewarder;
         uint128 reward_fee;
         uint128 lp_fee;
-        bool paused;
     }
 }

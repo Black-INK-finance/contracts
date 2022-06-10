@@ -15,7 +15,7 @@ import "flatqube/contracts/libraries/DexOperationTypes.sol";
 import "./../../v3/interfaces/IEverFarmPool.sol";
 
 import "./BoosterAccountSettings.sol";
-import "./../Utils.sol";
+import "./../Constants.sol";
 
 
 abstract contract BoosterAccountBase is
@@ -24,48 +24,30 @@ abstract contract BoosterAccountBase is
     IAcceptTokensMintCallback,
     BoosterAccountSettings
 {
-    /// @notice Returns all exceeding balance to the manager
-    /// `_targetBalance()` is used as a baseline
-    receive() external view {
-        tvm.rawReserve(_targetBalance(), 0);
-
-        manager.transfer({ value: 0, bounce: false, flag: MsgFlag.ALL_NOT_RESERVED });
-    }
+//    /// @notice Returns all exceeding balance to the manager
+//    /// `_targetBalance()` is used as a baseline
+//    receive() external view {
+//        tvm.rawReserve(_targetBalance(), 0);
+//
+//        factory.transfer({ value: 0, bounce: false, flag: MsgFlag.ALL_NOT_RESERVED });
+//    }
 
     constructor() public {
         revert();
     }
 
-    /// @notice Accept ping token top up
-    /// Can be called only by `factory`
-    /// @param amount Amount of ping tokens to accept
-    function acceptPingTokens(
-        uint128 amount,
-        address remainingGasTo
-    ) external override onlyFactory cashBack(remainingGasTo) {
-        ping_balance += amount;
-    }
-
     /// @notice Keeper method for claiming farming reward
-    /// Can be called only by `owner` or `manager`
-    /// @param price Ping price in PING tokens, needs to compensate keeper charges
-    /// @param skim Boolean, skim requested or not. If `false`, then fees won't be skimmed, use `skim` method.
-    /// Otherwise, fees will be skimmed each `Utils.PINGS_PER_SKIM` ping.
+    /// Can be called only by `owner` or `factory`
+    /// @param counter Current ping order number
     function ping(
-        uint128 price,
-        bool skim
-    ) external override onlyOwnerOrManager {
-        require(price <= ping_price_limit);
-        tvm.accept();
+        uint counter,
+        address sponsor
+    ) external override reserveTargetBalance {
+        require(msg.sender == passport || msg.sender == factory, Errors.WRONG_SENDER);
 
-        last_ping = now;
-        ping_counter++;
+        ping_sponsor = sponsor;
 
-        if (msg.sender == manager) {
-            ping_balance -= price;
-        }
-
-        if (skim && ping_counter % Utils.PINGS_PER_SKIM == 0) {
+        if (counter % Constants.PINGS_PER_SKIM == 0) {
             _skimFees();
         }
 
@@ -74,8 +56,7 @@ abstract contract BoosterAccountBase is
 
     /// @notice Keeper method for skimming fees
     /// Can be called only by `manager`
-    function skim() external override onlyManager {
-        tvm.accept();
+    function skim() external override onlyFactory {
 
         _skimFees();
     }
@@ -95,7 +76,7 @@ abstract contract BoosterAccountBase is
         TvmCell payload
     ) external override {
         // Received unknown token, return back with all remaining gas
-        if (!wallets.exists(root) || msg.sender != wallets[root] || paused == true) {
+        if (!wallets.exists(root) || msg.sender != wallets[root]) {
             TvmCell empty;
 
             _transferTokens(
@@ -115,7 +96,7 @@ abstract contract BoosterAccountBase is
 
         if (_isArrayIncludes(root, rewards) && sender == farming_pool) {
             // Get management fees from reward, which are sent from the farming pool
-            uint128 fee = math.muldivr(amount, reward_fee, Utils.BPS);
+            uint128 fee = math.muldivr(amount, reward_fee, Constants.BPS);
 
             // Consider fees
             _considerTokensFee(root, fee);
@@ -124,7 +105,7 @@ abstract contract BoosterAccountBase is
             // Check reward transfer payload
             (uint32 nonce) = abi.decode(payload, (uint32));
 
-            if (nonce == Utils.NO_REINVEST_REQUIRED) return;
+            if (nonce == Constants.NO_REINVEST_REQUIRED) return;
         } else {
             _considerTokensArrival(root, amount);
         }
@@ -142,7 +123,9 @@ abstract contract BoosterAccountBase is
         address,
         TvmCell
     ) external override {
-        if (!wallets.exists(root) || wallets[root] != msg.sender || paused == true) {
+        // Unknown token
+        // TODO: if LP & sender == farming, than transfer to the owner
+        if (!wallets.exists(root) || wallets[root] != msg.sender) {
             TvmCell empty;
 
             _transferTokens(
@@ -161,7 +144,7 @@ abstract contract BoosterAccountBase is
         }
 
         if (root == lp) {
-            uint128 fee = math.muldivr(amount, lp_fee, Utils.BPS);
+            uint128 fee = math.muldivr(amount, lp_fee, Constants.BPS);
 
             _considerTokensFee(lp, fee);
             _considerTokensArrival(lp, amount - fee);
@@ -234,7 +217,7 @@ abstract contract BoosterAccountBase is
                 _me(),
                 true,
                 empty,
-                Utils.FARMING_SKIM_FEES,
+                Gas.BOOSTER_ACCOUNT_TRANSFER_FEES,
                 0,
                 true
             );
@@ -260,7 +243,7 @@ abstract contract BoosterAccountBase is
             _me(),
             true,
             payload,
-            Utils.DEX_DEPOSIT_LIQUIDITY,
+            Gas.BOOSTER_ACCOUNT_DEPOSIT_TOKEN_TO_DEX,
             0,
             false
         );
@@ -270,9 +253,9 @@ abstract contract BoosterAccountBase is
 
     function _claimReward() internal view {
         IEverFarmPool(farming_pool).claimReward{
-            value: Utils.FARMING_CLAIM_REWARD,
+            value: Gas.FARMING_CLAIM_REWARD,
             bounce: false
-        }(_me(), Utils.REINVEST_REQUIRED);
+        }(_me(), Constants.REINVEST_REQUIRED);
     }
 
     function _swap(address token) internal {
@@ -293,7 +276,7 @@ abstract contract BoosterAccountBase is
             _me(),
             true,
             payload,
-            Utils.DEX_SWAP,
+            Gas.BOOSTER_ACCOUNT_DEX_SWAP,
             0,
             false
         );
@@ -310,18 +293,18 @@ abstract contract BoosterAccountBase is
         wallets[token] = address.makeAddrStd(0, 0);
 
         ITokenRoot(token).deployWallet{
-            value: Utils.DEPLOY_TOKEN_WALLET * 2,
+            value: Gas.DEPLOY_TOKEN_WALLET * 2,
             callback: BoosterAccountBase.receiveTokenWallet
         }(
             _me(),
-            Utils.DEPLOY_TOKEN_WALLET
+            Gas.DEPLOY_TOKEN_WALLET
         );
     }
 
     function _depositToFarming() internal {
         if (balances[lp] == 0) return;
 
-        TvmCell payload = _buildFarmingDepositPayload(Utils.NO_REINVEST_REQUIRED);
+        TvmCell payload = _buildFarmingDepositPayload(Constants.NO_REINVEST_REQUIRED);
 
         _transferTokens(
             wallets[lp],
@@ -330,7 +313,7 @@ abstract contract BoosterAccountBase is
             _me(),
             true,
             payload,
-            Utils.FARMING_DEPOSIT_LP,
+            Gas.BOOSTER_ACCOUNT_DEPOSIT_LP_TO_FARMING,
             0,
             false
         );
@@ -343,7 +326,7 @@ abstract contract BoosterAccountBase is
     /// @param amount Amount of LP to request
     function requestFarmingLP(
         uint128 amount
-    ) external override onlyOwner onlyPaused reserveBalance {
+    ) external override onlyOwner reserveBalance {
         IEverFarmPool(farming_pool).withdraw{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
@@ -353,7 +336,7 @@ abstract contract BoosterAccountBase is
 
     function _requestFarmingUserData() internal view {
         IEverFarmPool(farming_pool).getUserDataAddress{
-            value: Utils.FARMING_REQUEST_USER_DATA,
+            value: Gas.FARMING_REQUEST_USER_DATA,
             bounce: false,
             callback: BoosterAccountBase.receiveFarmingUserData
         }(_me());
@@ -402,6 +385,6 @@ abstract contract BoosterAccountBase is
     }
 
     function _targetBalance() internal override pure returns(uint128) {
-        return Utils.BOOSTER_DEPLOY_ACCOUNT;
+        return Gas.BOOSTER_DEPLOY_ACCOUNT;
     }
 }

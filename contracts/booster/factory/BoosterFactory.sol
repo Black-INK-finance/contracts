@@ -12,49 +12,57 @@ import "./BoosterFactoryBase.sol";
 import "./../account/BoosterAccount_V1.sol";
 import "./../account/BoosterAccountPlatform.sol";
 
+import "./../passport/BoosterPassport.sol";
+import "./../passport/BoosterPassportPlatform.sol";
+
 
 contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, BoosterFactoryBase, RandomNonce {
     constructor(
         address _owner,
-        address _manager,
+        uint[] _managers,
         address _rewarder,
         address _ping_token_root,
-        uint128 _recommended_ping_price_limit,
         TvmCell _account_platform,
-        TvmCell _account
+        TvmCell _account_implementation,
+        TvmCell _passport_platform,
+        TvmCell _passport_implementation
     ) public BoosterFactoryBase(_owner) {
         tvm.accept();
 
         ping_token_root = _ping_token_root;
-        recommended_ping_price_limit = _recommended_ping_price_limit;
-        manager = _manager;
+        managers = _managers;
         rewarder = _rewarder;
-        account_platform = _account_platform;
-        account = _account;
 
+        account_platform = _account_platform;
+        account_implementation = _account_implementation;
         account_version = 0;
 
+        passport_platform = _passport_platform;
+        passport_implementation = _passport_implementation;
+        passport_version = 0;
+
         ITokenRoot(ping_token_root).deployWallet{
-            value: Utils.DEPLOY_TOKEN_WALLET * 2,
+            value: Gas.DEPLOY_TOKEN_WALLET * 2,
             callback: BoosterFactory.receiveTokenWallet
         }(
             address(this),
-            Utils.DEPLOY_TOKEN_WALLET
+            Gas.DEPLOY_TOKEN_WALLET
         );
     }
 
     /// @notice Update manager on specific accounts
     /// Can be called only by `owner`
-    /// @param accounts Accounts list
-    /// @param _manager New manager
-    function setManager(
-        address[] accounts,
-        address _manager
+    /// @param passports Accounts list
+    /// @param _managers List of manager public keys
+    function setManagers(
+        address[] passports,
+        uint[] _managers
     ) external override reserveBalance onlyOwner {
-        for (address account: accounts) {
-            IBoosterAccount(account).setManager{
-                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
-            }(_manager, msg.sender);
+        for (address passport: passports) {
+            IBoosterPassport(passport).setManagers{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
+            }(_managers, msg.sender);
         }
     }
 
@@ -66,11 +74,12 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         address[] accounts,
         uint128 fee
     ) external override reserveBalance onlyOwner {
-        require(fee <= Utils.MAX_FEE);
+        require(fee <= Constants.MAX_FEE);
 
         for (address account: accounts) {
             IBoosterAccount(account).setRewardFee{
-                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
             }(fee, msg.sender);
         }
     }
@@ -83,24 +92,31 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         address[] accounts,
         uint128 fee
     ) external override reserveBalance onlyOwner {
-        require(fee <= Utils.MAX_FEE);
+        require(fee <= Constants.MAX_FEE);
 
         for (address account: accounts) {
             IBoosterAccount(account).setLpFee{
-                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
             }(fee, msg.sender);
         }
     }
 
+    /// @notice Set rewarder address on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    /// @param _rewarder New rewarder
     function setRewarder(
         address[] accounts,
         address _rewarder
     ) external override reserveBalance onlyOwner {
+        /// A.K. protection
         require(_rewarder != address.makeAddrStd(0, 0));
 
         for (address account: accounts) {
             IBoosterAccount(account).setRewarder{
-                value: Utils.BOOSTER_FACTORY_ACCOUNT_UPDATE
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
             }(_rewarder, msg.sender);
         }
     }
@@ -116,11 +132,23 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
     /// @notice Derive booster account
     /// @param _owner Owner address
     /// @param farming_pool Farming pool address
+    /// @return Booster account address
     function deriveAccount(
         address _owner,
         address farming_pool
     ) external override responsible returns(address) {
         TvmCell stateInit = _buildAccountPlatformStateInit(_owner, farming_pool);
+
+        return {value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS} address(tvm.hash(stateInit));
+    }
+
+    /// @notice Derive passport
+    /// @param _owner Owner address
+    /// @return Passport address
+    function derivePassport(
+        address _owner
+    ) external override responsible returns(address) {
+        TvmCell stateInit = _buildPassportPlatformStateInit(_owner);
 
         return {value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS} address(tvm.hash(stateInit));
     }
@@ -135,18 +163,20 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         TvmCell payload
     ) external override reserveBalance {
         // Send tokens back if wrong token received
-        if (tokenRoot != ping_token_root || msg.sender != ping_token_wallet || msg.value < Utils.BOOSTER_FACTORY_TOP_UP_MIN) {
+        if (tokenRoot != ping_token_root || msg.sender != ping_token_wallet) {
             _transferTokens(
                 msg.sender,
                 amount,
                 sender,
                 remainingGasTo,
-                true,
+                false,
                 payload,
                 0,
                 MsgFlag.ALL_NOT_RESERVED,
                 false
             );
+
+            return;
         }
 
         // Transfer tokens to owner
@@ -155,20 +185,21 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         _transferTokens(
             ping_token_wallet,
             amount,
-            rewarder,
+            owner,
             remainingGasTo,
             false,
             empty,
-            Utils.BOOSTER_FACTORY_THROW_PING_TOKENS,
+            Gas.BOOSTER_FACTORY_THROW_PING_TOKENS,
             0,
             true
         );
 
-        // Top up specified account
-        (address account) = abi.decode(payload, (address));
+        // Top up specified passport
+        (address passport) = abi.decode(payload, (address));
 
-        IBoosterAccount(account).acceptPingTokens{
+        IBoosterPassport(passport).acceptPingTokens{
             value: 0,
+            bounce: false,
             flag: MsgFlag.ALL_NOT_RESERVED
         }(amount, remainingGasTo);
     }
@@ -196,66 +227,107 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
     }
 
     /// @notice Deploy booster account
-    /// @param _owner Booster account owner
+    /// One booster account per (user, farming pool)
     /// @param farming_pool Farming pool address
     function deployAccount(
-        address _owner,
-        address farming_pool
+        address farming_pool,
+        uint128 ping_frequency,
+        uint128 max_ping_price,
+        bool deploy_passport
     ) external override reserveBalance {
         require(farmings.exists(farming_pool));
-        require(msg.value >= Utils.BOOSTER_DEPLOY_ACCOUNT);
-
-        TvmCell stateInit = _buildAccountPlatformStateInit(_owner, farming_pool);
+        require(ping_frequency >= Constants.MIN_PING_FREQUENCY);
 
         FarmingPoolSettings settings = farmings[farming_pool];
-        require(settings.paused == false);
 
+        TvmCell accountStateInit = _buildAccountPlatformStateInit(msg.sender, farming_pool);
+        TvmCell passportStateInit = _buildPassportPlatformStateInit(msg.sender);
+
+        address passport = address(tvm.hash(passportStateInit));
+        address account = address(tvm.hash(accountStateInit));
+
+        // Deploy passport if required
+        if (deploy_passport) {
+            new BoosterPassportPlatform{
+                stateInit: passportStateInit,
+                value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE,
+                bounce: false,
+                flag: 0
+            }(passport_implementation, passport_version, max_ping_price, msg.sender);
+        }
+
+        // Register booster account in passport
+        IBoosterPassport(passport).registerAccount{
+            value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE,
+            bounce: false
+        }(
+            account, // account
+            ping_frequency, // ping frequency
+            msg.sender // remaining gas
+        );
+
+        // Deploy booster account
         new BoosterAccountPlatform{
-            stateInit: stateInit,
+            stateInit: accountStateInit,
             value: 0,
             bounce: false,
             flag: MsgFlag.ALL_NOT_RESERVED
         }(
-            account, // account code
+            account_implementation, // account code
             account_version, // account version
-            manager, // manager
-            recommended_ping_price_limit, // recommended ping price limit
+            passport, // owner's passport
             settings // farming settings
         );
     }
 
-    /// @notice Update recommended price limit
-    /// @param limit New recommended price limit
-    function setRecommendedPriceLimit(
-        uint128 limit
-    ) external override onlyOwner {
-        require(limit > 0);
-
-        recommended_ping_price_limit = limit;
-    }
-
     /// @notice Upgrade booster account code
     /// Can be called only by `owner`
-    /// @param _account New booster account code
+    /// @param _account_implementation New booster account code
     function upgradeAccountCode(
-        TvmCell _account
+        TvmCell _account_implementation
     ) external override onlyOwner cashBack(owner) {
-        account = _account;
+        account_implementation = _account_implementation;
         account_version++;
     }
 
-    /// @notice Upgrade booster accounts
+    /// @notice Upgrade passport code
+    /// Can be called only by `owner`
+    /// @param _passport_implementation New booster passport code
+    function upgradePassportCode(
+        TvmCell _passport_implementation
+    ) external override onlyOwner cashBack(owner) {
+        passport_implementation = _passport_implementation;
+        passport_version++;
+    }
+
+    /// @notice Upgrade booster passports code
+    /// Can be called ony by `owner`
+    /// @param passports List of passport accounts to upgrade
+    function upgradePassports(
+        address[] passports
+    ) external override reserveBalance onlyOwner {
+        require(passports.length <= 100);
+
+        for (address passport_: passports) {
+            IBoosterPassport(passport_).acceptUpgrade{
+                value: Gas.BOOSTER_FACTORY_PASSPORT_UPGRADE,
+                bounce: true
+            }(passport_implementation, passport_version);
+        }
+    }
+
+    /// @notice Upgrade booster accounts code
     /// @param accounts List of booster accounts to upgrade
     function upgradeAccounts(
         address[] accounts
     ) external override reserveBalance onlyOwner {
         require(accounts.length <= 100);
-        require(msg.value >= accounts.length * Utils.BOOSTER_UPGRADE_ACCOUNT + 10 ton);
 
         for (address account_: accounts) {
             IBoosterAccount(account_).acceptUpgrade{
-                value: Utils.BOOSTER_UPGRADE_ACCOUNT
-            }(account, account_version);
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPGRADE,
+                bounce: true
+            }(account_implementation, account_version);
         }
     }
 
@@ -263,10 +335,14 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         return tvm.hash(account_platform);
     }
 
+    function getPassportPlatformCodeHash() external override returns (uint) {
+        return tvm.hash(passport_platform);
+    }
+
     function encodePingTopUp(
-        address account
+        address passport
     ) external override pure returns(TvmCell) {
-        return abi.encode(account);
+        return abi.encode(passport);
     }
 
     /// @notice Upgrade booster factory
@@ -278,15 +354,21 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         TvmCell data = abi.encode(
             _randomNonce,
             owner,
-            manager,
+            version,
+            managers,
             rewarder,
+
             ping_token_root,
             ping_token_wallet,
-            version,
+            ping_cost,
+            farmings,
+
             account_platform,
-            account,
+            account_implementation,
             account_version,
-            farmings
+            passport_platform,
+            passport_implementation,
+            passport_version
         );
 
         tvm.setcode(code);
@@ -301,37 +383,49 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         (
             uint _randomNonce_,
             address _owner,
-            address _manager,
+            uint _version,
+            uint[] _managers,
             address _rewarder,
 
             address _ping_token_root,
             address _ping_token_wallet,
-            uint _version,
+            uint128 _ping_cost,
+            mapping (address => FarmingPoolSettings) _farmings,
 
             TvmCell _account_platform,
-            TvmCell _account,
+            TvmCell _account_implementation,
             uint _account_version,
-            mapping (address => FarmingPoolSettings) _farmings
+
+            TvmCell _passport_platform,
+            TvmCell _passport_implementation,
+            uint _passport_version
         ) = abi.decode(
             data,
             (
-                uint, address, address, address, address, address, uint,
-                TvmCell, TvmCell, uint, mapping(address => FarmingPoolSettings)
+                uint, address, uint, uint[], address,
+                address, address, uint128, mapping(address => FarmingPoolSettings),
+                TvmCell, TvmCell, uint,
+                TvmCell, TvmCell, uint
             )
         );
 
         _randomNonce = _randomNonce_;
         setOwnership(_owner);
-        manager = _manager;
+        version = _version + 1;
+        managers = _managers;
         rewarder = _rewarder;
 
         ping_token_root = _ping_token_root;
         ping_token_wallet = _ping_token_wallet;
-        version = _version + 1;
+        ping_cost = _ping_cost;
+        farmings = _farmings;
 
         account_platform = _account_platform;
-        account = _account;
+        account_implementation = _account_implementation;
         account_version = _account_version;
-        farmings = _farmings;
+
+        passport_platform = _passport_platform;
+        passport_implementation = _passport_implementation;
+        passport_version = _passport_version;
     }
 }

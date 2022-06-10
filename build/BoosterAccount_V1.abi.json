@@ -13,19 +13,10 @@
 			]
 		},
 		{
-			"name": "acceptPingTokens",
-			"inputs": [
-				{"name":"amount","type":"uint128"},
-				{"name":"remainingGasTo","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "ping",
 			"inputs": [
-				{"name":"price","type":"uint128"},
-				{"name":"skim","type":"bool"}
+				{"name":"counter","type":"uint256"},
+				{"name":"sponsor","type":"address"}
 			],
 			"outputs": [
 			]
@@ -86,23 +77,6 @@
 			]
 		},
 		{
-			"name": "setPaused",
-			"inputs": [
-				{"name":"_paused","type":"bool"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setManager",
-			"inputs": [
-				{"name":"_manager","type":"address"},
-				{"name":"remainingGasTo","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "setRewardFee",
 			"inputs": [
 				{"name":"fee","type":"uint128"},
@@ -130,14 +104,6 @@
 			]
 		},
 		{
-			"name": "setPingFrequency",
-			"inputs": [
-				{"name":"_ping_frequency","type":"uint256"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "withdraw",
 			"inputs": [
 				{"name":"token","type":"address"},
@@ -155,9 +121,7 @@
 				{"name":"_version","type":"uint256"},
 				{"name":"_factory","type":"address"},
 				{"name":"_farming_pool","type":"address"},
-				{"name":"_last_ping","type":"uint256"},
-				{"name":"_paused","type":"bool"},
-				{"name":"_manager","type":"address"},
+				{"name":"_passport","type":"address"},
 				{"name":"_user_data","type":"address"},
 				{"name":"_balances","type":"map(address,uint128)"},
 				{"name":"_received","type":"map(address,uint128)"},
@@ -169,19 +133,9 @@
 				{"name":"_right","type":"address"},
 				{"name":"_rewards","type":"address[]"},
 				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"_swaps","type":"map(address,tuple)"},
-				{"name":"_ping_frequency","type":"uint256"},
 				{"name":"_rewarder","type":"address"},
 				{"name":"_reward_fee","type":"uint128"},
 				{"name":"_lp_fee","type":"uint128"}
-			]
-		},
-		{
-			"name": "isNeedPing",
-			"inputs": [
-				{"name":"ping_price","type":"uint128"}
-			],
-			"outputs": [
-				{"name":"value0","type":"bool"}
 			]
 		},
 		{
@@ -223,14 +177,6 @@
 			]
 		},
 		{
-			"name": "version",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"version","type":"uint256"}
-			]
-		},
-		{
 			"name": "factory",
 			"inputs": [
 			],
@@ -247,51 +193,19 @@
 			]
 		},
 		{
-			"name": "last_ping",
+			"name": "version",
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"last_ping","type":"uint256"}
+				{"name":"version","type":"uint256"}
 			]
 		},
 		{
-			"name": "ping_counter",
+			"name": "passport",
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"ping_counter","type":"uint256"}
-			]
-		},
-		{
-			"name": "ping_balance",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"ping_balance","type":"uint128"}
-			]
-		},
-		{
-			"name": "ping_price_limit",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"ping_price_limit","type":"uint128"}
-			]
-		},
-		{
-			"name": "paused",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"paused","type":"bool"}
-			]
-		},
-		{
-			"name": "manager",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"manager","type":"address"}
+				{"name":"passport","type":"address"}
 			]
 		},
 		{
@@ -300,6 +214,14 @@
 			],
 			"outputs": [
 				{"name":"user_data","type":"address"}
+			]
+		},
+		{
+			"name": "ping_sponsor",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"ping_sponsor","type":"address"}
 			]
 		}
 	],
@@ -321,16 +243,12 @@
 		{"name":"_timestamp","type":"uint64"},
 		{"name":"_constructorFlag","type":"bool"},
 		{"name":"owner","type":"address"},
-		{"name":"version","type":"uint256"},
 		{"name":"factory","type":"address"},
 		{"name":"farming_pool","type":"address"},
-		{"name":"last_ping","type":"uint256"},
-		{"name":"ping_counter","type":"uint256"},
-		{"name":"ping_balance","type":"uint128"},
-		{"name":"ping_price_limit","type":"uint128"},
-		{"name":"paused","type":"bool"},
-		{"name":"manager","type":"address"},
+		{"name":"version","type":"uint256"},
+		{"name":"passport","type":"address"},
 		{"name":"user_data","type":"address"},
+		{"name":"ping_sponsor","type":"address"},
 		{"name":"balances","type":"map(address,uint128)"},
 		{"name":"received","type":"map(address,uint128)"},
 		{"name":"wallets","type":"map(address,address)"},
@@ -341,7 +259,6 @@
 		{"name":"right","type":"address"},
 		{"name":"rewards","type":"address[]"},
 		{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},
-		{"name":"ping_frequency","type":"uint256"},
 		{"name":"rewarder","type":"address"},
 		{"name":"reward_fee","type":"uint128"},
 		{"name":"lp_fee","type":"uint128"}

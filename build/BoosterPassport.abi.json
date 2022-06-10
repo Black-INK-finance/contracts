@@ -1,0 +1,175 @@
+{
+	"ABI version": 2,
+	"version": "2.2",
+	"header": ["pubkey", "time", "expire"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "acceptUpgrade",
+			"inputs": [
+				{"name":"code","type":"cell"},
+				{"name":"_version","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "acceptPingTokens",
+			"inputs": [
+				{"name":"amount","type":"uint128"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setPingFrequency",
+			"inputs": [
+				{"name":"account","type":"address"},
+				{"name":"frequency","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setManagers",
+			"inputs": [
+				{"name":"_managers","type":"uint256[]"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "registerAccount",
+			"inputs": [
+				{"name":"account","type":"address"},
+				{"name":"ping_frequency","type":"uint128"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "toggleAccountAutoPing",
+			"inputs": [
+				{"name":"account","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "pingByManager",
+			"inputs": [
+				{"name":"price","type":"uint128"},
+				{"name":"account","type":"address"},
+				{"name":"counter","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "pingByOwner",
+			"inputs": [
+				{"name":"account","type":"address"},
+				{"name":"counter","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transferOwnership",
+			"inputs": [
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "renounceOwnership",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "owner",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"owner","type":"address"}
+			]
+		},
+		{
+			"name": "factory",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"factory","type":"address"}
+			]
+		},
+		{
+			"name": "version",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"version","type":"uint256"}
+			]
+		},
+		{
+			"name": "managers",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"managers","type":"uint256[]"}
+			]
+		},
+		{
+			"name": "ping_balance",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"ping_balance","type":"uint128"}
+			]
+		},
+		{
+			"name": "ping_max_price",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"ping_max_price","type":"uint128"}
+			]
+		}
+	],
+	"data": [
+	],
+	"events": [
+		{
+			"name": "OwnershipTransferred",
+			"inputs": [
+				{"name":"previousOwner","type":"address"},
+				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		}
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"owner","type":"address"},
+		{"name":"factory","type":"address"},
+		{"name":"version","type":"uint256"},
+		{"name":"managers","type":"uint256[]"},
+		{"name":"ping_balance","type":"uint128"},
+		{"name":"ping_max_price","type":"uint128"},
+		{"components":[{"name":"ping_frequency","type":"uint128"},{"name":"last_ping","type":"uint128"},{"name":"ping_counter","type":"uint256"},{"name":"auto_ping_enabled","type":"bool"}],"name":"accounts","type":"map(address,tuple)"}
+	]
+}

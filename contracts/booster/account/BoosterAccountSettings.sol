@@ -2,34 +2,12 @@ pragma ton-solidity ^0.57.1;
 
 
 import "./BoosterAccountStorage.sol";
-import "./../Utils.sol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
 
 
 abstract contract BoosterAccountSettings is BoosterAccountStorage {
-    /// @notice Pause or unpause booster
-    /// Can be called only by `owner`
-    /// @param _paused New paused status
-    function setPaused(
-        bool _paused
-    ) external override onlyOwner cashBack(owner) {
-        require(_paused == !paused);
-
-        paused = _paused;
-    }
-
-    /// @notice Set new manager address
-    /// Can be called only by `factory`
-    /// @param _manager New manager address
-    function setManager(
-        address _manager,
-        address remainingGasTo
-    ) external override onlyFactory cashBack(remainingGasTo) {
-        manager = _manager;
-    }
-
     /// @notice Set reward fee in BPS
     /// Can be called only by `factory`
     /// @param fee Reward fee in BPS
@@ -58,17 +36,6 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
         rewarder = _rewarder;
-    }
-
-    /// @notice Set new ping frequency
-    /// Can be called only by `owner`
-    /// @param _ping_frequency New ping frequency
-    function setPingFrequency(
-        uint _ping_frequency
-    ) external override onlyOwner cashBack(owner) {
-        require(_ping_frequency >= Utils.MIN_PING_FREQUENCY);
-
-        ping_frequency = _ping_frequency;
     }
 
     /// @notice Withdraw tokens from the booster
@@ -124,7 +91,7 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         }(
             amount,
             recipient,
-            deploy_wallet == true ? Utils.DEPLOY_TOKEN_WALLET : 0,
+            deploy_wallet == true ? Gas.DEPLOY_TOKEN_WALLET : 0,
             remainingGasTo,
             notify,
             payload

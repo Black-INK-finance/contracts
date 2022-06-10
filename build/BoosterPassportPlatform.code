@@ -13,6 +13,7 @@ OVER
 PUSHCONT {
 	LDREF
 	LDU 256
+	LDU 128
 	LDREF
 	ENDS
 	CTOS
@@ -20,105 +21,21 @@ PUSHCONT {
 PUSHCONT {
 	LDREF
 	LDU 256
+	LDU 128
 }
 IFELSE
 LDMSGADDR
-LDREF
 ENDS
-CTOS
-LDMSGADDR
-LDREF
-ENDS
-CTOS
-LDMSGADDR
-LDREF
-ENDS
-CTOS
-LDMSGADDR
-LDREF
-ENDS
-CTOS
-LDMSGADDR
-LDU 32
-LDDICT
-ROTREV
-PAIR
-SWAP
-LDDICT
-LDU 256
-LDREF
-ENDS
-CTOS
-LDMSGADDR
-LDU 128
-LDU 128
-ROLLREV 10
-TUPLE 10
-SWAP
-ENDS
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 16
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 14
 GETGLOB 9
-GETGLOB 11
+GETGLOB 10
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 18
-XCHG S2
-GETGLOB 12
-GETGLOB 11
-GETGLOB 10
-NEWC
-STSLICE
-ROLLREV 5
-NEWC
-STSLICE
-ROLLREV 4
-NEWC
-STSLICE
-STU 256
-ROTREV
-NEWC
-STSLICE
-SWAP
-UNTUPLE 10
-REVERSE 11, 0
-ROLLREV 10
-NEWC
-STSLICE
-ROLLREV 9
-NEWC
-STSLICE
-ROLLREV 8
-NEWC
-STSLICE
-ROLLREV 7
-NEWC
-STSLICE
-SWAP
-UNPAIR
-XCHG S2
-STU 32
-STDICT
-STDICT
-STU 256
-ROLLREV 3
-NEWC
-STSLICE
-STU 128
-STU 128
-STBREFR
-STBREFR
-STBREFR
-STBREFR
-STBREFR
-STBREFR
-STBREFR
-STBREFR
-ENDC
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 27
-OVER
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 16
+PUSH S3
 SETCODE
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 28
-SWAP
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 17
+ROLL 3
 CTOS
 DUP
 PUSHSLICE x8adb35
@@ -132,11 +49,28 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 30
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 19
+XCHG S2
+GETGLOB 11
+GETGLOB 10
+NEWC
+STSLICE
+ROLLREV 4
+NEWC
+STSLICE
+STU 256
+STU 128
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+ENDC
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 27
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 0
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -145,7 +79,7 @@ THROW 0
 .internal-alias :onCodeUpgrade, 2
 .internal :onCodeUpgrade
 DROP
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 0
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -164,12 +98,7 @@ LDREF
 ENDS
 CTOS
 LDMSGADDR
-LDREF
 ENDS
-CTOS
-LDMSGADDR
-ENDS
-SETGLOB 12
 SETGLOB 11
 SETGLOB 10
 SETGLOB 3
@@ -205,17 +134,6 @@ PUSHCONT {
 		}
 	}
 	IFNOT
-	PUSHINT 3
-	PUSH S3
-	PUSHINT 64
-	DICTUGET
-	PUSHCONT {
-		PUSHREFSLICE {
-			.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-		}
-	}
-	IFNOT
-	SETGLOB 12
 	SETGLOB 11
 	SETGLOB 10
 	PUSHINT 64
@@ -231,8 +149,6 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
-GETGLOB 12
-GETGLOB 11
 GETGLOB 10
 GETGLOB 3
 GETGLOB 2
@@ -241,13 +157,9 @@ STU 256
 STU 64
 STONE
 STSLICE
-ROTREV
+GETGLOB 11
 NEWC
 STSLICE
-SWAP
-NEWC
-STSLICE
-STBREFR
 STBREFR
 ENDC
 POPROOT
@@ -342,7 +254,7 @@ THROW 60
 
 .macro public_function_selector
 DUP
-PUSHINT 1740042643
+PUSHINT 786153634
 EQUAL
 IFJMPREF {
 	CALL $constructor$

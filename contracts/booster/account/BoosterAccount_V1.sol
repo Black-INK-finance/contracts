@@ -21,12 +21,11 @@ contract BoosterAccount_V1 is
         if (version == _version) return;
 
         TvmCell data = abi.encode(
-            owner, _version, factory, farming_pool,
-            last_ping, ping_counter, ping_balance, ping_price_limit,
-            paused, manager, user_data,
+            owner, factory, farming_pool, _version,
+            passport, user_data, ping_sponsor,
             balances, received, wallets, fees,
             lp, pair, left, right, rewards,
-            swaps, ping_frequency, rewarder, reward_fee, lp_fee
+            swaps, rewarder, reward_fee, lp_fee
         );
 
         tvm.setcode(code);
@@ -46,14 +45,13 @@ contract BoosterAccount_V1 is
             address _farming_pool,
 
             uint _version,
-            address _manager,
-            uint128 _ping_price_limit,
+            address _passport,
             FarmingPoolSettings settings
         ) = abi.decode(
             data,
             (
                 address, address, address,
-                uint, address, uint128, FarmingPoolSettings
+                uint, address, FarmingPoolSettings
             )
         );
 
@@ -62,8 +60,7 @@ contract BoosterAccount_V1 is
         farming_pool = _farming_pool;
 
         version = _version;
-        manager = _manager;
-        ping_price_limit = _ping_price_limit;
+        passport = _passport;
 
         lp = settings.lp;
         pair = settings.pair;
@@ -73,7 +70,6 @@ contract BoosterAccount_V1 is
 
         swaps = settings.swaps;
 
-        ping_frequency = settings.ping_frequency;
         rewarder = settings.rewarder;
         reward_fee = settings.reward_fee;
         lp_fee = settings.lp_fee;

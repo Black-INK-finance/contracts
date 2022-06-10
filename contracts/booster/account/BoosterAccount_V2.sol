@@ -21,12 +21,10 @@ contract BoosterAccount_V2 is
         if (version == _version) return;
 
         TvmCell data = abi.encode(
-            owner, _version, factory, farming_pool,
-            last_ping, ping_counter, ping_balance, ping_price_limit,
-            paused, manager, user_data,
+            owner, _version, factory, farming_pool, passport, user_data,
             balances, received, wallets, fees,
             lp, pair, left, right, rewards,
-            swaps, ping_frequency, rewarder, reward_fee, lp_fee
+            swaps, rewarder, reward_fee, lp_fee
         );
 
         tvm.setcode(code);
@@ -42,18 +40,13 @@ contract BoosterAccount_V2 is
 
         (
             address _owner,
-            uint _version,
             address _factory,
             address _farming_pool,
+            uint _version,
 
-            uint _last_ping,
-            uint _ping_counter,
-            uint128 _ping_balance,
-            uint128 _ping_price_limit,
-
-            bool _paused,
-            address _manager,
+            address _passport,
             address _user_data,
+            address _ping_sponsor,
 
             mapping (address => uint128) _balances,
             mapping (address => uint128) _received,
@@ -67,39 +60,33 @@ contract BoosterAccount_V2 is
             address[] _rewards,
 
             mapping (address => SwapDirection) _swaps,
-            uint256 _ping_frequency,
             address _rewarder,
             uint128 _reward_fee,
             uint128 _lp_fee
         ) = abi.decode(
             data,
             (
-                address, uint, address, address,
-                uint, uint, uint128, uint128,
-                bool, address, address,
+                address, address, address, uint,
+                address, address, address,
+
                 mapping (address => uint128),
                 mapping (address => uint128),
                 mapping (address => address),
                 mapping (address => uint128),
                 address, address, address, address, address[],
                 mapping (address => SwapDirection),
-                uint256, address, uint128, uint128
+                address, uint128, uint128
             )
         );
 
         setOwnership(_owner);
-        version = _version;
         factory = _factory;
         farming_pool = _farming_pool;
+        version = _version;
 
-        last_ping = _last_ping;
-        ping_counter = _ping_counter;
-        ping_balance = _ping_balance;
-        ping_price_limit = _ping_price_limit;
-
-        paused = _paused;
-        manager = _manager;
+        passport = _passport;
         user_data = _user_data;
+        ping_sponsor = _ping_sponsor;
 
         balances = _balances;
         received = _received;
@@ -114,7 +101,6 @@ contract BoosterAccount_V2 is
 
         swaps = _swaps;
 
-        ping_frequency = _ping_frequency;
         rewarder = _rewarder;
         reward_fee = _reward_fee;
         lp_fee = _lp_fee;

@@ -12,7 +12,9 @@ import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 import "flatqube/contracts/libraries/DexOperationTypes.sol";
 
 import "./../TransferUtils.sol";
-import "./../Utils.sol";
+import "./../Constants.sol";
+import "./../Errors.sol";
+import "./../Gas.sol";
 
 import "../interfaces/IBoosterBuyBack.sol";
 
@@ -194,7 +196,7 @@ contract BoosterBuyBack is
             _me(),
             true,
             payload,
-            Utils.DEX_SWAP,
+            Gas.BOOSTER_BUYBACK_DEX_SWAP,
             0,
             false
         );
@@ -217,12 +219,12 @@ contract BoosterBuyBack is
     ) internal pure {
         ITokenWallet(wallet).transfer{
             value: value,
-            flag: flag
-        //            bounce: false
+            flag: flag,
+            bounce: true
         }(
             amount,
             recipient,
-            deploy_wallet == true ? Utils.DEPLOY_TOKEN_WALLET : 0,
+            deploy_wallet == true ? Gas.DEPLOY_TOKEN_WALLET : 0,
             remainingGasTo,
             notify,
             payload
@@ -243,11 +245,11 @@ contract BoosterBuyBack is
         }
 
         ITokenRoot(token).deployWallet{
-            value: Utils.DEPLOY_TOKEN_WALLET * 2,
+            value: Gas.DEPLOY_TOKEN_WALLET * 2,
             callback: BoosterBuyBack.receiveTokenWallet
         }(
             _me(),
-            Utils.DEPLOY_TOKEN_WALLET
+            Gas.DEPLOY_TOKEN_WALLET
         );
     }
 

@@ -5,20 +5,18 @@ import "../TransferUtils.sol";
 import "../interfaces/IBoosterAccount.sol";
 import "@broxus/contracts/contracts/access/InternalOwner.sol";
 
+import "./../Constants.sol";
+import "./../Errors.sol";
+import "./../Gas.sol";
+
 
 abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, TransferUtils {
-    uint public version; // Account code version
     address public factory; // Factory
     address public farming_pool; // Farming pool
-
-    uint public last_ping; // Last time ping was called, timestamp
-    uint public ping_counter; // Ping calls counter
-    uint128 public ping_balance; // How many ping tokens booster has
-    uint128 public ping_price_limit; // Max price of ping in ping tokens
-
-    bool public paused; // Booster account paused flag
-    address public manager; // Manager address. Can only press `ping`
+    uint public version; // Account code version
+    address public passport; // Owner's passport
     address public user_data; // Booster farming user data
+    address public ping_sponsor;
 
     // Booster token stats
     mapping (address => uint128) balances; // Token balances
@@ -33,7 +31,6 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     address right; // Farming pair right token
     address[] rewards; // Farming pool reward tokens
     mapping (address => SwapDirection) swaps; // Swaps directions
-    uint256 ping_frequency; // Desired ping frequency
     address rewarder; // Fee receiver
     uint128 reward_fee; // Reward fee amount in BPS
     uint128 lp_fee; // LP fee amount in BPS
@@ -50,32 +47,8 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         _;
     }
 
-    modifier onlyUnpaused() {
-        require(paused == false);
-
-        _;
-    }
-
-    modifier onlyPaused() {
-        require(paused == true);
-
-        _;
-    }
-
     modifier onlyFactory() {
         require(msg.sender == factory);
-
-        _;
-    }
-
-    modifier onlyManager() {
-        require(msg.sender == manager);
-
-        _;
-    }
-
-    modifier onlyOwnerOrManager() {
-        require(msg.sender == manager || msg.sender == owner);
 
         _;
     }
@@ -85,10 +58,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         uint _version,
         address _factory,
         address _farming_pool,
-
-        uint _last_ping,
-        bool _paused,
-        address _manager,
+        address _passport,
         address _user_data,
 
         mapping (address => uint128) _balances,
@@ -103,7 +73,6 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         address[] _rewards,
 
         mapping (address => SwapDirection) _swaps,
-        uint256 _ping_frequency,
         address _rewarder,
         uint128 _reward_fee,
         uint128 _lp_fee
@@ -113,10 +82,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
             version,
             factory,
             farming_pool,
-
-            last_ping,
-            paused,
-            manager,
+            passport,
             user_data,
 
             balances,
@@ -131,25 +97,10 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
             rewards,
 
             swaps,
-            ping_frequency,
             rewarder,
             reward_fee,
             lp_fee
         );
-    }
-
-    /// @notice Keeper method for ensuring ping is needed
-    function isNeedPing(uint128 ping_price) external override view returns(bool) {
-        // Booster not initialized
-        if (!isInitialized()) return false;
-
-        // Ping balance is too low
-        if (ping_balance < ping_price) return false;
-
-        // Not enough time passed since last ping
-        if (last_ping + ping_frequency > now) return false;
-
-        return true;
     }
 
     function isInitialized() public override view returns(bool) {

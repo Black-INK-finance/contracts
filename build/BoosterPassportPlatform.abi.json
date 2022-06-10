@@ -1,0 +1,31 @@
+{
+	"ABI version": 2,
+	"version": "2.2",
+	"header": ["time"],
+	"functions": [
+		{
+			"name": "constructor",
+			"inputs": [
+				{"name":"code","type":"cell"},
+				{"name":"version","type":"uint256"},
+				{"name":"max_ping_price","type":"uint128"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		}
+	],
+	"data": [
+		{"key":1,"name":"factory","type":"address"},
+		{"key":2,"name":"owner","type":"address"}
+	],
+	"events": [
+	],
+	"fields": [
+		{"name":"_pubkey","type":"uint256"},
+		{"name":"_timestamp","type":"uint64"},
+		{"name":"_constructorFlag","type":"bool"},
+		{"name":"factory","type":"address"},
+		{"name":"owner","type":"address"}
+	]
+}

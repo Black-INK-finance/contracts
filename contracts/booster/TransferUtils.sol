@@ -11,6 +11,22 @@ abstract contract TransferUtils {
 
     modifier reserveBalance() {
         tvm.rawReserve(address(this).balance - msg.value, 2);
+
+        _;
+    }
+
+    modifier reserveTargetBalance() {
+        tvm.rawReserve(_targetBalance(), 2);
+
+        _;
+    }
+
+    modifier reserveAtLeastTargetBalance() {
+        tvm.rawReserve(
+            math.max(address(this).balance - msg.value, _targetBalance()),
+            2
+        );
+
         _;
     }
 

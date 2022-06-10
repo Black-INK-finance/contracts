@@ -1,8 +1,6 @@
 pragma ton-solidity >= 0.39.0;
 
-import "../interfaces/IBoosterBase.sol";
-//import '@broxus/contracts/contracts/utils/RandomNonce.sol';
-
+import "./../interfaces/IBoosterBase.sol";
 
 contract BoosterAccountPlatform is IBoosterBase {
     address static owner;
@@ -12,8 +10,7 @@ contract BoosterAccountPlatform is IBoosterBase {
     constructor(
         TvmCell code,
         uint version,
-        address manager,
-        uint128 ping_price_limit,
+        address passport,
         FarmingPoolSettings settings
     ) public {
         require(msg.sender == factory);
@@ -22,10 +19,8 @@ contract BoosterAccountPlatform is IBoosterBase {
             owner,
             factory,
             farming_pool,
-
             version,
-            manager,
-            ping_price_limit,
+            passport,
             settings
         );
 

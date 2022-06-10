@@ -1,0 +1,1671 @@
+.version sol 0.57.1
+
+.macro constructor
+DROP
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+GETGLOB 6
+THROWIF 51
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 28
+THROW 100
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.internal-alias :onCodeUpgrade, 2
+.internal :onCodeUpgrade
+.loc ../contracts/booster/passport/BoosterPassport.sol, 50
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 10
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 11
+PUSHINT 0
+SETGLOB 12
+PUSHINT 0
+NEWDICT
+PAIR
+SETGLOB 13
+PUSHINT 0
+SETGLOB 14
+PUSHINT 0
+SETGLOB 15
+NEWDICT
+SETGLOB 16
+.loc ../contracts/booster/passport/BoosterPassport.sol, 52
+CTOS
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 256
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 59
+CALLREF {
+	CALL $_targetBalance_internal_macro$
+}
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/passport/BoosterPassport.sol, 61
+ROLL 3
+SETGLOB 11
+.loc ../contracts/booster/passport/BoosterPassport.sol, 62
+ROT
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 63
+SWAP
+SETGLOB 12
+.loc ../contracts/booster/passport/BoosterPassport.sol, 65
+NEWC
+STSLICECONST x42_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $c7_to_c4$
+}
+COMMIT
+THROW 0
+
+.macro acceptUpgrade
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 77
+OVER
+PUSHCONT {
+	LDREF
+	LDREF
+	ENDS
+	CTOS
+}
+PUSHCONT {
+	LDREF
+}
+IFELSE
+LDU 256
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $acceptUpgrade_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro acceptUpgrade_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 44
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 2000
+.loc ../contracts/booster/passport/BoosterPassport.sol, 46
+PUSHCONT {
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 81
+	GETGLOB 12
+	OVER
+	EQUAL
+	PUSHCONT {
+		DROP2
+	}
+	IFJMP
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 83
+	GETGLOB 16
+	GETGLOB 15
+	GETGLOB 14
+	GETGLOB 13
+	ROLL 4
+	GETGLOB 11
+	GETGLOB 10
+	NEWC
+	STSLICE
+	ROLLREV 6
+	NEWC
+	STSLICE
+	STU 256
+	SWAP
+	UNPAIR
+	XCHG S2
+	STU 32
+	STDICT
+	STU 128
+	ROTREV
+	NEWC
+	STU 128
+	STDICT
+	STBREFR
+	STBREFR
+	ENDC
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 88
+	OVER
+	SETCODE
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 89
+	SWAP
+	CTOS
+	DUP
+	PUSHSLICE x8adb35
+	SDEQ
+	PUSHCONT {
+		PLDREFIDX 1
+		CTOS
+	}
+	IF
+	PLDREF
+	CTOS
+	BLESS
+	POP C3
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 91
+	CALLREF {
+		CALL $:onCodeUpgrade$
+	}
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 77
+}
+CALLX
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro acceptPingTokens
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 115
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $acceptPingTokens_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro acceptPingTokens_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 44
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 2000
+.loc ../contracts/booster/passport/BoosterPassport.sol, 46
+DUP
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROTREV
+.loc ../contracts/booster/passport/BoosterPassport.sol, 119
+DROP
+GETGLOB 14
+ADD
+UFITS 128
+SETGLOB 14
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro setPingFrequency
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 126
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $setPingFrequency_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setPingFrequency_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+PUSHINT 2105
+PUSH S2
+GETGLOB 16
+PUSHINT 267
+.loc ../contracts/booster/passport/BoosterPassport.sol, 32
+DICTGET
+NULLSWAPIFNOT
+NIP
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 34
+GETGLOB 9
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROTREV
+.loc ../contracts/booster/passport/BoosterPassport.sol, 130
+DUP
+PUSHINT 900
+GEQ
+THROWIFNOT 100
+.loc ../contracts/booster/passport/BoosterPassport.sol, 132
+SWAP
+GETGLOB 16
+DUP2
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+ROLL 3
+SETINDEX 0
+CALLREF {
+	UNTUPLE 4
+	REVERSE 4, 0
+	NEWC
+	STU 128
+	STU 128
+	STU 256
+	STI 1
+}
+ROTREV
+PUSHINT 267
+DICTSETB
+SETGLOB 16
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro setManagers
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 135
+OVER
+PUSHCONT {
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDREF
+	ENDS
+	CTOS
+}
+PUSHCONT {
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+}
+IFELSE
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $setManagers_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setManagers_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 44
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 2000
+.loc ../contracts/booster/passport/BoosterPassport.sol, 46
+DUP
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROTREV
+.loc ../contracts/booster/passport/BoosterPassport.sol, 139
+DROP
+SETGLOB 13
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro registerAccount
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 142
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $registerAccount_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro registerAccount_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 44
+GETGLOB 9
+GETGLOB 11
+SDEQ
+THROWIFNOT 2000
+.loc ../contracts/booster/passport/BoosterPassport.sol, 46
+DUP
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROLLREV 3
+.loc ../contracts/booster/passport/BoosterPassport.sol, 147
+DROP
+PUSHINT 0
+DUP
+TRUE
+TUPLE 4
+GETGLOB 16
+SWAP
+CALLREF {
+	UNTUPLE 4
+	REVERSE 4, 0
+	NEWC
+	STU 128
+	STU 128
+	STU 256
+	STI 1
+}
+ROTREV
+PUSHINT 267
+DICTSETB
+SETGLOB 16
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro toggleAccountAutoPing
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 158
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $toggleAccountAutoPing_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro toggleAccountAutoPing_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+PUSHINT 2105
+OVER
+GETGLOB 16
+PUSHINT 267
+.loc ../contracts/booster/passport/BoosterPassport.sol, 32
+DICTGET
+NULLSWAPIFNOT
+NIP
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 34
+GETGLOB 9
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+SWAP
+.loc ../contracts/booster/passport/BoosterPassport.sol, 161
+DUP
+GETGLOB 16
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+INDEX 3
+NOT
+SWAP
+GETGLOB 16
+DUP2
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+ROLL 3
+SETINDEX 3
+CALLREF {
+	UNTUPLE 4
+	REVERSE 4, 0
+	NEWC
+	STU 128
+	STU 128
+	STU 256
+	STI 1
+}
+ROTREV
+PUSHINT 267
+DICTSETB
+SETGLOB 16
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro pingByManager
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 171
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+LDMSGADDR
+LDU 256
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $pingByManager_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro pingByManager_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 38
+GETGLOB 5
+DUP
+ISNULL
+PUSHCONT {
+	DROP
+	PUSHINT 0
+}
+IF
+GETGLOB 13
+CALLREF {
+	CALL $_isArrayIncludes_internal_macro$
+}
+THROWIFNOT 2000
+.loc ../contracts/booster/passport/BoosterPassport.sol, 179
+ACCEPT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 181
+OVER
+CALLREF {
+	CALL $_updateAccountLastPing_internal_macro$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 183
+OVER
+GETGLOB 16
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 185
+PUSHINT 2100
+GETGLOB 14
+PUSH S5
+GEQ
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 186
+PUSHINT 2101
+OVER
+THIRD
+PUSH S3
+EQUAL
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 187
+PUSHINT 2102
+GETGLOB 15
+PUSH S5
+GEQ
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 188
+PUSHINT 2103
+SWAP
+INDEX 3
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 190
+GETGLOB 14
+ROLL 3
+SUB
+UFITS 128
+SETGLOB 14
+.loc ../contracts/booster/passport/BoosterPassport.sol, 193
+CALLREF {
+	CALL $_requiredTopUp_internal_macro$
+}
+ROTREV
+INC
+GETGLOB 10
+GETGLOB 11
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+PUSHINT 3
+STZEROES
+STSLICE
+PUSHINT 1
+STUR 111
+ROLLREV 4
+NEWC
+STSLICECONST x3e0e48c3
+STSLICE
+STU 256
+ROTREV
+NEWC
+STSLICE
+STU 128
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro pingByOwner
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 210
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 256
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $pingByOwner_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro pingByOwner_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../contracts/booster/TransferUtils.sol, 25
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+CALLREF {
+	CALL $_targetBalance_internal_macro$
+}
+MAX
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 30
+PUSHINT 2105
+PUSH S2
+GETGLOB 16
+PUSHINT 267
+.loc ../contracts/booster/passport/BoosterPassport.sol, 32
+DICTGET
+NULLSWAPIFNOT
+NIP
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 214
+OVER
+GETGLOB 16
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 216
+PUSHINT 2104
+OVER
+SECOND
+PUSHINT 300
+ADD
+NOW
+GEQ
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 217
+PUSHINT 2101
+SWAP
+THIRD
+PUSH S2
+EQUAL
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 219
+OVER
+CALLREF {
+	CALL $_updateAccountLastPing_internal_macro$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 222
+GETGLOB 10
+SWAP
+INC
+ROT
+FALSE
+NEWC
+STSLICECONST x6_
+STI 1
+PUSHINT 3
+STZEROES
+STSLICE
+PUSHINT 1
+STUR 111
+ROTREV
+NEWC
+STSLICECONST x1d03e15b
+STU 256
+STSLICE
+STBREFR
+ENDC
+PUSHINT 128
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.globl	_updateAccountLastPing_internal
+.type	_updateAccountLastPing_internal, @function
+CALL $_updateAccountLastPing_internal_macro$
+
+.macro _updateAccountLastPing_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 230
+DUP
+GETGLOB 16
+DUP2
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+NOW
+SETINDEX 1
+CALLREF {
+	UNTUPLE 4
+	REVERSE 4, 0
+	NEWC
+	STU 128
+	STU 128
+	STU 256
+	STI 1
+}
+ROTREV
+PUSHINT 267
+DICTSETB
+DUP
+SETGLOB 16
+.loc ../contracts/booster/passport/BoosterPassport.sol, 231
+DUP2
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+DUP
+THIRD
+INC
+SETINDEX 2
+CALLREF {
+	UNTUPLE 4
+	REVERSE 4, 0
+	NEWC
+	STU 128
+	STU 128
+	STU 256
+	STI 1
+}
+ROTREV
+PUSHINT 267
+DICTSETB
+SETGLOB 16
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.globl	_requiredTopUp_internal
+.type	_requiredTopUp_internal, @function
+CALL $_requiredTopUp_internal_macro$
+
+.macro _requiredTopUp_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 236
+CALLREF {
+	CALL $_targetBalance_internal_macro$
+}
+RSHIFT 1
+.loc ../contracts/booster/passport/BoosterPassport.sol, 237
+GETPARAM 7
+FIRST
+.loc ../contracts/booster/passport/BoosterPassport.sol, 239
+GETPARAM 7
+FIRST
+PUSH S2
+LESS
+PUSHCONT {
+	PUSH2 S0, S1
+	SUB
+	UFITS 128
+}
+PUSHCONT {
+	PUSHINT 0
+}
+IFELSE
+BLKDROP2 2, 1
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.globl	_targetBalance_internal
+.type	_targetBalance_internal, @function
+CALL $_targetBalance_internal_macro$
+
+.macro _targetBalance_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 243
+PUSHINT 1000000000
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.globl	_isArrayIncludes_internal
+.type	_isArrayIncludes_internal, @function
+CALL $_isArrayIncludes_internal_macro$
+
+.macro _isArrayIncludes_internal_macro
+.loc ../contracts/booster/passport/BoosterPassport.sol, 247
+SECOND
+PUSHINT 0
+NULL
+FALSE ; decl return flag
+PUSHCONT {
+	PUSH2 S2, S3
+	PUSHINT 32
+	DICTUGET
+	NULLSWAPIFNOT
+	PUSHCONT {
+		PLDU 256
+	}
+	IF
+	DUP
+	POP S3
+	ISNULL
+	NOT
+}
+PUSHCONT {
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 248
+	PUSH2 S4, S1
+	EQUAL
+	PUSHCONT {
+		BLKDROP 5
+		TRUE
+		PUSHINT 4
+		RETALT
+	}
+	IFJMP
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+	PUSH S2
+	INC
+	POP S3
+}
+WHILEBRK
+IFRET
+BLKDROP 4
+.loc ../contracts/booster/passport/BoosterPassport.sol, 251
+FALSE
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.globl	setOwnership_internal
+.type	setOwnership_internal, @function
+CALL $setOwnership_internal_macro$
+
+.macro setOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 24
+GETGLOB 10
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 26
+OVER
+SETGLOB 10
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 28
+PUSHSLICE xc0000000000000000000000001
+NEWC
+STSLICE
+ROTREV
+NEWC
+STSLICECONST x6115f072
+STSLICE
+SWAP
+NEWC
+STSLICE
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro transferOwnership
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 34
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+CALLREF {
+	CALL $transferOwnership_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro transferOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 37
+DUP
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SDEQ
+THROWIF 1102
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 39
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.macro renounceOwnership
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 45
+ENDS
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+CALLREF {
+	CALL $renounceOwnership_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro renounceOwnership_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 46
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 48
+CALLREF {
+	CALL $setOwnership_internal_macro$
+}
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 0
+
+.globl	TransferUtils__targetBalance
+.type	TransferUtils__targetBalance, @function
+CALL $TransferUtils__targetBalance_macro$
+
+.macro TransferUtils__targetBalance_macro
+.loc ../contracts/booster/TransferUtils.sol, 34
+PUSHINT 10000000000
+.loc ../contracts/booster/TransferUtils.sol, 0
+
+.macro c4_to_c7
+PUSHROOT
+CTOS
+LDU 256 ; pubkey c4
+LDU 64 ; pubkey timestamp c4
+LDU 1 ; ctor flag
+NIP
+LDMSGADDR
+LDREF
+ENDS
+CTOS
+LDMSGADDR
+LDU 256
+LDU 32
+LDDICT
+ROTREV
+PAIR
+SWAP
+LDU 128
+LDREF
+ENDS
+CTOS
+LDU 128
+LDDICT
+ENDS
+SETGLOB 16
+SETGLOB 15
+SETGLOB 14
+SETGLOB 13
+SETGLOB 12
+SETGLOB 11
+SETGLOB 10
+SETGLOB 3
+SETGLOB 2
+
+.macro c4_to_c7_with_init_storage
+PUSHROOT
+CTOS
+SBITS
+GTINT 1
+PUSHCONT {
+	PUSHINT 0
+	PUSHROOT
+	CTOS
+	PLDDICT ; D
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	DUP
+	PUSHINT 0
+	DUP
+	NEWDICT
+	PAIR
+	PUSHINT 0
+	DUP
+	NEWDICT
+	SETGLOB 16
+	SETGLOB 15
+	SETGLOB 14
+	SETGLOB 13
+	SETGLOB 12
+	SETGLOB 11
+	SETGLOB 10
+	PUSHINT 64
+	DICTUGET
+	THROWIFNOT 61
+	PLDU 256
+	SETGLOB 2
+	PUSHINT 0 ; timestamp
+	SETGLOB 3
+}
+IFREFELSE {
+	CALL $c4_to_c7$
+}
+
+.macro c7_to_c4
+GETGLOB 16
+GETGLOB 15
+GETGLOB 14
+GETGLOB 13
+GETGLOB 12
+GETGLOB 11
+GETGLOB 10
+GETGLOB 3
+GETGLOB 2
+NEWC
+STU 256
+STU 64
+STONE
+STSLICE
+ROLLREV 6
+NEWC
+STSLICE
+STU 256
+SWAP
+UNPAIR
+XCHG S2
+STU 32
+STDICT
+STU 128
+ROTREV
+NEWC
+STU 128
+STDICT
+STBREFR
+STBREFR
+ENDC
+POPROOT
+
+.macro upd_only_time_in_c4
+PUSHROOT
+CTOS
+LDU 256
+LDU 64
+NIP
+GETGLOB 3
+ROT
+NEWC
+STU 256
+STU 64
+STSLICE
+ENDC
+POPROOT
+
+.internal-alias :main_internal, 0
+.internal :main_internal
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSH S2
+CTOS
+LDU 4 ; bounced tail
+LDMSGADDR ; bounced src tail
+DROP
+SETGLOB 9
+MODPOW2 1
+IFRET
+OVER
+SEMPTY ; isEmpty
+IFJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+OVER
+LDUQ 32  ; [funcId] body' ok
+THROWIFNOT 60
+OVER
+IFNOTJMPREF {
+	GETGLOB 6
+	THROWIFNOT 76
+}
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.internal-alias :main_external, -1
+.internal :main_external
+PUSHROOT
+CTOS
+SBITS
+NEQINT 1
+SETGLOB 6
+PUSHREFSLICE {
+	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+}
+SETGLOB 9
+OVER
+CALLREF {
+	CALL $c4_to_c7_with_init_storage$
+}
+LDU 1 ; haveSign msgSlice
+SWAP
+PUSHCONT {
+	PUSHINT 512
+	LDSLICEX ; signatureSlice msgSlice
+	DUP
+	HASHSU ; signatureSlice msgSlice hashMsgSlice
+	SWAP
+	LDU 1 ; signatureSlice hashMsgSlice havePubkey msgSlice
+	SWAP
+	PUSHCONT {
+		LDU 256 ; signatureSlice hashMsgSlice pubkey msgSlice
+		XCHG S3
+		SWAP
+	}
+	PUSHCONT {
+		XCHG S2
+		GETGLOB 2
+	}
+	IFELSE
+	DUP
+	SETGLOB 5
+	CHKSIGNU ; msgSlice isSigned
+	THROWIFNOT 40
+}
+PUSHCONT {
+	LDU 1 ; havePubkey msgSlice
+	SWAP
+	THROWIF 58
+}
+IFELSE
+LDU 64 ; timestamp msgSlice
+SWAP
+CALL $replay_protection_macro$
+LDU 32 ; expireAt msgSlice
+SWAP
+NOW ; msgSlice expireAt now
+GREATER ; msgSlice expireAt>now
+THROWIFNOT 57
+LDU 32 ; funcId body
+SWAP
+CALLREF {
+	CALL $public_function_selector$
+}
+THROW 60
+
+.macro owner
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 10
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000df0bcfde
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro factory
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 11
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000b9769fb2
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro version
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 12
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000cd793224
+	NEWC
+	STSLICE
+	STU 256
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro managers
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 13
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000b176beb1
+	NEWC
+	STSLICE
+	SWAP
+	UNPAIR
+	XCHG S2
+	STU 32
+	STDICT
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro ping_balance
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 14
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000993a3aa0
+	NEWC
+	STSLICE
+	STU 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro ping_max_price
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 15
+OVER
+PUSHCONT {
+	PUSHSLICE xc00000000000000000000000009d91dd60
+	NEWC
+	STSLICE
+	STU 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro public_function_selector
+DUP
+PUSHINT 1765402562
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 423246496
+	LEQ
+	IFJMPREF {
+		DUP
+		PUSHINT 227292681
+		EQUAL
+		IFJMPREF {
+			CALL $acceptPingTokens$
+		}
+		DUP
+		PUSHINT 235197086
+		EQUAL
+		IFJMPREF {
+			CALL $transferOwnership$
+		}
+		DUP
+		PUSHINT 391723725
+		EQUAL
+		IFJMPREF {
+			CALL $setManagers$
+		}
+		DUP
+		PUSHINT 423246496
+		EQUAL
+		IFJMPREF {
+			CALL $ping_balance$
+		}
+	}
+	DUP
+	PUSHINT 964075442
+	LEQ
+	IFJMPREF {
+		DUP
+		PUSHINT 496098656
+		EQUAL
+		IFJMPREF {
+			CALL $ping_max_price$
+		}
+		DUP
+		PUSHINT 829865649
+		EQUAL
+		IFJMPREF {
+			CALL $managers$
+		}
+		DUP
+		PUSHINT 947733154
+		EQUAL
+		IFJMPREF {
+			CALL $pingByManager$
+		}
+		DUP
+		PUSHINT 964075442
+		EQUAL
+		IFJMPREF {
+			CALL $factory$
+		}
+	}
+	DUP
+	PUSHINT 1566838080
+	LEQ
+	IFJMPREF {
+		DUP
+		PUSHINT 1175088001
+		EQUAL
+		IFJMPREF {
+			CALL $registerAccount$
+		}
+		DUP
+		PUSHINT 1299788324
+		EQUAL
+		IFJMPREF {
+			CALL $version$
+		}
+		DUP
+		PUSHINT 1493926320
+		EQUAL
+		IFJMPREF {
+			CALL $acceptUpgrade$
+		}
+		DUP
+		PUSHINT 1566838080
+		EQUAL
+		IFJMPREF {
+			CALL $setPingFrequency$
+		}
+	}
+	DUP
+	PUSHINT 1765402562
+	LEQ
+	IFJMPREF {
+		DUP
+		PUSHINT 1594609630
+		EQUAL
+		IFJMPREF {
+			CALL $owner$
+		}
+		DUP
+		PUSHINT 1729444094
+		EQUAL
+		IFJMPREF {
+			CALL $renounceOwnership$
+		}
+		DUP
+		PUSHINT 1756716863
+		EQUAL
+		IFJMPREF {
+			CALL $constructor$
+		}
+		DUP
+		PUSHINT 1765402562
+		EQUAL
+		IFJMPREF {
+			CALL $pingByOwner$
+		}
+	}
+}
+DUP
+PUSHINT 1813925682
+EQUAL
+IFJMPREF {
+	CALL $toggleAccountAutoPing$
+}
+

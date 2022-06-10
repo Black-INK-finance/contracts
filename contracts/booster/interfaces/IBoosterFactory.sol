@@ -4,6 +4,13 @@ import "./IBoosterBase.sol";
 
 
 interface IBoosterFactory is IBoosterBase {
+    function pingAccount(
+        address _owner,
+        uint counter,
+        address account,
+        uint128 required_top_up
+    ) external;
+
     function withdrawPingTokens(
         uint128 amount
     ) external;
@@ -13,23 +20,32 @@ interface IBoosterFactory is IBoosterBase {
         address farming_pool
     ) external responsible returns(address);
 
+    function derivePassport(
+        address _owner
+    ) external responsible returns(address);
+
     function deployAccount(
-        address _owner,
-        address farming_pool
+        address farming_pool,
+        uint128 ping_frequency,
+        uint128 max_ping_price,
+        bool deploy_passport
     ) external;
 
-    function setRecommendedPriceLimit(
-        uint128 limit
-    ) external;
-
-    function upgradeAccountCode(TvmCell _account) external;
+    function upgradeAccountCode(TvmCell code) external;
     function upgradeAccounts(address[] accounts) external;
+
+    function upgradePassportCode(TvmCell code) external;
+    function upgradePassports(
+        address[] passports
+    ) external;
 
     function upgrade(
         TvmCell code
     ) external;
 
     function getAccountPlatformCodeHash() external returns(uint);
+    function getPassportPlatformCodeHash() external returns(uint);
+
     function encodePingTopUp(
         address account
     ) external pure returns(TvmCell);
@@ -48,9 +64,8 @@ interface IBoosterFactory is IBoosterBase {
         uint128 lp_fee
     ) external;
 
-    function setFarmingPaused(
-        address farming_pool,
-        bool paused
+    function removeFarming(
+        address farming_pool
     ) external;
 
     function setLpFee(
@@ -68,22 +83,26 @@ interface IBoosterFactory is IBoosterBase {
         uint128 fee
     ) external;
 
-    function setManager(
-        address[] accounts,
-        address _manager
+    function setManagers(
+        address[] passports,
+        uint[] _managers
     ) external;
 
     function getDetails() external returns (
         uint _version,
-        address _manager,
+        uint[] _managers,
         address _rewarder,
         address _ping_token_root,
         address _ping_token_wallet,
-        uint128 _recommended_ping_price_limit,
         mapping (address => FarmingPoolSettings) _farmings,
+
         TvmCell _account_platform,
-        TvmCell _account,
-        uint _account_version
+        TvmCell _account_implementation,
+        uint _account_version,
+
+        TvmCell _passport_platform,
+        TvmCell _passport_implementation,
+        uint _passport_version
     );
 
     function receiveTokenWallet(
