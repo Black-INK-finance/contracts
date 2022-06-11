@@ -8,6 +8,7 @@ contract BoosterPassportPlatform {
     constructor(
         TvmCell code,
         uint version,
+        uint[] managers,
         uint128 max_ping_price,
         address remainingGasTo
     ) public {
@@ -20,6 +21,7 @@ contract BoosterPassportPlatform {
             factory,
             owner,
             version,
+            managers,
             max_ping_price,
             remainingGasTo
         );

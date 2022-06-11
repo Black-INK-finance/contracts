@@ -46,12 +46,15 @@ contract BoosterAccount_V1 is
 
             uint _version,
             address _passport,
-            FarmingPoolSettings settings
+            FarmingPoolSettings settings,
+
+            address remainingGasTo
         ) = abi.decode(
             data,
             (
                 address, address, address,
-                uint, address, FarmingPoolSettings
+                uint, address, FarmingPoolSettings,
+                address
             )
         );
 
@@ -99,5 +102,13 @@ contract BoosterAccount_V1 is
                 _deployTokenWallet(direction.token);
             }
         }
+
+        tvm.rawReserve(_targetBalance(), 2);
+
+        remainingGasTo.transfer({
+            bounce: false,
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        });
     }
 }

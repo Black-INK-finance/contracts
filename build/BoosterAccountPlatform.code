@@ -45,42 +45,45 @@ ROTREV
 PAIR
 SWAP
 LDDICT
-LDU 256
 LDREF
 ENDS
 CTOS
 LDMSGADDR
 LDU 128
 LDU 128
-ROLLREV 10
-TUPLE 10
+ROLLREV 9
+TUPLE 9
 SWAP
+LDREF
 ENDS
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 16
+CTOS
+LDMSGADDR
+ENDS
+.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 17
 GETGLOB 9
 GETGLOB 11
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 18
-XCHG S2
+.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 19
+REVERSE 4, 0
 GETGLOB 12
 GETGLOB 11
 GETGLOB 10
 NEWC
 STSLICE
+ROLLREV 6
+NEWC
+STSLICE
 ROLLREV 5
 NEWC
 STSLICE
-ROLLREV 4
-NEWC
-STSLICE
 STU 256
-ROTREV
+ROLLREV 3
 NEWC
 STSLICE
 SWAP
-UNTUPLE 10
-REVERSE 11, 0
+UNTUPLE 9
+REVERSE 10, 0
 ROLLREV 10
 NEWC
 STSLICE
@@ -99,12 +102,15 @@ XCHG S2
 STU 32
 STDICT
 STDICT
-STU 256
-ROLLREV 3
+ROLLREV 4
 NEWC
 STSLICE
 STU 128
 STU 128
+SWAP
+NEWC
+STSLICE
+STBREFR
 STBREFR
 STBREFR
 STBREFR
@@ -114,10 +120,10 @@ STBREFR
 STBREFR
 STBREFR
 ENDC
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 27
+.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 29
 OVER
 SETCODE
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 28
+.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 30
 SWAP
 CTOS
 DUP
@@ -132,7 +138,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 30
+.loc ../contracts/booster/account/BoosterAccountPlatform.sol, 32
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
@@ -342,7 +348,7 @@ THROW 60
 
 .macro public_function_selector
 DUP
-PUSHINT 1740042643
+PUSHINT 756696212
 EQUAL
 IFJMPREF {
 	CALL $constructor$

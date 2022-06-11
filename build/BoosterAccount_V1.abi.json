@@ -35,7 +35,7 @@
 				{"name":"amount","type":"uint128"},
 				{"name":"sender","type":"address"},
 				{"name":"value3","type":"address"},
-				{"name":"value4","type":"address"},
+				{"name":"remainingGasTo","type":"address"},
 				{"name":"payload","type":"cell"}
 			],
 			"outputs": [

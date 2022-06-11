@@ -13,29 +13,42 @@ OVER
 PUSHCONT {
 	LDREF
 	LDU 256
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDREF
+	ENDS
+	CTOS
+	LDU 128
+}
+PUSHCONT {
+	LDREF
+	LDU 256
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
 	LDU 128
 	LDREF
 	ENDS
 	CTOS
 }
-PUSHCONT {
-	LDREF
-	LDU 256
-	LDU 128
-}
 IFELSE
 LDMSGADDR
 ENDS
-.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 14
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 15
 GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 16
-PUSH S3
-SETCODE
 .loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 17
-ROLL 3
+PUSH S4
+SETCODE
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 18
+ROLL 4
 CTOS
 DUP
 PUSHSLICE x8adb35
@@ -49,16 +62,21 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 19
-XCHG S2
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 20
+REVERSE 4, 0
 GETGLOB 11
 GETGLOB 10
 NEWC
 STSLICE
-ROLLREV 4
+ROLLREV 5
 NEWC
 STSLICE
 STU 256
+SWAP
+UNPAIR
+XCHG S2
+STU 32
+STDICT
 STU 128
 SWAP
 NEWC
@@ -66,7 +84,7 @@ STSLICE
 STBREFR
 STBREFR
 ENDC
-.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 27
+.loc ../contracts/booster/passport/BoosterPassportPlatform.sol, 29
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
@@ -254,7 +272,7 @@ THROW 60
 
 .macro public_function_selector
 DUP
-PUSHINT 786153634
+PUSHINT 403986118
 EQUAL
 IFJMPREF {
 	CALL $constructor$

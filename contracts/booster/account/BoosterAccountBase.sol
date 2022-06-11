@@ -45,6 +45,15 @@ abstract contract BoosterAccountBase is
     ) external override reserveTargetBalance {
         require(msg.sender == passport || msg.sender == factory, Errors.WRONG_SENDER);
 
+        // Return rest of previous ping sponsorship
+        if (ping_sponsor != address.makeAddrStd(0,0)) {
+            ping_sponsor.transfer({
+                flag: 0,
+                value: address(this).balance - (msg.value + _targetBalance()),
+                bounce: false
+            });
+        }
+
         ping_sponsor = sponsor;
 
         if (counter % Constants.PINGS_PER_SKIM == 0) {
@@ -57,7 +66,6 @@ abstract contract BoosterAccountBase is
     /// @notice Keeper method for skimming fees
     /// Can be called only by `manager`
     function skim() external override onlyFactory {
-
         _skimFees();
     }
 
@@ -72,7 +80,7 @@ abstract contract BoosterAccountBase is
         uint128 amount,
         address sender,
         address,
-        address,
+        address remainingGasTo,
         TvmCell payload
     ) external override {
         // Received unknown token, return back with all remaining gas
@@ -105,12 +113,17 @@ abstract contract BoosterAccountBase is
             // Check reward transfer payload
             (uint32 nonce) = abi.decode(payload, (uint32));
 
-            if (nonce == Constants.NO_REINVEST_REQUIRED) return;
+            if (nonce == Constants.NO_REINVEST_REQUIRED) {
+                return;
+            }
         } else {
             _considerTokensArrival(root, amount);
         }
 
-        _processTokensArrival(root);
+        _processTokensArrival(
+            root,
+            root == lp ? remainingGasTo : _me()
+        );
     }
 
     /// @notice Accepts tokens mint
@@ -152,7 +165,7 @@ abstract contract BoosterAccountBase is
             _considerTokensArrival(root, amount);
         }
 
-        _processTokensArrival(root);
+        _processTokensArrival(root, _me());
     }
 
     function _considerTokensFee(
@@ -170,11 +183,11 @@ abstract contract BoosterAccountBase is
         received[token] += amount;
     }
 
-    function _processTokensArrival(address token) internal {
+    function _processTokensArrival(address token, address remainingGasTo) internal {
         // Handle received token
         if (token == lp) {
             // - Received token is LP, deposit it into farming
-            _depositToFarming();
+            _depositToFarming(remainingGasTo);
         } else if (token == left || token == right) {
             // - Received token is pool left or right, deposit it to pair
             _depositLiquidityToPair(token);
@@ -192,6 +205,14 @@ abstract contract BoosterAccountBase is
         require(wallets.exists(msg.sender));
 
         wallets[msg.sender] = wallet;
+
+        tvm.rawReserve(_targetBalance(), 0);
+
+        owner.transfer({
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        });
     }
 
     /// @notice Receives booster farming user data
@@ -301,16 +322,18 @@ abstract contract BoosterAccountBase is
         );
     }
 
-    function _depositToFarming() internal {
+    function _depositToFarming(address remainingGasTo) internal {
         if (balances[lp] == 0) return;
 
         TvmCell payload = _buildFarmingDepositPayload(Constants.NO_REINVEST_REQUIRED);
+
+        tvm.rawReserve(_targetBalance(), 0);
 
         _transferTokens(
             wallets[lp],
             balances[lp],
             farming_pool,
-            _me(),
+            remainingGasTo,
             true,
             payload,
             Gas.BOOSTER_ACCOUNT_DEPOSIT_LP_TO_FARMING,
@@ -385,6 +408,6 @@ abstract contract BoosterAccountBase is
     }
 
     function _targetBalance() internal override pure returns(uint128) {
-        return Gas.BOOSTER_DEPLOY_ACCOUNT;
+        return Gas.BOOSTER_ACCOUNT_TARGET_BALANCE;
     }
 }

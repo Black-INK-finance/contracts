@@ -11,7 +11,8 @@ contract BoosterAccountPlatform is IBoosterBase {
         TvmCell code,
         uint version,
         address passport,
-        FarmingPoolSettings settings
+        FarmingPoolSettings settings,
+        address remainingGasTo
     ) public {
         require(msg.sender == factory);
 
@@ -21,7 +22,8 @@ contract BoosterAccountPlatform is IBoosterBase {
             farming_pool,
             version,
             passport,
-            settings
+            settings,
+            remainingGasTo
         );
 
         tvm.setcode(code);

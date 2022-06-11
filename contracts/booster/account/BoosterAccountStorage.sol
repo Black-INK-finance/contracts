@@ -53,6 +53,12 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         _;
     }
 
+    modifier onlyFactoryOrPassport() {
+        require(msg.sender == factory || msg.sender == passport, Errors.WRONG_SENDER);
+
+        _;
+    }
+
     function getDetails() external override view returns (
         address _owner,
         uint _version,

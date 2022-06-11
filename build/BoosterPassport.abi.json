@@ -84,6 +84,20 @@
 			]
 		},
 		{
+			"name": "getDetails",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_owner","type":"address"},
+				{"name":"_factory","type":"address"},
+				{"name":"_version","type":"uint256"},
+				{"name":"_managers","type":"uint256[]"},
+				{"name":"_ping_balance","type":"uint128"},
+				{"name":"_ping_max_price","type":"uint128"},
+				{"components":[{"name":"ping_frequency","type":"uint128"},{"name":"last_ping","type":"uint128"},{"name":"ping_counter","type":"uint256"},{"name":"auto_ping_enabled","type":"bool"}],"name":"_accounts","type":"map(address,tuple)"}
+			]
+		},
+		{
 			"name": "transferOwnership",
 			"inputs": [
 				{"name":"newOwner","type":"address"}
@@ -144,6 +158,14 @@
 			],
 			"outputs": [
 				{"name":"ping_max_price","type":"uint128"}
+			]
+		},
+		{
+			"name": "accounts",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"ping_frequency","type":"uint128"},{"name":"last_ping","type":"uint128"},{"name":"ping_counter","type":"uint256"},{"name":"auto_ping_enabled","type":"bool"}],"name":"accounts","type":"map(address,tuple)"}
 			]
 		}
 	],

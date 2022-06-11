@@ -49,4 +49,14 @@ interface IBoosterPassport {
         address account,
         uint counter
     ) external;
+
+    function getDetails() external view returns(
+        address _owner,
+        address _factory,
+        uint _version,
+        uint[] _managers,
+        uint128 _ping_balance,
+        uint128 _ping_max_price,
+        mapping (address => AccountSettings) _accounts
+    );
 }

@@ -8,6 +8,7 @@
 			"inputs": [
 				{"name":"code","type":"cell"},
 				{"name":"version","type":"uint256"},
+				{"name":"managers","type":"uint256[]"},
 				{"name":"max_ping_price","type":"uint128"},
 				{"name":"remainingGasTo","type":"address"}
 			],

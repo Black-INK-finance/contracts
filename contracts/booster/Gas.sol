@@ -5,8 +5,8 @@ library Gas {
     // Common gas values
     uint128 constant DEPLOY_TOKEN_WALLET = 0.2 ton;
 
-    uint128 constant BOOSTER_PASSPORT_TARGET_BALANCE = 1 ton;
-    uint128 constant BOOSTER_ACCOUNT_TARGET_BALANCE = 1 ton;
+    uint128 constant BOOSTER_PASSPORT_TARGET_BALANCE = 2 ton;
+    uint128 constant BOOSTER_ACCOUNT_TARGET_BALANCE = 10 ton;
 
     // Booster factory
     uint128 constant BOOSTER_FACTORY_ACCOUNT_UPDATE = 0.5 ton;

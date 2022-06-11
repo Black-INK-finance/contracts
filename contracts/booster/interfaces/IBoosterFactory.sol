@@ -58,7 +58,6 @@ interface IBoosterFactory is IBoosterBase {
         address right,
         address[] rewards,
         mapping (address => SwapDirection) swaps,
-        uint recommended_ping_frequency,
         address rewarder,
         uint128 reward_fee,
         uint128 lp_fee
@@ -94,6 +93,7 @@ interface IBoosterFactory is IBoosterBase {
         address _rewarder,
         address _ping_token_root,
         address _ping_token_wallet,
+        uint128 _ping_cost,
         mapping (address => FarmingPoolSettings) _farmings,
 
         TvmCell _account_platform,

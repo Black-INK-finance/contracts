@@ -22,7 +22,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     uint[] public managers;
     uint128 public ping_balance;
     uint128 public ping_max_price;
-    mapping (address => AccountSettings) accounts;
+    mapping (address => AccountSettings) public accounts;
 
     constructor() public {
         revert();
@@ -53,14 +53,24 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
             address _factory,
             address _owner,
             uint _version,
+            uint[] _managers,
+            uint128 _ping_max_price,
             address remainingGasTo
-        ) = abi.decode(data, (address, address, uint, address));
+        ) = abi.decode(
+            data,
+            (
+                address, address, uint,
+                uint[], uint128, address
+            )
+        );
 
         tvm.rawReserve(_targetBalance(), 2);
 
         factory = _factory;
         setOwnership(_owner);
         version = _version;
+        managers = _managers;
+        ping_max_price = _ping_max_price;
 
         remainingGasTo.transfer({
             bounce: false,
@@ -90,24 +100,6 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
 
         onCodeUpgrade(data);
     }
-
-//    function afterSignatureCheck(TvmSlice body, TvmCell message) private inline view returns (TvmSlice) {
-//        body.decode(uint64, uint32);
-//        TvmSlice bodyCopy = body;
-//        uint32 functionId = body.decode(uint32);
-//
-//        (,address account,) = abi.decode(message, (uint128, address, uint));
-//
-//        require(account.exists(account), Utils.PASSPORT_ACCOUNT_NOT_EXISTS);
-//
-//        AccountSettings settings = accounts[account];
-//
-//        if (functionId == tvm.functionId(ping)) {
-//            require(settings.last_ping + settings.frequency <= now, Errors.PASSPORT_PING_TOO_OFTEN);
-//        }
-//
-//        return bodyCopy;
-//    }
 
     /// @notice Accept ping token top up
     /// Can be called only by `factory`
@@ -174,11 +166,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         uint counter
     ) external override onlyManager {
         // - Manager uses external in message, passport pays itself
-
-        // TODO: infinite error? use tvm commit? or timestamp
         tvm.accept();
-
-        _updateAccountLastPing(account);
 
         AccountSettings settings = accounts[account];
 
@@ -187,16 +175,18 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         require(ping_max_price >= price, Errors.BOOSTER_PASSPORT_PRICE_TOO_HIGH);
         require(settings.auto_ping_enabled, Errors.BOOSTER_PASSPORT_AUTO_PING_DISABLED);
 
+        _updateAccountLastPing(account);
+
         ping_balance -= price;
 
         // Request factory to ping account
         IBoosterFactory(factory).pingAccount{
-            value: 0,
+            value: 0.1 ton,
             flag: 0,
             bounce: false
         }(
             owner,
-            counter + 1,
+            counter,
             account,
             _requiredTopUp()
         );
@@ -213,7 +203,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     ) external override onlyOwner reserveAtLeastTargetBalance accountExists(account) {
         AccountSettings settings = accounts[account];
 
-        require(settings.last_ping + Constants.PING_DURATION >= now, Errors.BOOSTER_PASSPORT_PING_NOT_FINISHED);
+//        require(settings.last_ping + Constants.PING_DURATION >= now, Errors.BOOSTER_PASSPORT_PING_NOT_FINISHED);
         require(settings.ping_counter == counter, Errors.BOOSTER_PASSPORT_WRONG_COUNTER);
 
         _updateAccountLastPing(account);
@@ -223,7 +213,27 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
-        }(counter + 1, owner);
+        }(counter, msg.sender);
+    }
+
+    function getDetails() external override view returns(
+        address _owner,
+        address _factory,
+        uint _version,
+        uint[] _managers,
+        uint128 _ping_balance,
+        uint128 _ping_max_price,
+        mapping (address => AccountSettings) _accounts
+    ) {
+        return (
+            owner,
+            factory,
+            version,
+            managers,
+            ping_balance,
+            ping_max_price,
+            accounts
+        );
     }
 
     function _updateAccountLastPing(address account) internal {

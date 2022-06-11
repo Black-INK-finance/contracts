@@ -119,7 +119,6 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     /// @param right Pair right token
     /// @param rewards Reward tokens
     /// @param swaps, (token_from => (token_to, pair))
-    /// @param recommended_ping_frequency Recommended ping frequency
     /// @param rewarder Rewarder address
     /// @param reward_fee Reward fee amount in BPS
     /// @param lp_fee LP fee amount in BPS
@@ -131,13 +130,11 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address right,
         address[] rewards,
         mapping (address => SwapDirection) swaps,
-        uint recommended_ping_frequency,
         address rewarder,
         uint128 reward_fee,
         uint128 lp_fee
     ) external override onlyOwner cashBack(owner) {
         require(!farmings.exists(farming_pool));
-        require(recommended_ping_frequency >= Constants.MIN_PING_FREQUENCY);
         require(lp_fee + reward_fee <= Constants.MAX_FEE);
 
         farmings[farming_pool] = FarmingPoolSettings({
@@ -148,7 +145,6 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
             rewards: rewards,
             rewarder: rewarder,
             swaps: swaps,
-            ping_frequency: recommended_ping_frequency,
             reward_fee: reward_fee,
             lp_fee: lp_fee
         });

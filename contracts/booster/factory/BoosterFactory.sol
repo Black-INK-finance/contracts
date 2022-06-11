@@ -22,6 +22,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         uint[] _managers,
         address _rewarder,
         address _ping_token_root,
+        uint128 _ping_cost,
         TvmCell _account_platform,
         TvmCell _account_implementation,
         TvmCell _passport_platform,
@@ -29,9 +30,10 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
     ) public BoosterFactoryBase(_owner) {
         tvm.accept();
 
-        ping_token_root = _ping_token_root;
         managers = _managers;
         rewarder = _rewarder;
+        ping_token_root = _ping_token_root;
+        ping_cost = _ping_cost;
 
         account_platform = _account_platform;
         account_implementation = _account_implementation;
@@ -250,10 +252,16 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         if (deploy_passport) {
             new BoosterPassportPlatform{
                 stateInit: passportStateInit,
-                value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE,
+                value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE * 2,
                 bounce: false,
                 flag: 0
-            }(passport_implementation, passport_version, max_ping_price, msg.sender);
+            }(
+                passport_implementation,
+                passport_version,
+                managers,
+                max_ping_price,
+                msg.sender
+            );
         }
 
         // Register booster account in passport
@@ -276,7 +284,8 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             account_implementation, // account code
             account_version, // account version
             passport, // owner's passport
-            settings // farming settings
+            settings, // farming settings
+            msg.sender // remaining gas
         );
     }
 
