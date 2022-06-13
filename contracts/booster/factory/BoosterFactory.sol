@@ -181,21 +181,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             return;
         }
 
-        // Transfer tokens to owner
-        TvmCell empty;
-
-        _transferTokens(
-            ping_token_wallet,
-            amount,
-            owner,
-            remainingGasTo,
-            false,
-            empty,
-            Gas.BOOSTER_FACTORY_THROW_PING_TOKENS,
-            0,
-            true
-        );
-
         // Top up specified passport
         (address passport) = abi.decode(payload, (address));
 
@@ -206,26 +191,53 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         }(amount, remainingGasTo);
     }
 
-    /// @notice Withdraw ping tokens from the factory
-    /// Can be called only by `owner`
-    /// Tokens will be transferred to the `owner`
+    /// @notice Withdraw ping tokens on user's behalf
+    /// Can be called only by correct passport
+    /// @notice _owner Passport owner, used for address-derivation check
     /// @param amount Amount of tokens to withdraw
     function withdrawPingTokens(
-        uint128 amount
-    ) external override onlyOwner reserveBalance {
+        address _owner,
+        uint128 amount,
+        address remainingGasTo
+    ) external override onlyBoosterPassport(_owner) reserveAtLeastTargetBalance {
         TvmCell empty;
 
         _transferTokens(
             ping_token_wallet,
             amount,
-            owner,
-            msg.sender,
+            _owner,
+
+            remainingGasTo,
             false,
             empty,
+
             0,
             MsgFlag.ALL_NOT_RESERVED,
             true
         );
+    }
+
+    /// @notice Claim ping tokens, marked as "spent"
+    /// Can be called only by `owner`
+    /// Tokens will be transferred to the `owner`
+    function claimSpentPingTokens() external override onlyOwner reserveAtLeastTargetBalance {
+        TvmCell empty;
+
+        _transferTokens(
+            ping_token_wallet,
+            ping_spent,
+            owner,
+
+            msg.sender,
+            false,
+            empty,
+
+            0,
+            MsgFlag.ALL_NOT_RESERVED,
+            true
+        );
+
+        ping_spent = 0;
     }
 
     /// @notice Deploy booster account

@@ -111,6 +111,24 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         ping_balance += amount;
     }
 
+    /// @notice Withdraw ping tokens. Decreases ping balance, tokens are actually withdrawn from the factory.
+    /// Can be called only by `owner`
+    /// @param amount Amount of ping tokens to withdraw
+    function withdrawPingToken(
+        uint128 amount,
+        address remainingGasTo
+    ) external override onlyOwner reserveBalance {
+        require(amount >= ping_balance);
+
+        ping_balance -= amount;
+
+        IBoosterFactory(factory).withdrawPingTokens{
+            value: 0,
+            bounce: true,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        }(owner, amount, remainingGasTo);
+    }
+
     /// @notice Set ping frequency
     /// Can be called only by `owner`
     /// @param account Booster account address
@@ -188,6 +206,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
             owner,
             counter,
             account,
+            price,
             _requiredTopUp()
         );
     }

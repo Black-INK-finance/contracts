@@ -100,7 +100,16 @@
 		{
 			"name": "withdrawPingTokens",
 			"inputs": [
-				{"name":"amount","type":"uint128"}
+				{"name":"_owner","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "claimSpentPingTokens",
+			"inputs": [
 			],
 			"outputs": [
 			]
@@ -187,6 +196,7 @@
 				{"name":"_owner","type":"address"},
 				{"name":"counter","type":"uint256"},
 				{"name":"account","type":"address"},
+				{"name":"price","type":"uint128"},
 				{"name":"required_top_up","type":"uint128"}
 			],
 			"outputs": [
@@ -309,6 +319,14 @@
 			]
 		},
 		{
+			"name": "ping_spent",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"ping_spent","type":"uint128"}
+			]
+		},
+		{
 			"name": "farmings",
 			"inputs": [
 			],
@@ -398,6 +416,7 @@
 		{"name":"ping_token_root","type":"address"},
 		{"name":"ping_token_wallet","type":"address"},
 		{"name":"ping_cost","type":"uint128"},
+		{"name":"ping_spent","type":"uint128"},
 		{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"}],"name":"farmings","type":"map(address,tuple)"},
 		{"name":"account_platform","type":"cell"},
 		{"name":"account_implementation","type":"cell"},

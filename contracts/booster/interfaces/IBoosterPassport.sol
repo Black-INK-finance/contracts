@@ -19,6 +19,11 @@ interface IBoosterPassport {
         address remainingGasTo
     ) external;
 
+    function withdrawPingToken(
+        uint128 amount,
+        address remainingGasTo
+    ) external;
+
     function registerAccount(
         address account,
         uint128 ping_frequency,

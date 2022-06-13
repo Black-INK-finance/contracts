@@ -29,6 +29,15 @@
 			]
 		},
 		{
+			"name": "withdrawPingToken",
+			"inputs": [
+				{"name":"amount","type":"uint128"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setPingFrequency",
 			"inputs": [
 				{"name":"account","type":"address"},

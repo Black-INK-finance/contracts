@@ -8,11 +8,8 @@ interface IBoosterFactory is IBoosterBase {
         address _owner,
         uint counter,
         address account,
+        uint128 price,
         uint128 required_top_up
-    ) external;
-
-    function withdrawPingTokens(
-        uint128 amount
     ) external;
 
     function deriveAccount(
@@ -23,6 +20,14 @@ interface IBoosterFactory is IBoosterBase {
     function derivePassport(
         address _owner
     ) external responsible returns(address);
+
+    function withdrawPingTokens(
+        address _owner,
+        uint128 amount,
+        address remainingGasTo
+    ) external;
+
+    function claimSpentPingTokens() external;
 
     function deployAccount(
         address farming_pool,

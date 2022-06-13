@@ -16,6 +16,7 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
     address public ping_token_root;
     address public ping_token_wallet;
     uint128 public ping_cost;
+    uint128 public ping_spent;
 
     mapping (address => FarmingPoolSettings) public farmings;
 

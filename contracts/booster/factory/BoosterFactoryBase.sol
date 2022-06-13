@@ -33,6 +33,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address _owner,
         uint counter,
         address account,
+        uint128 price,
         uint128 required_top_up
     ) external override onlyBoosterPassport(_owner) {
         tvm.accept();
@@ -45,6 +46,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
                 flag: 0
             });
         }
+
+        ping_spent += price;
 
         IBoosterAccount(account).ping{
             value: ping_cost,
