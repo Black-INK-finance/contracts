@@ -84,16 +84,18 @@ abstract contract BoosterAccountBase is
         TvmCell payload
     ) external override {
         // Received unknown token, return back with all remaining gas
-        if (!wallets.exists(root) || msg.sender != wallets[root]) {
+        if (!wallets.exists(root) || msg.sender != wallets[root] || (root == lp && sender == farming_pool)) {
             TvmCell empty;
 
             _transferTokens(
                 msg.sender,
                 amount,
                 owner,
-                _me(),
+
+                remainingGasTo,
                 false,
                 empty,
+
                 0,
                 MsgFlag.REMAINING_GAS,
                 true
@@ -354,7 +356,7 @@ abstract contract BoosterAccountBase is
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
-        }(amount, _me(), 0);
+        }(amount, msg.sender, 0);
     }
 
     function _requestFarmingUserData() internal view {
