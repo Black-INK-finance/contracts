@@ -403,6 +403,24 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "PassportDeployed",
+			"inputs": [
+				{"name":"owner","type":"address"},
+				{"name":"passport","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AccountDeployed",
+			"inputs": [
+				{"name":"owner","type":"address"},
+				{"name":"account","type":"address"}
+			],
+			"outputs": [
+			]
 		}
 	],
 	"fields": [

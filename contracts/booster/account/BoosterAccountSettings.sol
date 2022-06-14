@@ -38,39 +38,6 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         rewarder = _rewarder;
     }
 
-    /// @notice Withdraw tokens from the booster
-    /// Can be called only by `owner`
-    /// @param token Token address
-    /// @param _amount Amount ot withdraw. If 0, then withdraw all virtual balance
-    function withdraw(
-        address token,
-        uint128 _amount
-    ) external override onlyOwner tokenExists(token) {
-        address wallet = wallets[token];
-
-        uint128 amount = _amount;
-
-        if (_amount == 0) {
-            amount = balances[token];
-        }
-
-        TvmCell empty;
-
-        _transferTokens(
-            wallet,
-            amount,
-            owner,
-            owner,
-            false,
-            empty,
-            0,
-            MsgFlag.REMAINING_GAS,
-            true
-        );
-
-        balances[token] -= amount;
-    }
-
     function _transferTokens(
         address wallet,
         uint128 amount,

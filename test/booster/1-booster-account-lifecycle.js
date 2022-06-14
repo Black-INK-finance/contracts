@@ -479,7 +479,7 @@ describe('Test booster lifecycle', async function() {
                     _managers: [`0x${manager1.public}`, `0x${manager2.public}`],
                     _rewarder: rewarder.address,
                     _ping_token_root: PING.address,
-                    _ping_cost: locklift.utils.convertCrystal(10, 'nano'),
+                    _ping_cost: locklift.utils.convertCrystal(2, 'nano'),
                     _account_platform: BoosterAccountPlatform.code,
                     _account_implementation: BoosterAccount.code,
                     _passport_platform: BoosterPassportPlatform.code,
@@ -736,7 +736,7 @@ describe('Test booster lifecycle', async function() {
             // }
         });
 
-        it('Alice transfers LP to the booster account', async () => {
+        it('Alice transfers some LP to the booster account', async () => {
             const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
 
             const lp = await Token.from_addr(lp_address, alice);
@@ -753,7 +753,7 @@ describe('Test booster lifecycle', async function() {
                     notify: true,
                     payload: ''
                 },
-                value: locklift.utils.convertCrystal(6, 'nano'),
+                value: locklift.utils.convertCrystal(3, 'nano'),
             });
 
             await sleep(1000);
@@ -823,11 +823,6 @@ describe('Test booster lifecycle', async function() {
                 await sleep(5 * 1000);
             });
 
-            it('Check factory is ping sponsor', async () => {
-                expect(await alice_booster_account.call({ method: 'ping_sponsor' }))
-                    .to.be.equal(booster_factory.address, 'Wrong sponsor');
-            });
-
             it('Check booster virtual balances', async () => {
                 const details = await alice_booster_account.call({ method: 'getDetails' });
                 const position = await alice_booster_account_user_data.call({ method: 'getDetails' });
@@ -868,12 +863,18 @@ describe('Test booster lifecycle', async function() {
                         account: alice_booster_account.address,
                         counter: 1
                     },
-                    value: locklift.utils.convertCrystal(20, 'nano')
+                    value: locklift.utils.convertCrystal(2, 'nano')
                 });
 
                 logger.success(`Second ping by Alice tx: ${tx.transaction.id}`);
 
                 await sleep(3000);
+            });
+        });
+
+        describe('Alice adds tokens to her booster account', async () => {
+            it('Alice sends LPs to booster', async () => {
+
             });
         });
 

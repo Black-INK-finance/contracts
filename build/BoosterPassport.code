@@ -250,6 +250,15 @@ RAWRESERVE
 ROTREV
 .loc ../contracts/booster/passport/BoosterPassport.sol, 111
 DROP
+DUP
+PUSHSLICE xc00000000000000000000000006e4a03da
+NEWC
+STSLICE
+STU 128
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 113
 GETGLOB 14
 ADD
 UFITS 128
@@ -274,7 +283,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 117
+.loc ../contracts/booster/passport/BoosterPassport.sol, 119
 OVER
 PUSHCONT {
 	LDREF
@@ -311,18 +320,27 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/booster/passport/BoosterPassport.sol, 121
+.loc ../contracts/booster/passport/BoosterPassport.sol, 123
 OVER
 GETGLOB 14
 GEQ
 THROWIFNOT 100
-.loc ../contracts/booster/passport/BoosterPassport.sol, 123
+.loc ../contracts/booster/passport/BoosterPassport.sol, 125
 GETGLOB 14
 PUSH S2
 SUB
 UFITS 128
 SETGLOB 14
-.loc ../contracts/booster/passport/BoosterPassport.sol, 125
+.loc ../contracts/booster/passport/BoosterPassport.sol, 127
+OVER
+PUSHSLICE xc000000000000000000000000025f8a21b
+NEWC
+STSLICE
+STU 128
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 129
 SWAP
 GETGLOB 10
 GETGLOB 11
@@ -359,7 +377,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 136
+.loc ../contracts/booster/passport/BoosterPassport.sol, 140
 OVER
 PUSHCONT {
 	LDREF
@@ -410,13 +428,13 @@ PUSHINT 2
 RAWRESERVE
 .loc ../contracts/booster/TransferUtils.sol, 7
 ROTREV
-.loc ../contracts/booster/passport/BoosterPassport.sol, 140
+.loc ../contracts/booster/passport/BoosterPassport.sol, 144
 DUP
 PUSHINT 900
 GEQ
 THROWIFNOT 100
-.loc ../contracts/booster/passport/BoosterPassport.sol, 142
-SWAP
+.loc ../contracts/booster/passport/BoosterPassport.sol, 146
+PUSH2 S0, S1
 GETGLOB 16
 DUP2
 PUSHINT 267
@@ -450,6 +468,87 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 16
+.loc ../contracts/booster/passport/BoosterPassport.sol, 148
+SWAP
+PUSHSLICE xc000000000000000000000000014fc9a0f
+NEWC
+STSLICE
+STSLICE
+STU 256
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+
+.macro setPingMaxPrice
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/passport/BoosterPassport.sol, 154
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDU 128
+ENDS
+.loc ../contracts/booster/passport/BoosterPassport.sol, 0
+CALLREF {
+	CALL $setPingMaxPrice_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setPingMaxPrice_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+GETGLOB 9
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+SWAP
+.loc ../contracts/booster/passport/BoosterPassport.sol, 157
+DUP
+SETGLOB 15
+.loc ../contracts/booster/passport/BoosterPassport.sol, 159
+PUSHSLICE xc00000000000000000000000007751e0fe
+NEWC
+STSLICE
+STU 128
+ENDC
+PUSHINT 0
+SENDRAWMSG
 .loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
@@ -470,7 +569,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 145
+.loc ../contracts/booster/passport/BoosterPassport.sol, 165
 OVER
 PUSHCONT {
 	LDU 32
@@ -522,9 +621,22 @@ PUSHINT 2
 RAWRESERVE
 .loc ../contracts/booster/TransferUtils.sol, 7
 ROTREV
-.loc ../contracts/booster/passport/BoosterPassport.sol, 149
+.loc ../contracts/booster/passport/BoosterPassport.sol, 169
 DROP
+DUP
 SETGLOB 13
+.loc ../contracts/booster/passport/BoosterPassport.sol, 171
+PUSHSLICE xc00000000000000000000000004a4d4443
+NEWC
+STSLICE
+SWAP
+UNPAIR
+XCHG S2
+STU 32
+STDICT
+ENDC
+PUSHINT 0
+SENDRAWMSG
 .loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
@@ -545,7 +657,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 152
+.loc ../contracts/booster/passport/BoosterPassport.sol, 174
 OVER
 PUSHCONT {
 	LDREF
@@ -590,14 +702,26 @@ PUSHINT 2
 RAWRESERVE
 .loc ../contracts/booster/TransferUtils.sol, 7
 ROLLREV 3
-.loc ../contracts/booster/passport/BoosterPassport.sol, 157
+.loc ../contracts/booster/passport/BoosterPassport.sol, 179
 DROP
+PUSHINT 2106
+PUSH S2
+GETGLOB 16
+PUSHINT 267
+DICTGET
+NULLSWAPIFNOT
+NIP
+NOT
+THROWANYIFNOT
+.loc ../contracts/booster/passport/BoosterPassport.sol, 181
+DUP
 PUSHINT 0
 DUP
 TRUE
 TUPLE 4
+PUSH S2
 GETGLOB 16
-SWAP
+ROT
 CALLREF {
 	UNTUPLE 4
 	REVERSE 4, 0
@@ -611,6 +735,36 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 16
+.loc ../contracts/booster/passport/BoosterPassport.sol, 188
+OVER
+PUSHSLICE xc00000000000000000000000005bc5ed68
+NEWC
+STSLICE
+STSLICE
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 189
+TRUE
+PUSH S2
+PUSHSLICE xc00000000000000000000000003de6c3e3
+NEWC
+STSLICE
+STSLICE
+STI 1
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 190
+SWAP
+PUSHSLICE xc000000000000000000000000014fc9a0f
+NEWC
+STSLICE
+STSLICE
+STU 256
+ENDC
+PUSHINT 0
+SENDRAWMSG
 .loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
@@ -631,7 +785,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 168
+.loc ../contracts/booster/passport/BoosterPassport.sol, 196
 OVER
 PUSHCONT {
 	LDREF
@@ -681,7 +835,7 @@ PUSHINT 2
 RAWRESERVE
 .loc ../contracts/booster/TransferUtils.sol, 7
 SWAP
-.loc ../contracts/booster/passport/BoosterPassport.sol, 171
+.loc ../contracts/booster/passport/BoosterPassport.sol, 199
 DUP
 GETGLOB 16
 PUSHINT 267
@@ -702,7 +856,7 @@ IFREFELSEREF
 }
 INDEX 3
 NOT
-SWAP
+OVER
 GETGLOB 16
 DUP2
 PUSHINT 267
@@ -736,6 +890,35 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 16
+.loc ../contracts/booster/passport/BoosterPassport.sol, 201
+DUP
+GETGLOB 16
+PUSHINT 267
+DICTGET
+IFREFELSEREF
+{
+	LDU 128
+	LDU 128
+	LDU 256
+	LDI 1
+	ENDS
+	TUPLE 4
+}
+{
+	PUSHINT 0
+	BLKPUSH 3, 0
+	TUPLE 4
+}
+INDEX 3
+SWAP
+PUSHSLICE xc00000000000000000000000003de6c3e3
+NEWC
+STSLICE
+STSLICE
+STI 1
+ENDC
+PUSHINT 0
+SENDRAWMSG
 .loc ../contracts/booster/TransferUtils.sol, 9
 NEWC
 STSLICECONST x62_
@@ -756,7 +939,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 181
+.loc ../contracts/booster/passport/BoosterPassport.sol, 211
 OVER
 PUSHCONT {
 	LDREF
@@ -793,9 +976,9 @@ CALLREF {
 	CALL $_isArrayIncludes_internal_macro$
 }
 THROWIFNOT 2000
-.loc ../contracts/booster/passport/BoosterPassport.sol, 187
+.loc ../contracts/booster/passport/BoosterPassport.sol, 217
 ACCEPT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 189
+.loc ../contracts/booster/passport/BoosterPassport.sol, 219
 OVER
 GETGLOB 16
 PUSHINT 267
@@ -814,42 +997,43 @@ IFREFELSEREF
 	BLKPUSH 3, 0
 	TUPLE 4
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 191
+.loc ../contracts/booster/passport/BoosterPassport.sol, 221
 PUSHINT 2100
 GETGLOB 14
 PUSH S5
 GEQ
 THROWANYIFNOT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 192
+.loc ../contracts/booster/passport/BoosterPassport.sol, 222
 PUSHINT 2101
 OVER
 THIRD
 PUSH S3
 EQUAL
 THROWANYIFNOT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 193
+.loc ../contracts/booster/passport/BoosterPassport.sol, 223
 PUSHINT 2102
 GETGLOB 15
 PUSH S5
 GEQ
 THROWANYIFNOT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 194
+.loc ../contracts/booster/passport/BoosterPassport.sol, 224
 PUSHINT 2103
 SWAP
 INDEX 3
 THROWANYIFNOT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 196
-OVER
+.loc ../contracts/booster/passport/BoosterPassport.sol, 226
+DUP2
+TRUE
 CALLREF {
 	CALL $_updateAccountLastPing_internal_macro$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 198
+.loc ../contracts/booster/passport/BoosterPassport.sol, 228
 GETGLOB 14
 PUSH S3
 SUB
 UFITS 128
 SETGLOB 14
-.loc ../contracts/booster/passport/BoosterPassport.sol, 201
+.loc ../contracts/booster/passport/BoosterPassport.sol, 231
 CALLREF {
 	CALL $_requiredTopUp_internal_macro$
 }
@@ -891,7 +1075,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 219
+.loc ../contracts/booster/passport/BoosterPassport.sol, 249
 OVER
 PUSHCONT {
 	LDREF
@@ -942,7 +1126,7 @@ DICTGET
 NULLSWAPIFNOT
 NIP
 THROWANYIFNOT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 223
+.loc ../contracts/booster/passport/BoosterPassport.sol, 253
 OVER
 GETGLOB 16
 PUSHINT 267
@@ -961,21 +1145,21 @@ IFREFELSEREF
 	BLKPUSH 3, 0
 	TUPLE 4
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 226
+.loc ../contracts/booster/passport/BoosterPassport.sol, 255
 PUSHINT 2101
 SWAP
 THIRD
 PUSH S2
 EQUAL
 THROWANYIFNOT
-.loc ../contracts/booster/passport/BoosterPassport.sol, 228
-OVER
+.loc ../contracts/booster/passport/BoosterPassport.sol, 257
+DUP2
+FALSE
 CALLREF {
 	CALL $_updateAccountLastPing_internal_macro$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 231
-GETGLOB 9
-XCHG S2
+.loc ../contracts/booster/passport/BoosterPassport.sol, 260
+SWAP
 FALSE
 NEWC
 STSLICECONST x6_
@@ -983,14 +1167,9 @@ STI 1
 PUSHINT 3
 STZEROES
 STSLICE
-PUSHINT 1
-STUR 111
-ROTREV
-NEWC
-STSLICECONST x1d03e15b
+PUSHSLICE x0000000000000000000000000000e25fbf23_
+STSLICER
 STU 256
-STSLICE
-STBREFR
 ENDC
 PUSHINT 128
 SENDRAWMSG
@@ -1005,7 +1184,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/passport/BoosterPassport.sol, 238
+.loc ../contracts/booster/passport/BoosterPassport.sol, 267
 ENDS
 .loc ../contracts/booster/passport/BoosterPassport.sol, 0
 CALLREF {
@@ -1059,7 +1238,7 @@ IFREF {
 THROW 0
 
 .macro getDetails_internal_macro
-.loc ../contracts/booster/passport/BoosterPassport.sol, 247
+.loc ../contracts/booster/passport/BoosterPassport.sol, 276
 GETGLOB 10
 GETGLOB 11
 GETGLOB 12
@@ -1074,8 +1253,30 @@ GETGLOB 16
 CALL $_updateAccountLastPing_internal_macro$
 
 .macro _updateAccountLastPing_internal_macro
-.loc ../contracts/booster/passport/BoosterPassport.sol, 259
-DUP
+.loc ../contracts/booster/passport/BoosterPassport.sol, 288
+NOW
+.loc ../contracts/booster/passport/BoosterPassport.sol, 290
+XCHG S2
+PUSH2 S2, S3
+PUSHSLICE xc0000000000000000000000001
+NEWC
+STSLICE
+ROLLREV 4
+NEWC
+STSLICECONST x1ee221e2
+STSLICE
+STU 256
+ROTREV
+NEWC
+STU 256
+STI 1
+STBREFR
+STBREFR
+ENDC
+PUSHINT 0
+SENDRAWMSG
+.loc ../contracts/booster/passport/BoosterPassport.sol, 292
+OVER
 GETGLOB 16
 DUP2
 PUSHINT 267
@@ -1094,7 +1295,7 @@ IFREFELSEREF
 	BLKPUSH 3, 0
 	TUPLE 4
 }
-NOW
+ROLL 3
 SETINDEX 1
 CALLREF {
 	UNTUPLE 4
@@ -1110,7 +1311,7 @@ PUSHINT 267
 DICTSETB
 DUP
 SETGLOB 16
-.loc ../contracts/booster/passport/BoosterPassport.sol, 260
+.loc ../contracts/booster/passport/BoosterPassport.sol, 293
 DUP2
 PUSHINT 267
 DICTGET
@@ -1152,15 +1353,15 @@ SETGLOB 16
 CALL $_requiredTopUp_internal_macro$
 
 .macro _requiredTopUp_internal_macro
-.loc ../contracts/booster/passport/BoosterPassport.sol, 265
+.loc ../contracts/booster/passport/BoosterPassport.sol, 298
 CALLREF {
 	CALL $_targetBalance_internal_macro$
 }
 RSHIFT 1
-.loc ../contracts/booster/passport/BoosterPassport.sol, 266
+.loc ../contracts/booster/passport/BoosterPassport.sol, 299
 GETPARAM 7
 FIRST
-.loc ../contracts/booster/passport/BoosterPassport.sol, 268
+.loc ../contracts/booster/passport/BoosterPassport.sol, 301
 GETPARAM 7
 FIRST
 PUSH S2
@@ -1182,7 +1383,7 @@ BLKDROP2 2, 1
 CALL $_targetBalance_internal_macro$
 
 .macro _targetBalance_internal_macro
-.loc ../contracts/booster/passport/BoosterPassport.sol, 272
+.loc ../contracts/booster/passport/BoosterPassport.sol, 305
 PUSHINT 1000000000
 .loc ../contracts/booster/passport/BoosterPassport.sol, 0
 
@@ -1191,7 +1392,7 @@ PUSHINT 1000000000
 CALL $_isArrayIncludes_internal_macro$
 
 .macro _isArrayIncludes_internal_macro
-.loc ../contracts/booster/passport/BoosterPassport.sol, 276
+.loc ../contracts/booster/passport/BoosterPassport.sol, 309
 SECOND
 PUSHINT 0
 NULL
@@ -1211,7 +1412,7 @@ PUSHCONT {
 	NOT
 }
 PUSHCONT {
-	.loc ../contracts/booster/passport/BoosterPassport.sol, 277
+	.loc ../contracts/booster/passport/BoosterPassport.sol, 310
 	PUSH2 S4, S1
 	EQUAL
 	PUSHCONT {
@@ -1229,7 +1430,7 @@ PUSHCONT {
 WHILEBRK
 IFRET
 BLKDROP 4
-.loc ../contracts/booster/passport/BoosterPassport.sol, 280
+.loc ../contracts/booster/passport/BoosterPassport.sol, 313
 FALSE
 .loc ../contracts/booster/passport/BoosterPassport.sol, 0
 
@@ -1721,7 +1922,7 @@ THROW 0
 
 .macro public_function_selector
 DUP
-PUSHINT 1729444094
+PUSHINT 1636473528
 LEQ
 IFJMPREF {
 	DUP
@@ -1783,7 +1984,7 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 1493926320
+	PUSHINT 1299788324
 	LEQ
 	IFJMPREF {
 		DUP
@@ -1799,22 +2000,28 @@ IFJMPREF {
 			CALL $registerAccount$
 		}
 		DUP
+		PUSHINT 1193396418
+		EQUAL
+		IFJMPREF {
+			CALL $setPingMaxPrice$
+		}
+		DUP
 		PUSHINT 1299788324
 		EQUAL
 		IFJMPREF {
 			CALL $version$
 		}
+	}
+	DUP
+	PUSHINT 1636473528
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1493926320
 		EQUAL
 		IFJMPREF {
 			CALL $acceptUpgrade$
 		}
-	}
-	DUP
-	PUSHINT 1729444094
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1566838080
 		EQUAL
@@ -1833,12 +2040,6 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $accounts$
 		}
-		DUP
-		PUSHINT 1729444094
-		EQUAL
-		IFJMPREF {
-			CALL $renounceOwnership$
-		}
 	}
 }
 DUP
@@ -1846,22 +2047,33 @@ PUSHINT 1961637170
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 1756716863
-	EQUAL
-	IFJMPREF {
-		CALL $constructor$
-	}
-	DUP
-	PUSHINT 1765402562
-	EQUAL
-	IFJMPREF {
-		CALL $pingByOwner$
-	}
-	DUP
 	PUSHINT 1813925682
-	EQUAL
+	LEQ
 	IFJMPREF {
-		CALL $toggleAccountAutoPing$
+		DUP
+		PUSHINT 1729444094
+		EQUAL
+		IFJMPREF {
+			CALL $renounceOwnership$
+		}
+		DUP
+		PUSHINT 1756716863
+		EQUAL
+		IFJMPREF {
+			CALL $constructor$
+		}
+		DUP
+		PUSHINT 1765402562
+		EQUAL
+		IFJMPREF {
+			CALL $pingByOwner$
+		}
+		DUP
+		PUSHINT 1813925682
+		EQUAL
+		IFJMPREF {
+			CALL $toggleAccountAutoPing$
+		}
 	}
 	DUP
 	PUSHINT 1961637170

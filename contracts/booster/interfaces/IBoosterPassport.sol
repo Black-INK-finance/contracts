@@ -35,6 +35,10 @@ interface IBoosterPassport {
         uint128 frequency
     ) external;
 
+    function setPingMaxPrice(
+        uint128 price
+    ) external;
+
     function setManagers(
         uint[] managers,
         address remainingGasTo
@@ -64,4 +68,14 @@ interface IBoosterPassport {
         uint128 _ping_max_price,
         mapping (address => AccountSettings) _accounts
     );
+
+    event PingTokensAccepted(uint128 amount);
+    event PingTokensWithdrawn(uint128 amount);
+
+    event AccountRegistered(address account);
+    event PingFrequencyUpdated(address account, uint frequency);
+    event PingMaxPriceUpdated(uint128 price);
+    event AutoPingUpdated(address account, bool status);
+    event Ping(address account, uint _timestamp, uint counter, bool byManager);
+    event ManagersUpdated(uint[] managers);
 }

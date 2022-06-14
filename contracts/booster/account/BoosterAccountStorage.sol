@@ -25,15 +25,15 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     mapping (address => uint128) fees; // Recorded fees
 
     // Farming pool settings
-    address lp; // Farming LP
-    address pair; // Farming pair
-    address left; // Farming pair left token
-    address right; // Farming pair right token
-    address[] rewards; // Farming pool reward tokens
-    mapping (address => SwapDirection) swaps; // Swaps directions
-    address rewarder; // Fee receiver
-    uint128 reward_fee; // Reward fee amount in BPS
-    uint128 lp_fee; // LP fee amount in BPS
+    address public lp; // Farming LP
+    address public pair; // Farming pair
+    address public left; // Farming pair left token
+    address public right; // Farming pair right token
+    address[] public rewards; // Farming pool reward tokens
+    mapping (address => SwapDirection) public swaps; // Swaps directions
+    address public rewarder; // Fee receiver
+    uint128 public reward_fee; // Reward fee amount in BPS
+    uint128 public lp_fee; // LP fee amount in BPS
 
     // === STORAGE END ===
 

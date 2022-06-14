@@ -10,7 +10,7 @@ IFREF {
 GETGLOB 6
 THROWIF 51
 ENDS
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 36
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 27
 THROW 100
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 
@@ -500,19 +500,8 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 42
-OVER
-PUSHCONT {
-	LDU 256
-	LDREF
-	ENDS
-	CTOS
-}
-PUSHCONT {
-	LDU 256
-}
-IFELSE
-LDMSGADDR
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 33
+LDU 256
 ENDS
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 CALLREF {
@@ -525,13 +514,7 @@ CALLREF {
 THROW 0
 
 .macro ping_internal_macro
-.loc ../contracts/booster/TransferUtils.sol, 19
-CALLREF {
-	CALL $_targetBalance_internal_macro$
-}
-PUSHINT 2
-RAWRESERVE
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 46
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 36
 GETGLOB 9
 GETGLOB 14
 SDEQ
@@ -540,27 +523,41 @@ GETGLOB 11
 SDEQ
 OR
 THROWIFNOT 2000
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 49
-GETGLOB 16
-PUSHREFSLICE {
-	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 38
+CALLREF {
+	CALL $_targetBalance_internal_macro$
 }
-SDEQ
+PUSHINT 100
+ADDCONST 20
+UFITS 128
+PUSHINT 100
+MULDIV
+UFITS 128
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 45
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+SWAP
+GREATER
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 50
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 46
 	GETPARAM 7
 	FIRST
 	DEPTH
 	ADDCONST -2
 	PICK
+	SUB
+	UFITS 128
 	CALLREF {
 		CALL $_targetBalance_internal_macro$
 	}
-	ADD
-	UFITS 128
 	SUB
 	UFITS 128
-	GETGLOB 16
+	GETGLOB 11
 	NEWC
 	STSLICECONST x42_
 	STSLICE
@@ -573,21 +570,19 @@ PUSHCONT {
 	SENDRAWMSG
 	.loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 }
-IFNOT
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 57
-SETGLOB 16
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 59
+IF
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 53
 PUSHINT 10
 MOD
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 60
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 54
 	CALLREF {
 		CALL $_skimFees_internal_macro$
 	}
 	.loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 }
 IFNOT
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 63
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 57
 CALLREF {
 	CALL $_claimReward_internal_macro$
 }
@@ -602,7 +597,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 68
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 62
 ENDS
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 CALLREF {
@@ -620,7 +615,7 @@ GETGLOB 9
 GETGLOB 11
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 69
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 63
 CALLREF {
 	CALL $_skimFees_internal_macro$
 }
@@ -635,7 +630,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 78
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 72
 OVER
 PUSHCONT {
 	LDREF
@@ -670,7 +665,7 @@ CALLREF {
 THROW 0
 
 .macro onAcceptTokensTransfer_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 87
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 81
 PUSH S5
 GETGLOB 19
 PUSHINT 267
@@ -705,7 +700,7 @@ PUSHCONT {
 }
 IFNOT
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 90
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 84
 	GETGLOB 9
 	ROLL 5
 	GETGLOB 10
@@ -719,12 +714,12 @@ PUSHCONT {
 	CALLREF {
 		CALL $_transferTokens_internal_macro$
 	}
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 104
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 98
 	BLKDROP 4
 	.loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 }
 IFJMP
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 107
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 101
 FALSE ; decl return flag
 PUSH S6
 GETGLOB 25
@@ -736,18 +731,18 @@ GETGLOB 12
 SDEQ
 AND
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 109
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 103
 	PUSH S4
 	GETGLOB 28
 	PUSHINT 100
 	MULDIVR
 	UFITS 128
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 112
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 106
 	PUSH2 S6, S0
 	CALLREF {
 		CALL $_considerTokensFee_internal_macro$
 	}
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 113
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 107
 	BLKPUSH 2, 6
 	ROT
 	SUB
@@ -755,15 +750,15 @@ PUSHCONT {
 	CALLREF {
 		CALL $_considerTokensArrival_internal_macro$
 	}
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 116
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 110
 	OVER
 	CTOS
 	LDU 32
 	ENDS
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 118
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 112
 	EQINT 22
 	PUSHCONT {
-		.loc ../contracts/booster/account/BoosterAccountBase.sol, 119
+		.loc ../contracts/booster/account/BoosterAccountBase.sol, 113
 		BLKDROP 6
 		PUSHINT 4
 		.loc ../contracts/booster/account/BoosterAccountBase.sol, 0
@@ -772,7 +767,7 @@ PUSHCONT {
 	.loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 }
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 122
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 116
 	BLKPUSH 2, 5
 	CALLREF {
 		CALL $_considerTokensArrival_internal_macro$
@@ -781,26 +776,15 @@ PUSHCONT {
 }
 IFELSE
 IFRET
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 125
-DROP
-PUSH S3
-ROLL 4
-GETGLOB 21
-SDEQ
-PUSHCONT {
-	OVER
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 119
+BLKDROP 4
+CALLREF {
+	CALL $_me_internal_macro$
 }
-PUSHCONT {
-	CALLREF {
-		CALL $_me_internal_macro$
-	}
-}
-IFELSE
 CALLREF {
 	CALL $_processTokensArrival_internal_macro$
 }
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
-BLKDROP 3
 
 .macro onAcceptTokensMint
 DROP
@@ -811,7 +795,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 135
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 129
 OVER
 PUSHCONT {
 	LDREF
@@ -838,7 +822,7 @@ CALLREF {
 THROW 0
 
 .macro onAcceptTokensMint_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 143
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 136
 DROP2
 OVER
 GETGLOB 19
@@ -866,7 +850,7 @@ PUSHCONT {
 }
 IFNOT
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 146
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 139
 	GETGLOB 9
 	SWAP
 	GETGLOB 10
@@ -882,29 +866,29 @@ PUSHCONT {
 	CALLREF {
 		CALL $_transferTokens_internal_macro$
 	}
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 158
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 151
 	DROP
 	.loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 }
 IFJMP
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 161
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 154
 OVER
 GETGLOB 21
 SDEQ
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 162
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 156
 	DUP
 	GETGLOB 29
 	PUSHINT 100
 	MULDIVR
 	UFITS 128
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 164
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 158
 	GETGLOB 21
 	OVER
 	CALLREF {
 		CALL $_considerTokensFee_internal_macro$
 	}
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 165
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 159
 	GETGLOB 21
 	PUSH S2
 	ROT
@@ -912,14 +896,14 @@ PUSHCONT {
 	UFITS 128
 }
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 167
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 161
 	DUP2
 }
 IFELSE
 CALLREF {
 	CALL $_considerTokensArrival_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 170
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 164
 DROP
 CALLREF {
 	CALL $_me_internal_macro$
@@ -934,7 +918,7 @@ CALLREF {
 CALL $_considerTokensFee_internal_macro$
 
 .macro _considerTokensFee_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 177
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 171
 SWAP
 GETGLOB 20
 DUP2
@@ -963,7 +947,7 @@ SETGLOB 20
 CALL $_considerTokensArrival_internal_macro$
 
 .macro _considerTokensArrival_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 184
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 178
 PUSH2 S0, S1
 GETGLOB 17
 DUP2
@@ -985,7 +969,7 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 17
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 185
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 179
 SWAP
 GETGLOB 18
 DUP2
@@ -1014,12 +998,12 @@ SETGLOB 18
 CALL $_processTokensArrival_internal_macro$
 
 .macro _processTokensArrival_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 190
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 184
 OVER
 GETGLOB 21
 SDEQ
 PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountBase.sol, 192
+	.loc ../contracts/booster/account/BoosterAccountBase.sol, 186
 	DUP
 	CALLREF {
 		CALL $_depositToFarming_internal_macro$
@@ -1034,7 +1018,7 @@ PUSHCONT {
 	SDEQ
 	OR
 	PUSHCONT {
-		.loc ../contracts/booster/account/BoosterAccountBase.sol, 195
+		.loc ../contracts/booster/account/BoosterAccountBase.sol, 189
 		OVER
 		CALLREF {
 			CALL $_depositLiquidityToPair_internal_macro$
@@ -1048,7 +1032,7 @@ PUSHCONT {
 		NULLSWAPIFNOT
 		NIP
 		PUSHCONT {
-			.loc ../contracts/booster/account/BoosterAccountBase.sol, 198
+			.loc ../contracts/booster/account/BoosterAccountBase.sol, 192
 			OVER
 			CALLREF {
 				CALL $_swap_internal_macro$
@@ -1072,7 +1056,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 204
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 198
 OVER
 PUSHCONT {
 	LDREF
@@ -1093,7 +1077,7 @@ CALLREF {
 THROW 0
 
 .macro receiveTokenWallet_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 207
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 201
 GETGLOB 9
 GETGLOB 19
 PUSHINT 267
@@ -1101,19 +1085,19 @@ DICTGET
 NULLSWAPIFNOT
 NIP
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 209
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 203
 GETGLOB 9
 GETGLOB 19
 PUSHINT 267
 DICTSET
 SETGLOB 19
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 211
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 205
 CALLREF {
 	CALL $_targetBalance_internal_macro$
 }
 PUSHINT 0
 RAWRESERVE
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 213
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 207
 GETGLOB 10
 NEWC
 STSLICECONST x42_
@@ -1134,7 +1118,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 222
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 216
 OVER
 PUSHCONT {
 	LDREF
@@ -1155,12 +1139,12 @@ CALLREF {
 THROW 0
 
 .macro receiveFarmingUserData_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 225
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 219
 GETGLOB 9
 GETGLOB 12
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 227
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 221
 SETGLOB 15
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 
@@ -1169,10 +1153,10 @@ SETGLOB 15
 CALL $_skimFees_internal_macro$
 
 .macro _skimFees_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 231
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 225
 PUSHREF {
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 233
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 227
 GETGLOB 20
 DUP
 PUSHINT 267
@@ -1194,10 +1178,10 @@ PUSHCONT {
 }
 PUSHCONT {
 	PUSHCONT {
-		.loc ../contracts/booster/account/BoosterAccountBase.sol, 234
+		.loc ../contracts/booster/account/BoosterAccountBase.sol, 228
 		DUP
 		IFNOTRET
-		.loc ../contracts/booster/account/BoosterAccountBase.sol, 236
+		.loc ../contracts/booster/account/BoosterAccountBase.sol, 230
 		OVER
 		GETGLOB 19
 		PUSHINT 267
@@ -1221,7 +1205,7 @@ PUSHCONT {
 		CALLREF {
 			CALL $_transferTokens_internal_macro$
 		}
-		.loc ../contracts/booster/account/BoosterAccountBase.sol, 248
+		.loc ../contracts/booster/account/BoosterAccountBase.sol, 242
 		OVER
 		GETGLOB 20
 		PUSHINT 0
@@ -1258,7 +1242,7 @@ BLKDROP 5
 CALL $_depositLiquidityToPair_internal_macro$
 
 .macro _depositLiquidityToPair_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 255
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 249
 DUP
 GETGLOB 17
 PUSHINT 267
@@ -1274,13 +1258,13 @@ PUSHCONT {
 	DROP
 }
 IFNOTJMP
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 257
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 251
 NOW
 PUSHINT 0
 CALLREF {
 	CALL $_buildDepositPayload_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 262
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 256
 OVER
 GETGLOB 19
 PUSHINT 267
@@ -1314,7 +1298,7 @@ DUP
 CALLREF {
 	CALL $_transferTokens_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 274
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 268
 GETGLOB 17
 PUSHINT 0
 NEWC
@@ -1330,7 +1314,7 @@ SETGLOB 17
 CALL $_claimReward_internal_macro$
 
 .macro _claimReward_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 278
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 272
 PUSHINT 11
 CALLREF {
 	CALL $_me_internal_macro$
@@ -1361,7 +1345,7 @@ SENDRAWMSG
 CALL $_swap_internal_macro$
 
 .macro _swap_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 285
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 279
 DUP
 GETGLOB 17
 PUSHINT 267
@@ -1377,7 +1361,7 @@ PUSHCONT {
 	DROP
 }
 IFNOTJMP
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 287
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 281
 DUP
 GETGLOB 26
 PUSHINT 267
@@ -1402,13 +1386,13 @@ PUSHCONT {
 	PAIR
 }
 IFELSE
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 289
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 283
 PUSHINT 0
 BLKPUSH 2, 0
 CALLREF {
 	CALL $_buildSwapPayload_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 295
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 289
 PUSH S2
 GETGLOB 19
 PUSHINT 267
@@ -1443,7 +1427,7 @@ DUP
 CALLREF {
 	CALL $_transferTokens_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 307
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 301
 GETGLOB 17
 PUSHINT 0
 NEWC
@@ -1459,7 +1443,7 @@ SETGLOB 17
 CALL $_deployTokenWallet_internal_macro$
 
 .macro _deployTokenWallet_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 313
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 307
 DUP
 GETGLOB 17
 PUSHINT 0
@@ -1469,7 +1453,7 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 17
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 314
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 308
 DUP
 GETGLOB 18
 PUSHINT 0
@@ -1479,7 +1463,7 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 18
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 315
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 309
 DUP
 GETGLOB 20
 PUSHINT 0
@@ -1489,7 +1473,7 @@ ROTREV
 PUSHINT 267
 DICTSETB
 SETGLOB 20
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 316
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 310
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -1498,7 +1482,7 @@ GETGLOB 19
 PUSHINT 267
 DICTSET
 SETGLOB 19
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 318
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 312
 PUSHINT 200000000
 CALLREF {
 	CALL $_me_internal_macro$
@@ -1530,7 +1514,7 @@ SENDRAWMSG
 CALL $_depositToFarming_internal_macro$
 
 .macro _depositToFarming_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 328
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 322
 GETGLOB 21
 GETGLOB 17
 PUSHINT 267
@@ -1546,18 +1530,12 @@ PUSHCONT {
 	DROP
 }
 IFNOTJMP
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 330
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 324
 PUSHINT 22
 CALLREF {
 	CALL $_buildFarmingDepositPayload_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 332
-CALLREF {
-	CALL $_targetBalance_internal_macro$
-}
-PUSHINT 0
-RAWRESERVE
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 334
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 326
 GETGLOB 21
 GETGLOB 19
 PUSHINT 267
@@ -1589,7 +1567,7 @@ DUP
 CALLREF {
 	CALL $_transferTokens_internal_macro$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 346
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 338
 GETGLOB 21
 GETGLOB 17
 PUSHINT 0
@@ -1610,7 +1588,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 352
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 344
 LDU 128
 ENDS
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
@@ -1639,7 +1617,7 @@ SUB
 UFITS 128
 PUSHINT 2
 RAWRESERVE
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 355
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 347
 PUSHINT 0
 GETGLOB 9
 ROT
@@ -1670,7 +1648,7 @@ SENDRAWMSG
 CALL $_requestFarmingUserData_internal_macro$
 
 .macro _requestFarmingUserData_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 363
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 355
 CALLREF {
 	CALL $_me_internal_macro$
 }
@@ -1700,20 +1678,20 @@ SENDRAWMSG
 CALL $_buildDepositPayload_internal_macro$
 
 .macro _buildDepositPayload_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 375
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 367
 NEWC
 STSLICECONST x02
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 376
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 368
 XCHG S1, S2
 STU 64
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 377
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 369
 STU 128
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 380
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 372
 PUSHREF {
 }
 SWAP
 STREF
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 382
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 374
 ENDC
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 
@@ -1722,24 +1700,24 @@ ENDC
 CALL $_buildSwapPayload_internal_macro$
 
 .macro _buildSwapPayload_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 391
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 383
 NEWC
 STSLICECONST x01
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 392
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 384
 ROLL 3
 SWAP
 STU 64
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 393
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 385
 XCHG S1, S2
 STU 128
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 394
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 386
 STU 128
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 397
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 389
 PUSHREF {
 }
 SWAP
 STREF
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 399
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 391
 ENDC
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 
@@ -1748,15 +1726,15 @@ ENDC
 CALL $_buildFarmingDepositPayload_internal_macro$
 
 .macro _buildFarmingDepositPayload_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 406
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 398
 CALLREF {
 	CALL $_me_internal_macro$
 }
 NEWC
 STSLICE
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 407
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 399
 STU 32
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 409
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 401
 ENDC
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 
@@ -1765,8 +1743,8 @@ ENDC
 CALL $_targetBalance_internal_macro$
 
 .macro _targetBalance_internal_macro
-.loc ../contracts/booster/account/BoosterAccountBase.sol, 413
-PUSHINT 10000000000
+.loc ../contracts/booster/account/BoosterAccountBase.sol, 405
+PUSHINT 20000000000
 .loc ../contracts/booster/account/BoosterAccountBase.sol, 0
 
 .macro setRewardFee
@@ -1970,126 +1948,12 @@ PUSHINT 129
 SENDRAWMSG
 .loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
 
-.macro withdraw
-DROP
-GETGLOB 6
-THROWIFNOT 76
-GETGLOB 2
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 45
-OVER
-PUSHCONT {
-	LDREF
-	ENDS
-	CTOS
-}
-IF
-LDMSGADDR
-LDU 128
-ENDS
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
-CALLREF {
-	CALL $withdraw_internal_macro$
-}
-DROP
-CALLREF {
-	CALL $c7_to_c4$
-}
-THROW 0
-
-.macro withdraw_internal_macro
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
-GETGLOB 9
-GETGLOB 10
-SDEQ
-THROWIFNOT 1101
-.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
-OVER
-.loc ../contracts/booster/account/BoosterAccountStorage.sol, 45
-GETGLOB 19
-PUSHINT 267
-DICTGET
-NULLSWAPIFNOT
-NIP
-THROWIFNOT 100
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 49
-OVER
-GETGLOB 19
-PUSHINT 267
-DICTGET
-PUSHCONT {
-	PUSHREFSLICE {
-		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-	}
-}
-IFNOT
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 51
-OVER
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 53
-ROT
-PUSHCONT {
-	.loc ../contracts/booster/account/BoosterAccountSettings.sol, 54
-	PUSH S2
-	GETGLOB 17
-	PUSHINT 267
-	DICTGET
-	PUSHCONT {
-		PLDU 128
-	}
-	PUSHCONT {
-		PUSHINT 0
-	}
-	IFELSE
-	NIP
-	.loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
-}
-IFNOT
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 59
-TUCK
-GETGLOB 10
-DUP
-FALSE
-PUSHREF {
-}
-PUSHINT 0
-PUSHINT 64
-TRUE
-CALLREF {
-	CALL $_transferTokens_internal_macro$
-}
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 71
-SWAP
-GETGLOB 17
-DUP2
-PUSHINT 267
-DICTGET
-PUSHCONT {
-	PLDU 128
-}
-PUSHCONT {
-	PUSHINT 0
-}
-IFELSE
-ROLL 3
-SUB
-UFITS 128
-NEWC
-STU 128
-ROTREV
-PUSHINT 267
-DICTSETB
-SETGLOB 17
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 0
-
 .globl	_transferTokens_internal
 .type	_transferTokens_internal, @function
 CALL $_transferTokens_internal_macro$
 
 .macro _transferTokens_internal_macro
-.loc ../contracts/booster/account/BoosterAccountSettings.sol, 87
+.loc ../contracts/booster/account/BoosterAccountSettings.sol, 54
 BLKSWAP 3, 3
 REVERSE 4, 0
 TRUE
@@ -2978,9 +2842,193 @@ PUSHCONT {
 IF
 THROW 0
 
+.macro lp
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 21
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000a8421683
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro pair
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 22
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000b536d33f
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro left
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 23
+OVER
+PUSHCONT {
+	PUSHSLICE xc000000000000000000000000092d81022
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro right
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 24
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000ee71897d
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro rewards
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 25
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000b30a1f54
+	NEWC
+	STSLICE
+	SWAP
+	UNPAIR
+	XCHG S2
+	STU 32
+	STDICT
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro swaps
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 26
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000bc325540
+	NEWC
+	STSLICE
+	STDICT
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro rewarder
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 27
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000c504c8fa
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro reward_fee
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 28
+OVER
+PUSHCONT {
+	PUSHSLICE xc0000000000000000000000000f0d821f4
+	NEWC
+	STSLICE
+	STU 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
+.macro lp_fee
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 29
+OVER
+PUSHCONT {
+	PUSHSLICE xc000000000000000000000000081aa8442
+	NEWC
+	STSLICE
+	STU 128
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
 .macro public_function_selector
 DUP
-PUSHINT 1417376408
+PUSHINT 1157941498
 LEQ
 IFJMPREF {
 	DUP
@@ -2988,10 +3036,10 @@ IFJMPREF {
 	LEQ
 	IFJMPREF {
 		DUP
-		PUSHINT 141807997
+		PUSHINT 27952194
 		EQUAL
 		IFJMPREF {
-			CALL $withdraw$
+			CALL $lp_fee$
 		}
 		DUP
 		PUSHINT 150952694
@@ -3013,14 +3061,20 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 859986061
+	PUSHINT 777389991
 	LEQ
 	IFJMPREF {
 		DUP
-		PUSHINT 486793563
+		PUSHINT 316149794
 		EQUAL
 		IFJMPREF {
-			CALL $ping$
+			CALL $left$
+		}
+		DUP
+		PUSHINT 675419779
+		EQUAL
+		IFJMPREF {
+			CALL $lp$
 		}
 		DUP
 		PUSHINT 730217656
@@ -3034,28 +3088,51 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $receiveTokenWallet$
 		}
+	}
+	DUP
+	PUSHINT 923783735
+	LEQ
+	IFJMPREF {
+		DUP
+		PUSHINT 856301396
+		EQUAL
+		IFJMPREF {
+			CALL $rewards$
+		}
 		DUP
 		PUSHINT 859986061
 		EQUAL
 		IFJMPREF {
 			CALL $isInitialized$
 		}
-	}
-	DUP
-	PUSHINT 1299788324
-	LEQ
-	IFJMPREF {
+		DUP
+		PUSHINT 892785471
+		EQUAL
+		IFJMPREF {
+			CALL $pair$
+		}
 		DUP
 		PUSHINT 923783735
 		EQUAL
 		IFJMPREF {
 			CALL $user_data$
 		}
+	}
+	DUP
+	PUSHINT 1157941498
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 964075442
 		EQUAL
 		IFJMPREF {
 			CALL $factory$
+		}
+		DUP
+		PUSHINT 1009931584
+		EQUAL
+		IFJMPREF {
+			CALL $swaps$
 		}
 		DUP
 		PUSHINT 1082359095
@@ -3064,16 +3141,27 @@ IFJMPREF {
 			CALL $skim$
 		}
 		DUP
+		PUSHINT 1157941498
+		EQUAL
+		IFJMPREF {
+			CALL $rewarder$
+		}
+	}
+}
+DUP
+PUSHINT 2117416875
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 1382290624
+	LEQ
+	IFJMPREF {
+		DUP
 		PUSHINT 1299788324
 		EQUAL
 		IFJMPREF {
 			CALL $version$
 		}
-	}
-	DUP
-	PUSHINT 1417376408
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1315085537
 		EQUAL
@@ -3092,22 +3180,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $setRewardFee$
 		}
+	}
+	DUP
+	PUSHINT 1729444094
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1417376408
 		EQUAL
 		IFJMPREF {
 			CALL $setLpFee$
 		}
-	}
-}
-DUP
-PUSHINT 2117416875
-LEQ
-IFJMPREF {
-	DUP
-	PUSHINT 1756716863
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1493926320
 		EQUAL
@@ -3126,11 +3209,34 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $renounceOwnership$
 		}
+	}
+	DUP
+	PUSHINT 1893244873
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1756716863
 		EQUAL
 		IFJMPREF {
 			CALL $constructor$
+		}
+		DUP
+		PUSHINT 1852934525
+		EQUAL
+		IFJMPREF {
+			CALL $right$
+		}
+		DUP
+		PUSHINT 1893212660
+		EQUAL
+		IFJMPREF {
+			CALL $reward_fee$
+		}
+		DUP
+		PUSHINT 1893244873
+		EQUAL
+		IFJMPREF {
+			CALL $onAcceptTokensTransfer$
 		}
 	}
 	DUP
@@ -3138,10 +3244,10 @@ IFJMPREF {
 	LEQ
 	IFJMPREF {
 		DUP
-		PUSHINT 1893244873
+		PUSHINT 1898962833
 		EQUAL
 		IFJMPREF {
-			CALL $onAcceptTokensTransfer$
+			CALL $ping$
 		}
 		DUP
 		PUSHINT 2031238068

@@ -38,8 +38,7 @@ interface IBoosterAccount is IBoosterBase {
 
     // Manager methods
     function ping(
-        uint counter,
-        address _remainingGasTo
+        uint counter
     ) external;
 
     function skim() external;
@@ -65,7 +64,6 @@ interface IBoosterAccount is IBoosterBase {
     function isInitialized() external view returns(bool);
 
     // Owner methods
-    function withdraw(address token, uint128 _amount) external;
     function requestFarmingLP(
         uint128 amount
     ) external;

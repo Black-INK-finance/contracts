@@ -108,6 +108,8 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         uint128 amount,
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
+        emit PingTokensAccepted(amount);
+
         ping_balance += amount;
     }
 
@@ -121,6 +123,8 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         require(amount >= ping_balance);
 
         ping_balance -= amount;
+
+        emit PingTokensWithdrawn(amount);
 
         IBoosterFactory(factory).withdrawPingTokens{
             value: 0,
@@ -140,13 +144,31 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         require(frequency >= Constants.MIN_PING_FREQUENCY);
 
         accounts[account].ping_frequency = frequency;
+
+        emit PingFrequencyUpdated(account, frequency);
     }
 
+    /// @notice Set ping max price
+    /// Can be called only by `owner`
+    /// @param price New ping max price
+    function setPingMaxPrice(
+        uint128 price
+    ) external override onlyOwner cashBack(msg.sender) {
+        ping_max_price = price;
+
+        emit PingMaxPriceUpdated(ping_max_price);
+    }
+
+    /// @notice Set manager keys, authorized to call `pingByManager`
+    /// Can be called only by `factory`
+    /// @param _managers List of manager keys
     function setManagers(
         uint[] _managers,
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
         managers = _managers;
+
+        emit ManagersUpdated(managers);
     }
 
     function registerAccount(
@@ -154,12 +176,18 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         uint128 ping_frequency,
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
+        require(!accounts.exists(account), Errors.BOOSTER_PASSPORT_ACCOUNT_ALREADY_REGISTERED);
+
         accounts[account] = AccountSettings({
             ping_frequency: ping_frequency,
             last_ping: 0,
             ping_counter: 0,
             auto_ping_enabled: true
         });
+
+        emit AccountRegistered(account);
+        emit AutoPingUpdated(account, true);
+        emit PingFrequencyUpdated(account, ping_frequency);
     }
 
     /// @notice Toggle account auto ping
@@ -169,6 +197,8 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         address account
     ) external override onlyOwner accountExists(account) cashBack(msg.sender) {
         accounts[account].auto_ping_enabled = !accounts[account].auto_ping_enabled;
+
+        emit AutoPingUpdated(account, accounts[account].auto_ping_enabled);
     }
 
     /// @notice Initialize ping
@@ -193,7 +223,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         require(ping_max_price >= price, Errors.BOOSTER_PASSPORT_PRICE_TOO_HIGH);
         require(settings.auto_ping_enabled, Errors.BOOSTER_PASSPORT_AUTO_PING_DISABLED);
 
-        _updateAccountLastPing(account);
+        _updateAccountLastPing(account, counter, true);
 
         ping_balance -= price;
 
@@ -222,17 +252,16 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     ) external override onlyOwner reserveAtLeastTargetBalance accountExists(account) {
         AccountSettings settings = accounts[account];
 
-//        require(settings.last_ping + Constants.PING_DURATION >= now, Errors.BOOSTER_PASSPORT_PING_NOT_FINISHED);
         require(settings.ping_counter == counter, Errors.BOOSTER_PASSPORT_WRONG_COUNTER);
 
-        _updateAccountLastPing(account);
+        _updateAccountLastPing(account, counter, false);
 
         // Attach gas to the ping
         IBoosterAccount(account).ping{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
-        }(counter, msg.sender);
+        }(counter);
     }
 
     function getDetails() external override view returns(
@@ -255,8 +284,12 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         );
     }
 
-    function _updateAccountLastPing(address account) internal {
-        accounts[account].last_ping = now;
+    function _updateAccountLastPing(address account, uint counter, bool byManager) internal {
+        uint128 _now = now;
+
+        emit Ping(account, _now, counter, byManager);
+
+        accounts[account].last_ping = _now;
         accounts[account].ping_counter++;
     }
 

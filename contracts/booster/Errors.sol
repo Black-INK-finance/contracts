@@ -12,6 +12,7 @@ library Errors {
     uint16 constant BOOSTER_PASSPORT_AUTO_PING_DISABLED = 2103;
     uint16 constant BOOSTER_PASSPORT_PING_NOT_FINISHED = 2104;
     uint16 constant BOOSTER_PASSPORT_ACCOUNT_NOT_EXISTS = 2105;
+    uint16 constant BOOSTER_PASSPORT_ACCOUNT_ALREADY_REGISTERED = 2106;
 
     // Account
     // Buyback

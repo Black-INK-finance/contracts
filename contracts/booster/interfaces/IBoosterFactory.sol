@@ -113,4 +113,7 @@ interface IBoosterFactory is IBoosterBase {
     function receiveTokenWallet(
         address wallet
     ) external;
+
+    event PassportDeployed(address owner, address passport);
+    event AccountDeployed(address owner, address account);
 }

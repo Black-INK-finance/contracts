@@ -19,42 +19,36 @@ import "./../Constants.sol";
 
 
 abstract contract BoosterAccountBase is
-    InternalOwner,
     IAcceptTokensTransferCallback,
     IAcceptTokensMintCallback,
     BoosterAccountSettings
 {
-//    /// @notice Returns all exceeding balance to the manager
-//    /// `_targetBalance()` is used as a baseline
-//    receive() external view {
-//        tvm.rawReserve(_targetBalance(), 0);
-//
-//        factory.transfer({ value: 0, bounce: false, flag: MsgFlag.ALL_NOT_RESERVED });
-//    }
-
     constructor() public {
         revert();
     }
 
     /// @notice Keeper method for claiming farming reward
-    /// Can be called only by `owner` or `factory`
+    /// Can be called only by `passport` or `factory`
     /// @param counter Current ping order number
     function ping(
-        uint counter,
-        address sponsor
-    ) external override reserveTargetBalance {
+        uint counter
+    ) external override {
         require(msg.sender == passport || msg.sender == factory, Errors.WRONG_SENDER);
 
-        // Return rest of previous ping sponsorship
-        if (ping_sponsor != address.makeAddrStd(0,0)) {
-            ping_sponsor.transfer({
+        uint128 skim_limit = math.muldiv(
+            _targetBalance(),
+            Constants.BPS + Constants.BOOSTER_ACCOUNT_GAS_SKIM_MULTIPLIER,
+            Constants.BPS
+        );
+
+        // Skim exceeding gas
+        if ((address(this).balance - msg.value) > skim_limit) {
+            factory.transfer({
                 flag: 0,
-                value: address(this).balance - (msg.value + _targetBalance()),
-                bounce: false
+                bounce: false,
+                value: address(this).balance - msg.value - _targetBalance()
             });
         }
-
-        ping_sponsor = sponsor;
 
         if (counter % Constants.PINGS_PER_SKIM == 0) {
             _skimFees();
@@ -124,7 +118,7 @@ abstract contract BoosterAccountBase is
 
         _processTokensArrival(
             root,
-            root == lp ? remainingGasTo : _me()
+            _me()
         );
     }
 
@@ -139,7 +133,6 @@ abstract contract BoosterAccountBase is
         TvmCell
     ) external override {
         // Unknown token
-        // TODO: if LP & sender == farming, than transfer to the owner
         if (!wallets.exists(root) || wallets[root] != msg.sender) {
             TvmCell empty;
 
@@ -159,6 +152,7 @@ abstract contract BoosterAccountBase is
         }
 
         if (root == lp) {
+            // Get management fees from LP
             uint128 fee = math.muldivr(amount, lp_fee, Constants.BPS);
 
             _considerTokensFee(lp, fee);
@@ -328,8 +322,6 @@ abstract contract BoosterAccountBase is
         if (balances[lp] == 0) return;
 
         TvmCell payload = _buildFarmingDepositPayload(Constants.NO_REINVEST_REQUIRED);
-
-        tvm.rawReserve(_targetBalance(), 0);
 
         _transferTokens(
             wallets[lp],

@@ -38,7 +38,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     ) external override onlyBoosterPassport(_owner) {
         tvm.accept();
 
-        // Top up booster
+        // Top up booster passport
         if (required_top_up > 0) {
             msg.sender.transfer({
                 value: required_top_up,
@@ -52,8 +52,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         IBoosterAccount(account).ping{
             value: ping_cost,
             bounce: false,
-            flag: 0
-        }(counter, _me());
+            flag: 1
+        }(counter);
     }
 
     function _transferTokens(

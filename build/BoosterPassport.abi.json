@@ -47,6 +47,14 @@
 			]
 		},
 		{
+			"name": "setPingMaxPrice",
+			"inputs": [
+				{"name":"price","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setManagers",
 			"inputs": [
 				{"name":"_managers","type":"uint256[]"},
@@ -186,6 +194,75 @@
 			"inputs": [
 				{"name":"previousOwner","type":"address"},
 				{"name":"newOwner","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "PingTokensAccepted",
+			"inputs": [
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "PingTokensWithdrawn",
+			"inputs": [
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AccountRegistered",
+			"inputs": [
+				{"name":"account","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "PingFrequencyUpdated",
+			"inputs": [
+				{"name":"account","type":"address"},
+				{"name":"frequency","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "PingMaxPriceUpdated",
+			"inputs": [
+				{"name":"price","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AutoPingUpdated",
+			"inputs": [
+				{"name":"account","type":"address"},
+				{"name":"status","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "Ping",
+			"inputs": [
+				{"name":"account","type":"address"},
+				{"name":"_timestamp","type":"uint256"},
+				{"name":"counter","type":"uint256"},
+				{"name":"byManager","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "ManagersUpdated",
+			"inputs": [
+				{"name":"managers","type":"uint256[]"}
 			],
 			"outputs": [
 			]

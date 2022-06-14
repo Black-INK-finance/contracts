@@ -262,6 +262,8 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
 
         // Deploy passport if required
         if (deploy_passport) {
+            emit PassportDeployed(msg.sender, passport);
+
             new BoosterPassportPlatform{
                 stateInit: passportStateInit,
                 value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE * 2,
@@ -285,6 +287,8 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             ping_frequency, // ping frequency
             msg.sender // remaining gas
         );
+
+        emit AccountDeployed(msg.sender, account);
 
         // Deploy booster account
         new BoosterAccountPlatform{
