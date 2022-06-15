@@ -19,50 +19,6 @@
 			]
 		},
 		{
-			"name": "setManagers",
-			"inputs": [
-				{"name":"passports","type":"address[]"},
-				{"name":"_managers","type":"uint256[]"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setRewardFee",
-			"inputs": [
-				{"name":"accounts","type":"address[]"},
-				{"name":"fee","type":"uint128"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setLpFee",
-			"inputs": [
-				{"name":"accounts","type":"address[]"},
-				{"name":"fee","type":"uint128"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "skimFees",
-			"inputs": [
-				{"name":"accounts","type":"address[]"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setRewarder",
-			"inputs": [
-				{"name":"accounts","type":"address[]"},
-				{"name":"_rewarder","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "receiveTokenWallet",
 			"inputs": [
 				{"name":"wallet","type":"address"}
@@ -198,6 +154,14 @@
 			]
 		},
 		{
+			"name": "skimGas",
+			"inputs": [
+				{"name":"reserve","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "pingAccount",
 			"inputs": [
 				{"name":"_owner","type":"address"},
@@ -224,6 +188,56 @@
 				{"name":"reward_fee","type":"uint128"},
 				{"name":"lp_fee","type":"uint128"},
 				{"name":"ping_value","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setPingValue",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"ping_value","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setManagers",
+			"inputs": [
+				{"name":"passports","type":"address[]"},
+				{"name":"_managers","type":"uint256[]"},
+				{"name":"save_as_default","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setFees",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"accounts","type":"address[]"},
+				{"name":"lp_fee","type":"uint128"},
+				{"name":"reward_fee","type":"uint128"},
+				{"name":"save_as_default","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "skimFees",
+			"inputs": [
+				{"name":"accounts","type":"address[]"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setRewarder",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"accounts","type":"address[]"},
+				{"name":"rewarder","type":"address"},
+				{"name":"save_as_default","type":"bool"}
 			],
 			"outputs": [
 			]

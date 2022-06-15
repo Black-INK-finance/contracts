@@ -14,6 +14,7 @@ library Gas {
     uint128 constant BOOSTER_FACTORY_PASSPORT_UPDATE = 0.5 ton;
     uint128 constant BOOSTER_FACTORY_ACCOUNT_UPGRADE = 1 ton;
     uint128 constant BOOSTER_FACTORY_PASSPORT_UPGRADE = 1 ton;
+    uint128 constant BOOSTER_FACTORY_MIN_PING_VALUE = 1 ton;
 
     uint128 constant BOOSTER_UPGRADE_ACCOUNT = 0.5 ton;
     uint128 constant BOOSTER_DEPLOY_ACCOUNT = 1 ton;

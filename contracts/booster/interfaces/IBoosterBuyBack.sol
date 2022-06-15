@@ -10,6 +10,10 @@ interface IBoosterBuyBack {
         uint128 minToSwap;
     }
 
+    function skimGas(
+        uint128 reserve
+    ) external;
+
     function receiveTokenWallet(
         address wallet
     ) external;

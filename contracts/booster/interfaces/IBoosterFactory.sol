@@ -4,6 +4,10 @@ import "./IBoosterBase.sol";
 
 
 interface IBoosterFactory is IBoosterBase {
+    function skimGas(
+        uint128 reserve
+    ) external;
+
     function pingAccount(
         address _owner,
         uint counter,
@@ -70,32 +74,38 @@ interface IBoosterFactory is IBoosterBase {
         uint128 ping_value
     ) external;
 
-    function toggleFarming(
-        address farming_pool
+    function setPingValue(
+        address farming_pool,
+        uint128 ping_value
     ) external;
 
-    function setLpFee(
+    function setRewarder(
+        address farming_pool,
         address[] accounts,
-        uint128 fee
+        address rewarder,
+        bool save_as_default
+    ) external;
+
+    function setFees(
+        address farming_pool,
+        address[] accounts,
+        uint128 lp_fee,
+        uint128 reward_fee,
+        bool save_as_default
+    ) external;
+
+    function toggleFarming(
+        address farming_pool
     ) external;
 
     function skimFees(
         address[] accounts
     ) external;
 
-    function setRewarder(
-        address[] accounts,
-        address _rewarder
-    ) external;
-
-    function setRewardFee(
-        address[] accounts,
-        uint128 fee
-    ) external;
-
     function setManagers(
         address[] passports,
-        uint[] _managers
+        uint[] _managers,
+        bool save_as_default
     ) external;
 
     function getDetails() external returns (

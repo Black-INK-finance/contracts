@@ -3,7 +3,10 @@ pragma ton-solidity ^0.57.1;
 
 import "./../interfaces/IBoosterFactory.sol";
 import "./../interfaces/IBoosterAccount.sol";
+import "./../interfaces/IBoosterPassport.sol";
+
 import "@broxus/contracts/contracts/access/InternalOwner.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "./../Constants.sol";
 import "./../Errors.sol";
@@ -26,6 +29,12 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
     TvmCell public passport_platform;
     TvmCell public passport_implementation;
     uint public passport_version;
+
+    modifier farmingPoolExists(address farming_pool) {
+        require(farmings.exists(farming_pool), Errors.BOOSTER_FACTORY_FARMING_POOL_NOT_EXISTS);
+
+        _;
+    }
 
     function getDetails() external override returns (
         uint _version,

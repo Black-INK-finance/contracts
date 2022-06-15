@@ -8,24 +8,15 @@ import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
 
 
 abstract contract BoosterAccountSettings is BoosterAccountStorage {
-    /// @notice Set reward fee in BPS
+    /// @notice Set LP and reward fee in BPS
     /// Can be called only by `factory`
-    /// @param fee Reward fee in BPS
-    function setRewardFee(
-        uint128 fee,
+    function setFees(
+        uint128 _lp_fee,
+        uint128 _reward_fee,
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
-        reward_fee = fee;
-    }
-
-    /// @notice Set LP fee in BPS
-    /// Can be called only by `factory`
-    /// @param fee LP fee in BPS
-    function setLpFee(
-        uint128 fee,
-        address remainingGasTo
-    ) external override onlyFactory cashBack(remainingGasTo) {
-        lp_fee = fee;
+        lp_fee = _lp_fee;
+        reward_fee = _reward_fee;
     }
 
     /// @notice Set new rewarder

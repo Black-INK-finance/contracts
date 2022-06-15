@@ -77,18 +77,10 @@
 			]
 		},
 		{
-			"name": "setRewardFee",
+			"name": "setFees",
 			"inputs": [
-				{"name":"fee","type":"uint128"},
-				{"name":"remainingGasTo","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setLpFee",
-			"inputs": [
-				{"name":"fee","type":"uint128"},
+				{"name":"_lp_fee","type":"uint128"},
+				{"name":"_reward_fee","type":"uint128"},
 				{"name":"remainingGasTo","type":"address"}
 			],
 			"outputs": [

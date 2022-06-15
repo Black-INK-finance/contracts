@@ -15,9 +15,14 @@ library Errors {
     uint16 constant BOOSTER_PASSPORT_ACCOUNT_ALREADY_REGISTERED = 2106;
     uint16 constant BOOSTER_PASSPORT_PING_FREQUENCY_TOO_LOW = 2107;
 
-    // Account
-    // Buyback
     // Factory
     uint16 constant BOOSTER_FACTORY_WRONG_ACCOUNT = 2200;
     uint16 constant BOOSTER_FACTORY_FARMING_NOT_EXISTS = 2201;
+    uint16 constant BOOSTER_FACTORY_FARMING_POOL_NOT_EXISTS = 2202;
+    uint16 constant BOOSTER_FACTORY_PING_VALUE_TOO_LOW = 2203;
+    uint16 constant BOOSTER_FACTORY_FARMING_POOL_DISABLED = 2204;
+    uint16 constant BOOSTER_FACTORY_FEE_TOO_HIGH = 2205;
+
+    // Account
+    // Buyback
 }

@@ -12,6 +12,14 @@
 			]
 		},
 		{
+			"name": "skimGas",
+			"inputs": [
+				{"name":"reserve","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setPaused",
 			"inputs": [
 				{"name":"_paused","type":"bool"}

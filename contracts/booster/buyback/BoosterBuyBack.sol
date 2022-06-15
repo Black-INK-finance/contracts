@@ -36,7 +36,7 @@ contract BoosterBuyBack is
     bool public paused;
 
     modifier onlyMeOrOwner() {
-        require(msg.sender == owner || msg.sender == _me());
+        require(msg.sender == owner || msg.sender == _me(), Errors.WRONG_SENDER);
 
         _;
     }
@@ -48,6 +48,21 @@ contract BoosterBuyBack is
 
         setOwnership(_owner);
         paused = false;
+    }
+
+    /// @notice Skim gas from the factory
+    /// Can be called only by `owner`
+    /// @param reserve How much left on the factory
+    function skimGas(
+        uint128 reserve
+    ) external override onlyOwner {
+        tvm.rawReserve(reserve, 0);
+
+        owner.transfer({
+            value: 0,
+            bounce: false,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        });
     }
 
     /// @notice Pause / unpause buybacks

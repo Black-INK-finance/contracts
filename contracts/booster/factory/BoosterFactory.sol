@@ -50,91 +50,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         );
     }
 
-    /// @notice Update manager on specific accounts
-    /// Can be called only by `owner`
-    /// @param passports Accounts list
-    /// @param _managers List of manager public keys
-    function setManagers(
-        address[] passports,
-        uint[] _managers
-    ) external override reserveBalance onlyOwner {
-        for (address passport: passports) {
-            IBoosterPassport(passport).setManagers{
-                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
-                bounce: true
-            }(_managers, msg.sender);
-        }
-    }
-
-    /// @notice Update reward fee on specific accounts
-    /// Can be called only by `owner`
-    /// @param accounts Accounts list
-    /// @param fee Fee value in BPS
-    function setRewardFee(
-        address[] accounts,
-        uint128 fee
-    ) external override reserveBalance onlyOwner {
-        require(fee <= Constants.MAX_FEE);
-
-        for (address account: accounts) {
-            IBoosterAccount(account).setRewardFee{
-                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
-                bounce: true
-            }(fee, msg.sender);
-        }
-    }
-
-    /// @notice Update LP fee on specific accounts
-    /// Can be called only by `owner`
-    /// @param accounts Accounts list
-    /// @param fee Fee value in BPS
-    function setLpFee(
-        address[] accounts,
-        uint128 fee
-    ) external override reserveBalance onlyOwner {
-        require(fee <= Constants.MAX_FEE);
-
-        for (address account: accounts) {
-            IBoosterAccount(account).setLpFee{
-                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
-                bounce: true
-            }(fee, msg.sender);
-        }
-    }
-
-    /// @notice Skim fees on specific accounts
-    /// Can be called only by `owner`
-    /// @param accounts Accounts list
-    function skimFees(
-        address[] accounts
-    ) external override onlyOwner cashBack(msg.sender) {
-        for (address account: accounts) {
-            IBoosterAccount(account).skim{
-                value: Gas.BOOSTER_FACTORY_ACCOUNT_SKIM,
-                bounce: true
-            }(msg.sender);
-        }
-    }
-
-    /// @notice Set rewarder address on specific accounts
-    /// Can be called only by `owner`
-    /// @param accounts Accounts list
-    /// @param _rewarder New rewarder
-    function setRewarder(
-        address[] accounts,
-        address _rewarder
-    ) external override reserveBalance onlyOwner {
-        /// A.K. protection
-        require(_rewarder != address.makeAddrStd(0, 0));
-
-        for (address account: accounts) {
-            IBoosterAccount(account).setRewarder{
-                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
-                bounce: true
-            }(_rewarder, msg.sender);
-        }
-    }
-
     function receiveTokenWallet(
         address wallet
     ) external override {
@@ -260,11 +175,12 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         uint128 ping_frequency,
         uint128 max_ping_price,
         bool deploy_passport
-    ) external override reserveBalance {
-        require(farmings.exists(farming_pool));
+    ) external override reserveBalance farmingPoolExists(farming_pool) {
         require(ping_frequency >= Constants.MIN_PING_FREQUENCY, Errors.BOOSTER_PASSPORT_PING_FREQUENCY_TOO_LOW);
 
         FarmingPoolSettings settings = farmings[farming_pool];
+
+        require(settings.enabled, Errors.BOOSTER_FACTORY_FARMING_POOL_DISABLED);
 
         TvmCell accountStateInit = _buildAccountPlatformStateInit(msg.sender, farming_pool);
         TvmCell passportStateInit = _buildPassportPlatformStateInit(msg.sender);

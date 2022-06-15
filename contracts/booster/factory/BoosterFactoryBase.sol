@@ -24,6 +24,21 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         _;
     }
 
+    /// @notice Skim gas from the factory
+    /// Can be called only by `owner`
+    /// @param reserve How much left on the factory
+    function skimGas(
+        uint128 reserve
+    ) external override onlyOwner {
+        tvm.rawReserve(reserve, 0);
+
+        owner.transfer({
+            value: 0,
+            bounce: false,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        });
+    }
+
     /// @notice Ping booster account
     /// Can be called only by booster passport
     /// @param _owner Passport owner, used for address check
@@ -144,7 +159,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         uint128 ping_value
     ) external override onlyOwner cashBack(owner) {
         require(!farmings.exists(farming_pool), Errors.BOOSTER_FACTORY_FARMING_NOT_EXISTS);
-        require(lp_fee + reward_fee <= Constants.MAX_FEE);
+        require(lp_fee + reward_fee <= Constants.MAX_FEE, Errors.BOOSTER_FACTORY_FEE_TOO_HIGH);
+        require(ping_value >= Gas.BOOSTER_FACTORY_MIN_PING_VALUE, Errors.BOOSTER_FACTORY_PING_VALUE_TOO_LOW);
 
         farmings[farming_pool] = FarmingPoolSettings({
             lp: lp,
@@ -161,12 +177,112 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         });
     }
 
+    /// @notice Set new ping value
+    /// Can be called only by `owner`
+    /// @param farming_pool Farming pool address
+    /// @param ping_value New ping value
+    function setPingValue(
+        address farming_pool,
+        uint128 ping_value
+    ) external override onlyOwner farmingPoolExists(farming_pool) {
+        require(ping_value >= Gas.BOOSTER_FACTORY_MIN_PING_VALUE, Errors.BOOSTER_FACTORY_PING_VALUE_TOO_LOW);
+
+        farmings[farming_pool].ping_value = ping_value;
+    }
+
+    /// @notice Update manager on specific accounts
+    /// Can be called only by `owner`
+    /// @param passports Accounts list
+    /// @param _managers List of manager public keys
+    function setManagers(
+        address[] passports,
+        uint[] _managers,
+        bool save_as_default
+    ) external override cashBack(owner) onlyOwner {
+        if (save_as_default) {
+            managers = _managers;
+        }
+
+        for (address passport: passports) {
+            IBoosterPassport(passport).setManagers{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
+            }(_managers, msg.sender);
+        }
+    }
+
+    /// @notice Update reward fee on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    /// @param lp_fee LP fee value in BPS
+    /// @param reward_fee Rewards fee value in BPS
+    function setFees(
+        address farming_pool,
+        address[] accounts,
+        uint128 lp_fee,
+        uint128 reward_fee,
+        bool save_as_default
+    ) external override cashBack(owner) onlyOwner farmingPoolExists(farming_pool) {
+        require(lp_fee + reward_fee <= Constants.MAX_FEE);
+
+        if (save_as_default) {
+            farmings[farming_pool].lp_fee = lp_fee;
+            farmings[farming_pool].reward_fee = reward_fee;
+        }
+
+        for (address account: accounts) {
+            IBoosterAccount(account).setFees{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
+            }(lp_fee, reward_fee, msg.sender);
+        }
+    }
+
+    /// @notice Skim fees on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    function skimFees(
+        address[] accounts
+    ) external override onlyOwner cashBack(msg.sender) {
+        for (address account: accounts) {
+            IBoosterAccount(account).skim{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_SKIM,
+                bounce: true
+            }(msg.sender);
+        }
+    }
+
+    /// @notice Set rewarder address on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    /// @param rewarder New rewarder
+    function setRewarder(
+        address farming_pool,
+        address[] accounts,
+        address rewarder,
+        bool save_as_default
+    ) external override cashBack(owner) onlyOwner farmingPoolExists(farming_pool) {
+        if (save_as_default) {
+            farmings[farming_pool].rewarder = rewarder;
+        }
+
+        /// A.K. protection
+        require(rewarder != address.makeAddrStd(0, 0));
+
+        for (address account: accounts) {
+            IBoosterAccount(account).setRewarder{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
+            }(rewarder, msg.sender);
+        }
+    }
+
     /// @notice Pause / unpause farming pool
     /// Users can't create booster accounts for paused farming pools
     /// @param farming_pool Farming pool address
     function toggleFarming(
         address farming_pool
-    ) external override onlyOwner cashBack(owner) {
+    ) external override onlyOwner farmingPoolExists(farming_pool) cashBack(owner) {
         farmings[farming_pool].enabled = !farmings[farming_pool].enabled;
     }
 }

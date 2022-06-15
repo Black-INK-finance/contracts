@@ -45,14 +45,12 @@ interface IBoosterAccount is IBoosterBase {
     function skim(address remainingGasTo) external;
 
     // Factory methods
-    function setRewardFee(
-        uint128 _fee,
+    function setFees(
+        uint128 _lp_fee,
+        uint128 _reward_fee,
         address remainingGasTo
     ) external;
-    function setLpFee(
-        uint128 _fee,
-        address remainingGasTo
-    ) external;
+
     function setRewarder(
         address _rewarder,
         address remainingGasTo
