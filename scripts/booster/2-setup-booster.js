@@ -6,6 +6,10 @@ const BigNumber = require("bignumber.js");
 
 
 const main = async () => {
+    logger.log('Dont forget to check default values in the following contracts!!');
+    logger.log('contracts/Gas.sol');
+    logger.log('contracts/Constants.sol');
+
     const response = await prompts([
         {
             type: 'text',
@@ -27,38 +31,33 @@ const main = async () => {
         },
         {
             type: 'number',
-            name: 'ping_price_limit',
-            message: 'Ping price limit in decimals (default value)',
-        }
+            name: 'rewarder_value',
+            message: 'Rewarder initial value in EVERs',
+            initial: 20
+        },
+        {
+            type: 'number',
+            name: 'factory_value',
+            message: 'Factory initial value in EVERs',
+            initial: 50
+        },
     ]);
 
     const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
-    const BoosterManager = await locklift.factory.getContract('BoosterManager');
     const BoosterBuyBack = await locklift.factory.getContract('BoosterBuyBack');
-    const BoosterAccount = await locklift.factory.getContract('BoosterAccount_V1');
     const BoosterAccountPlatform = await locklift.factory.getContract('BoosterAccountPlatform');
+    const BoosterAccount = await locklift.factory.getContract('BoosterAccount_V1');
+    const BoosterPassportPlatform = await locklift.factory.getContract('BoosterPassportPlatform');
+    const BoosterPassport = await locklift.factory.getContract('BoosterPassport');
 
 
-    const spinner = ora('Deploying booster manager').start();
-    const manager = await locklift.giver.deployContract({
-        contract: BoosterManager,
-        constructorParams: {
-            _owner: `0x${response.manager_public_key}`,
-            _internalOwner: response.owner
-        }
-    }, locklift.utils.convertCrystal(100, 'nano'));
-    manager.name = 'Manager';
-    spinner.stop();
-
-    await logContract(manager);
-
-    spinner.start('Deploying rewarder');
+    const spinner = ora('Deploying buyback').start();
     const rewarder = await locklift.giver.deployContract({
         contract: BoosterBuyBack,
         constructorParams: {
             _owner: response.owner
         }
-    }, locklift.utils.convertCrystal(100, 'nano'));
+    }, locklift.utils.convertCrystal(response.rewarder_value, 'nano'));
     rewarder.name = 'Rewarder (BuyBack)';
     spinner.stop();
 
@@ -69,14 +68,15 @@ const main = async () => {
         contract: BoosterFactory,
         constructorParams: {
             _owner: response.owner,
-            _manager: manager.address,
+            _managers: [response.manager_public_key],
             _rewarder: rewarder.address,
             _ping_token_root: response.ping_token,
-            _recommended_ping_price_limit: response.ping_price_limit,
             _account_platform: BoosterAccountPlatform.code,
-            _account: BoosterAccount.code
+            _account_implementation: BoosterAccount.code,
+            _passport_platform: BoosterPassportPlatform.code,
+            _passport_implementation: BoosterPassport.code
         },
-    });
+    }, locklift.utils.convertCrystal(response.factory_value, 'nano'));
     spinner.stop();
 
     await logContract(factory);

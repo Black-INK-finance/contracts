@@ -760,7 +760,7 @@ PUSHCONT {
 	SDEQ
 }
 IFNOT
-THROWIFNOT 100
+THROWIFNOT 2000
 .loc ../contracts/booster/buyback/BoosterBuyBack.sol, 187
 ACCEPT
 .loc ../contracts/booster/buyback/BoosterBuyBack.sol, 189
