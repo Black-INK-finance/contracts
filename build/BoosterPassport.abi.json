@@ -227,7 +227,7 @@
 			"name": "PingFrequencyUpdated",
 			"inputs": [
 				{"name":"account","type":"address"},
-				{"name":"frequency","type":"uint256"}
+				{"name":"frequency","type":"uint128"}
 			],
 			"outputs": [
 			]

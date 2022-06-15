@@ -521,7 +521,6 @@ describe('Test booster lifecycle', async function() {
                             pair: dex_pair_QUBE_USDC.address
                         }
                     },
-                    recommended_ping_frequency: 20 * 60, // 1 minute
                     rewarder: rewarder.address,
                     reward_fee: 5,
                     lp_fee: 5,

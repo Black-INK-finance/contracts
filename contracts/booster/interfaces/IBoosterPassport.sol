@@ -75,7 +75,7 @@ interface IBoosterPassport {
     event PingTokensWithdrawn(uint128 amount);
 
     event AccountRegistered(address account);
-    event PingFrequencyUpdated(address account, uint frequency);
+    event PingFrequencyUpdated(address account, uint128 frequency);
     event PingMaxPriceUpdated(uint128 price);
     event AutoPingUpdated(address account, bool status);
     event Ping(address account, uint _timestamp, uint counter, bool byManager);
