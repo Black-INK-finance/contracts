@@ -12,7 +12,7 @@ const main = async () => {
 
     const [key] = await locklift.keys.getKeyPairs();
 
-    logger.log(`First pubkey: ${key.public}`);
+    logger.log(`First pubkey: 0x${key.public}`);
 
     const response = await prompts([
         {
@@ -25,7 +25,7 @@ const main = async () => {
         {
             type: 'text',
             name: 'manager_public_key',
-            message: 'Manager public key',
+            message: 'Manager public key (0x prefixed hex)',
         },
         {
             type: 'text',

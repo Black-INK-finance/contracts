@@ -1,52 +1,94 @@
 const _ = require('underscore');
 const logger = require('mocha-logger');
-
-
-const booster_factory_address = process.env.BOOSTER_FACTORY;
-const manager_address = process.env.MANAGER;
+const BigNumber = require("bignumber.js");
 
 
 const main = async () => {
     // Initialize booster factory
     const booster_factory = await locklift.factory.getContract('BoosterFactory');
-    booster_factory.setAddress(booster_factory_address);
+    booster_factory.setAddress('0:e972b8959cdebcf37415ce01e9f0310e12ce76cdb8822fd167aa791a53136734');
 
-    // Initialize booster manager
-    const manager = await locklift.factory.getContract('Manager');
-    manager.setAddress(manager_address);
+    const [manager_key] = await locklift.keys.getKeyPairs();
 
-    const [keyPair] = await locklift.keys.getKeyPairs();
-    manager.setKeyPair(keyPair);
+    logger.log(`Manager public key: 0x${manager_key.public}`);
 
-    // Get all booster accounts by code hash
-    const booster_account_code_hash = await booster_factory.call({
-        method: 'getAccountPlatformHash'
-    });
+    // Get all booster accounts from events
+    const events = await booster_factory.getEvents('AccountDeployed');
+
+    const accounts = events.map(e => e.value.account);
 
     // Get ping price in PING tokens
-    const ping_price = 0;
+    const ping_price = 1;
 
-    // Filter out booster accounts which are not "ready-to-be-pinged"
-    const accounts = [];
+    logger.log(`Ping price: ${ping_price}`);
 
-    // Ping all of them
-    // - Split accounts in chunks, 100 accounts each
-    const chunks = _.chunk(accounts, 100);
+    for (const account of accounts) {
+        logger.success("-".repeat(100));
+        logger.log(`Working on account ${account}`);
 
-    // - Ping each chunk
-    for (const [i, chunk] of chunks.entries()) {
-        const tx = await manager.run({
-            method: 'ping',
+        const booster_account = await locklift.factory.getContract('BoosterAccount_V1');
+        booster_account.setAddress(account);
+
+        // Check account initialized
+        const is_initialized = await booster_account.call({ method: 'isInitialized' });
+
+        if (is_initialized === false) {
+            logger.log(`Booster not initialized, quit ping`);
+            continue;
+        } else {
+            logger.log(`Booster account initialized`);
+        }
+
+        // Get account passport
+        const passport_address = await booster_account.call({ method: 'passport' });
+        const passport = await locklift.factory.getContract('BoosterPassport');
+        passport.setAddress(passport_address);
+
+        logger.log(`Booster passport: ${passport_address}`);
+
+        const passport_details = await passport.call({ method: 'getDetails' });
+
+        // Check auto ping enabled
+        if (passport_details._accounts[account].auto_ping_enabled === false) {
+            logger.log(`Auto ping disabled, quit ping`);
+            continue;
+        } else {
+            logger.log(`Auto ping enabled`);
+        }
+
+        // Check balance is enough
+        if (passport_details._ping_balance.isLessThan(ping_price)) {
+            logger.log(`Ping balance too low, quit ping`);
+            continue;
+        } else {
+            logger.log(`Ping balance is sufficient`);
+        }
+
+        // Check it's not too early to ping
+        const last_ping = new BigNumber(passport_details._accounts[account].last_ping);
+        const ping_frequency = new BigNumber(passport_details._accounts[account].ping_frequency);
+        const now = new BigNumber(+ new Date()).div(1000);
+
+        // TODO: check account has at least some tokens
+
+        if (last_ping.plus(ping_frequency).isGreaterThanOrEqualTo(now)) {
+            logger.log(`Last ping was recently, quit ping`);
+            continue;
+        } else {
+            logger.log(`The time has come, sending ping`);
+        }
+
+        await passport.run({
+            method: 'pingByManager',
             params: {
-                pings: chunk.map(a => Object({
-                    account: a,
-                    price: ping_price,
-                    skim: true
-                }))
-            }
-        });
-
-        logger.log(`Ping ${i}, ${chunk.length} accounts tx: ${tx.transaction.id}`);
+                price: ping_price,
+                account,
+                counter: passport_details._accounts[account].ping_counter
+            },
+            keyPair: manager_key
+        })
+            .then(tx => logger.log(`Ping tx: ${tx.transaction.id}`))
+            .catch(e => logger.error(`Ping failed: ${e.message}`));
     }
 };
 
