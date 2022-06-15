@@ -18,6 +18,7 @@ interface IBoosterAccount is IBoosterBase {
         address _farming_pool,
         address _passport,
         address _user_data,
+        bool _token_processing,
 
         mapping (address => uint128) _balances,
         mapping (address => uint128) _received,
@@ -41,7 +42,7 @@ interface IBoosterAccount is IBoosterBase {
         uint counter
     ) external;
 
-    function skim() external;
+    function skim(address remainingGasTo) external;
 
     // Factory methods
     function setRewardFee(
@@ -56,6 +57,8 @@ interface IBoosterAccount is IBoosterBase {
         address _rewarder,
         address remainingGasTo
     ) external;
+    function toggleTokenProcessing() external;
+
     function acceptUpgrade(
         TvmCell code,
         uint version

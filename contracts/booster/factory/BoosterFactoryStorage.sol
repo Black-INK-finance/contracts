@@ -15,7 +15,6 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
     address public rewarder;
     address public ping_token_root;
     address public ping_token_wallet;
-    uint128 public ping_cost;
     uint128 public ping_spent;
 
     mapping (address => FarmingPoolSettings) public farmings;
@@ -34,7 +33,6 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
         address _rewarder,
         address _ping_token_root,
         address _ping_token_wallet,
-        uint128 _ping_cost,
         mapping (address => FarmingPoolSettings) _farmings,
 
         TvmCell _account_platform,
@@ -52,7 +50,6 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
 
             ping_token_root,
             ping_token_wallet,
-            ping_cost,
 
             farmings,
 

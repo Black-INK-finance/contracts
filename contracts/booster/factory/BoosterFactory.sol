@@ -22,7 +22,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         uint[] _managers,
         address _rewarder,
         address _ping_token_root,
-        uint128 _ping_cost,
         TvmCell _account_platform,
         TvmCell _account_implementation,
         TvmCell _passport_platform,
@@ -33,7 +32,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         managers = _managers;
         rewarder = _rewarder;
         ping_token_root = _ping_token_root;
-        ping_cost = _ping_cost;
 
         account_platform = _account_platform;
         account_implementation = _account_implementation;
@@ -101,6 +99,20 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
                 value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
                 bounce: true
             }(fee, msg.sender);
+        }
+    }
+
+    /// @notice Skim fees on specific accounts
+    /// Can be called only by `owner`
+    /// @param accounts Accounts list
+    function skimFees(
+        address[] accounts
+    ) external override onlyOwner cashBack(msg.sender) {
+        for (address account: accounts) {
+            IBoosterAccount(account).skim{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_SKIM,
+                bounce: true
+            }(msg.sender);
         }
     }
 
@@ -250,7 +262,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         bool deploy_passport
     ) external override reserveBalance {
         require(farmings.exists(farming_pool));
-        require(ping_frequency >= Constants.MIN_PING_FREQUENCY);
+        require(ping_frequency >= Constants.MIN_PING_FREQUENCY, Errors.BOOSTER_PASSPORT_PING_FREQUENCY_TOO_LOW);
 
         FarmingPoolSettings settings = farmings[farming_pool];
 
@@ -262,8 +274,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
 
         // Deploy passport if required
         if (deploy_passport) {
-            emit PassportDeployed(msg.sender, passport);
-
             new BoosterPassportPlatform{
                 stateInit: passportStateInit,
                 value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE * 2,
@@ -276,6 +286,8 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
                 max_ping_price,
                 msg.sender
             );
+
+            emit PassportDeployed(msg.sender, passport);
         }
 
         // Register booster account in passport
@@ -284,6 +296,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             bounce: false
         }(
             account, // account
+            farming_pool,
             ping_frequency, // ping frequency
             msg.sender // remaining gas
         );
@@ -385,7 +398,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
 
             ping_token_root,
             ping_token_wallet,
-            ping_cost,
             farmings,
 
             account_platform,
@@ -414,7 +426,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
 
             address _ping_token_root,
             address _ping_token_wallet,
-            uint128 _ping_cost,
             mapping (address => FarmingPoolSettings) _farmings,
 
             TvmCell _account_platform,
@@ -428,7 +439,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             data,
             (
                 uint, address, uint, uint[], address,
-                address, address, uint128, mapping(address => FarmingPoolSettings),
+                address, address, mapping(address => FarmingPoolSettings),
                 TvmCell, TvmCell, uint,
                 TvmCell, TvmCell, uint
             )
@@ -442,7 +453,6 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
 
         ping_token_root = _ping_token_root;
         ping_token_wallet = _ping_token_wallet;
-        ping_cost = _ping_cost;
         farmings = _farmings;
 
         account_platform = _account_platform;

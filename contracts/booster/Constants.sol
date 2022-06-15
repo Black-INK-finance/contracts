@@ -4,14 +4,16 @@ pragma ton-solidity ^0.57.1;
 library Constants {
     uint128 constant BPS = 100;
 
-    // - Restrictions
+    // Max value in BPS for (LP fee + rewards fee)
     uint128 constant MAX_FEE = 50;
 
-    uint constant MIN_PING_FREQUENCY = 60 * 15; // 15 minutes
-    uint constant PINGS_PER_SKIM = 10; // Skim fees every 10th ping
+    // - Prod
+    // uint constant MIN_PING_FREQUENCY = 60 * 15; // 15 minutes
+    // - Test
+    uint constant MIN_PING_FREQUENCY = 10; // 10 seconds
 
-    // Skim exceeding gas from booster account if balance is more than
-    uint128 constant BOOSTER_ACCOUNT_GAS_SKIM_MULTIPLIER = 20;
+    // How often to skim LP & rewards fees from account
+    uint constant PINGS_PER_SKIM = 10; // Skim fees every 10th ping
 
     // -- Farming Nonce
     uint32 constant REINVEST_REQUIRED = 11;

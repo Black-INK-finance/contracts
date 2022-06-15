@@ -33,10 +33,15 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address _owner,
         uint counter,
         address account,
+        address farming_pool,
         uint128 price,
         uint128 required_top_up
     ) external override onlyBoosterPassport(_owner) {
         tvm.accept();
+
+        // Check provided account
+        TvmCell accountStateInit = _buildAccountPlatformStateInit(_owner, farming_pool);
+        require(address(tvm.hash(accountStateInit)) == account, Errors.BOOSTER_FACTORY_WRONG_ACCOUNT);
 
         // Top up booster passport
         if (required_top_up > 0) {
@@ -50,9 +55,9 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         ping_spent += price;
 
         IBoosterAccount(account).ping{
-            value: ping_cost,
-            bounce: false,
-            flag: 1
+            value: farmings[farming_pool].ping_value,
+            bounce: true,
+            flag: 0
         }(counter);
     }
 
@@ -135,9 +140,10 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         mapping (address => SwapDirection) swaps,
         address rewarder,
         uint128 reward_fee,
-        uint128 lp_fee
+        uint128 lp_fee,
+        uint128 ping_value
     ) external override onlyOwner cashBack(owner) {
-        require(!farmings.exists(farming_pool));
+        require(!farmings.exists(farming_pool), Errors.BOOSTER_FACTORY_FARMING_NOT_EXISTS);
         require(lp_fee + reward_fee <= Constants.MAX_FEE);
 
         farmings[farming_pool] = FarmingPoolSettings({
@@ -149,16 +155,18 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
             rewarder: rewarder,
             swaps: swaps,
             reward_fee: reward_fee,
-            lp_fee: lp_fee
+            lp_fee: lp_fee,
+            ping_value: ping_value,
+            enabled: true
         });
     }
 
     /// @notice Pause / unpause farming pool
     /// Users can't create booster accounts for paused farming pools
     /// @param farming_pool Farming pool address
-    function removeFarming(
+    function toggleFarming(
         address farming_pool
     ) external override onlyOwner cashBack(owner) {
-        delete farmings[farming_pool];
+        farmings[farming_pool].enabled = !farmings[farming_pool].enabled;
     }
 }

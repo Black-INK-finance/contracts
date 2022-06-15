@@ -38,6 +38,13 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         rewarder = _rewarder;
     }
 
+    /// @notice Toggle token processing
+    /// If disabled, than all received tokens will be immediately sent to owner
+    /// Can be called only by `owner`
+    function toggleTokenProcessing() external override onlyOwner cashBack(owner) {
+        token_processing = !token_processing;
+    }
+
     function _transferTokens(
         address wallet,
         uint128 amount,

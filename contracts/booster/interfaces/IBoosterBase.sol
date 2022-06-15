@@ -17,5 +17,7 @@ interface IBoosterBase {
         address rewarder;
         uint128 reward_fee;
         uint128 lp_fee;
+        uint128 ping_value;
+        bool enabled;
     }
 }

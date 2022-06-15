@@ -10,7 +10,6 @@
 				{"name":"_managers","type":"uint256[]"},
 				{"name":"_rewarder","type":"address"},
 				{"name":"_ping_token_root","type":"address"},
-				{"name":"_ping_cost","type":"uint128"},
 				{"name":"_account_platform","type":"cell"},
 				{"name":"_account_implementation","type":"cell"},
 				{"name":"_passport_platform","type":"cell"},
@@ -42,6 +41,14 @@
 			"inputs": [
 				{"name":"accounts","type":"address[]"},
 				{"name":"fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "skimFees",
+			"inputs": [
+				{"name":"accounts","type":"address[]"}
 			],
 			"outputs": [
 			]
@@ -196,6 +203,7 @@
 				{"name":"_owner","type":"address"},
 				{"name":"counter","type":"uint256"},
 				{"name":"account","type":"address"},
+				{"name":"farming_pool","type":"address"},
 				{"name":"price","type":"uint128"},
 				{"name":"required_top_up","type":"uint128"}
 			],
@@ -214,13 +222,14 @@
 				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},
 				{"name":"rewarder","type":"address"},
 				{"name":"reward_fee","type":"uint128"},
-				{"name":"lp_fee","type":"uint128"}
+				{"name":"lp_fee","type":"uint128"},
+				{"name":"ping_value","type":"uint128"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "removeFarming",
+			"name": "toggleFarming",
 			"inputs": [
 				{"name":"farming_pool","type":"address"}
 			],
@@ -237,8 +246,7 @@
 				{"name":"_rewarder","type":"address"},
 				{"name":"_ping_token_root","type":"address"},
 				{"name":"_ping_token_wallet","type":"address"},
-				{"name":"_ping_cost","type":"uint128"},
-				{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"}],"name":"_farmings","type":"map(address,tuple)"},
+				{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"},{"name":"ping_value","type":"uint128"},{"name":"enabled","type":"bool"}],"name":"_farmings","type":"map(address,tuple)"},
 				{"name":"_account_platform","type":"cell"},
 				{"name":"_account_implementation","type":"cell"},
 				{"name":"_account_version","type":"uint256"},
@@ -311,14 +319,6 @@
 			]
 		},
 		{
-			"name": "ping_cost",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"ping_cost","type":"uint128"}
-			]
-		},
-		{
 			"name": "ping_spent",
 			"inputs": [
 			],
@@ -331,7 +331,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"}],"name":"farmings","type":"map(address,tuple)"}
+				{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"},{"name":"ping_value","type":"uint128"},{"name":"enabled","type":"bool"}],"name":"farmings","type":"map(address,tuple)"}
 			]
 		},
 		{
@@ -433,9 +433,8 @@
 		{"name":"rewarder","type":"address"},
 		{"name":"ping_token_root","type":"address"},
 		{"name":"ping_token_wallet","type":"address"},
-		{"name":"ping_cost","type":"uint128"},
 		{"name":"ping_spent","type":"uint128"},
-		{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"}],"name":"farmings","type":"map(address,tuple)"},
+		{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"},{"name":"ping_value","type":"uint128"},{"name":"enabled","type":"bool"}],"name":"farmings","type":"map(address,tuple)"},
 		{"name":"account_platform","type":"cell"},
 		{"name":"account_implementation","type":"cell"},
 		{"name":"account_version","type":"uint256"},

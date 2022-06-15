@@ -35,14 +35,8 @@ abstract contract BoosterAccountBase is
     ) external override {
         require(msg.sender == passport || msg.sender == factory, Errors.WRONG_SENDER);
 
-        uint128 skim_limit = math.muldiv(
-            _targetBalance(),
-            Constants.BPS + Constants.BOOSTER_ACCOUNT_GAS_SKIM_MULTIPLIER,
-            Constants.BPS
-        );
-
         // Skim exceeding gas
-        if ((address(this).balance - msg.value) > skim_limit) {
+        if ((address(this).balance - msg.value - _targetBalance()) > Gas.BOOSTER_ACCOUNT_EXCEEDING_GAS_LIMIT) {
             factory.transfer({
                 flag: 0,
                 bounce: false,
@@ -51,16 +45,18 @@ abstract contract BoosterAccountBase is
         }
 
         if (counter % Constants.PINGS_PER_SKIM == 0) {
-            _skimFees();
+            _skimFees(_me());
         }
 
         _claimReward();
     }
 
     /// @notice Keeper method for skimming fees
-    /// Can be called only by `manager`
-    function skim() external override onlyFactory {
-        _skimFees();
+    /// Can be called only by `factory`
+    function skim(
+        address remainingGasTo
+    ) external override onlyFactory cashBack(remainingGasTo) {
+        _skimFees(remainingGasTo);
     }
 
     /// @notice Receive tokens
@@ -78,7 +74,13 @@ abstract contract BoosterAccountBase is
         TvmCell payload
     ) external override {
         // Received unknown token, return back with all remaining gas
-        if (!wallets.exists(root) || msg.sender != wallets[root] || (root == lp && sender == farming_pool)) {
+        // - Or received LP from farming pool, which means user requested LP withdraw
+        // - Or tokens processing is disabled
+        if (
+            !wallets.exists(root) || msg.sender != wallets[root] ||
+            (root == lp && sender == farming_pool) ||
+            token_processing == false
+        ) {
             TvmCell empty;
 
             _transferTokens(
@@ -133,7 +135,7 @@ abstract contract BoosterAccountBase is
         TvmCell
     ) external override {
         // Unknown token
-        if (!wallets.exists(root) || wallets[root] != msg.sender) {
+        if (!wallets.exists(root) || wallets[root] != msg.sender || token_processing == false) {
             TvmCell empty;
 
             _transferTokens(
@@ -221,7 +223,7 @@ abstract contract BoosterAccountBase is
         user_data = _user_data;
     }
 
-    function _skimFees() internal {
+    function _skimFees(address remainingGasTo) internal {
         TvmCell empty;
 
         for ((address root, uint128 fee): fees) {
@@ -231,9 +233,11 @@ abstract contract BoosterAccountBase is
                 wallets[root],
                 fee,
                 rewarder,
-                _me(),
+
+                remainingGasTo,
                 true,
                 empty,
+
                 Gas.BOOSTER_ACCOUNT_TRANSFER_FEES,
                 0,
                 true

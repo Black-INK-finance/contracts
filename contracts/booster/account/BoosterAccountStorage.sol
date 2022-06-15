@@ -16,7 +16,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     uint public version; // Account code version
     address public passport; // Owner's passport
     address public user_data; // Booster farming user data
-    address public ping_sponsor;
+    bool public token_processing; // Disabled swaps / supplies / deposits. Instead, transfer all tokens to owner
 
     // Booster token stats
     mapping (address => uint128) balances; // Token balances
@@ -66,6 +66,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         address _farming_pool,
         address _passport,
         address _user_data,
+        bool _token_processing,
 
         mapping (address => uint128) _balances,
         mapping (address => uint128) _received,
@@ -90,6 +91,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
             farming_pool,
             passport,
             user_data,
+            token_processing,
 
             balances,
             received,

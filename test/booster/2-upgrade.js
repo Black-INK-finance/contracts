@@ -17,7 +17,7 @@ describe('Test booster updatability', async function() {
     let left, right, lp, reward, ping;
     let farming_factory, farming_pool;
 
-    let booster_factory, alice_booster_account;
+    let booster_factory, alice_booster_account, alice_passport;
 
     const farmStart = Math.floor(Date.now() / 1000);
 
@@ -53,20 +53,25 @@ describe('Test booster updatability', async function() {
     });
 
     it('Setup booster factory', async () => {
+        const [manager1] = await locklift.keys.getKeyPairs();
+
         const BoosterFactory = await locklift.factory.getContract('BoosterFactory');
         const BoosterAccountPlatform = await locklift.factory.getContract('BoosterAccountPlatform')
         const BoosterAccount = await locklift.factory.getContract('BoosterAccount_V1');
+        const BoosterPassportPlatform = await locklift.factory.getContract('BoosterPassportPlatform');
+        const BoosterPassport = await locklift.factory.getContract('BoosterPassport');
 
         booster_factory = await locklift.giver.deployContract({
             contract: BoosterFactory,
             constructorParams: {
                 _owner: god.address,
-                _manager: manager.address,
+                _managers: [`0x${manager1.public}`],
                 _rewarder: rewarder.address,
                 _ping_token_root: ping.address,
-                _recommended_ping_price_limit: 1000,
                 _account_platform: BoosterAccountPlatform.code,
-                _account: BoosterAccount.code
+                _account_implementation: BoosterAccount.code,
+                _passport_platform: BoosterPassportPlatform.code,
+                _passport_implementation: BoosterPassport.code
             },
         });
 
@@ -110,7 +115,8 @@ describe('Test booster updatability', async function() {
                 recommended_ping_frequency: 20 * 60, // 20 minutes
                 rewarder: rewarder.address,
                 reward_fee: 10,
-                lp_fee: 0
+                lp_fee: 0,
+                ping_value: locklift.utils.convertCrystal(2, 'nano')
             }
         });
     });
@@ -187,7 +193,7 @@ describe('Test booster updatability', async function() {
         });
     });
 
-    describe('Upgrade booster account', async () => {
+    describe('Upgrade booster account and passport', async () => {
         let details_before_upgrade;
 
         it('Create booster account', async () => {
@@ -195,11 +201,12 @@ describe('Test booster updatability', async function() {
                 contract: booster_factory,
                 method: 'deployAccount',
                 params: {
-                    _owner: alice.address,
                     farming_pool: farming_pool.address,
-                    ping_frequency: 60 * 20
+                    ping_frequency: 60 * 20,
+                    max_ping_price: 1000,
+                    deploy_passport: true
                 },
-                value: locklift.utils.convertCrystal(21, 'nano')
+                value: locklift.utils.convertCrystal(50, 'nano')
             });
 
             const alice_booster_account_address = await booster_factory.call({
@@ -210,11 +217,23 @@ describe('Test booster updatability', async function() {
                 }
             });
 
+            const alice_passport_address = await booster_factory.call({
+                method: 'derivePassport',
+                params: {
+                    _owner: alice.address
+                }
+            });
+
             alice_booster_account = await locklift.factory.getContract('BoosterAccount_V1');
             alice_booster_account.setAddress(alice_booster_account_address);
             alice_booster_account.name = 'Alice booster account';
 
+            alice_passport = await locklift.factory.getContract('BoosterPassport');
+            alice_passport.setAddress(alice_passport_address);
+            alice_passport.name = 'Alice passport';
+
             await logContract(alice_booster_account);
+            await logContract(alice_passport);
         });
 
         it('Set new booster account in factory', async () => {
@@ -226,7 +245,7 @@ describe('Test booster updatability', async function() {
                 contract: booster_factory,
                 method: 'upgradeAccountCode',
                 params: {
-                    _account: BoosterAccount.code
+                    _account_implementation: BoosterAccount.code
                 }
             });
 
@@ -266,8 +285,6 @@ describe('Test booster updatability', async function() {
                 .to.be.equal(details_before_upgrade._user_data, 'Wrong booster account user data');
             expect(details._rewards)
                 .to.be.eql(details_before_upgrade._rewards, 'Wrong booster account reward tokens');
-            expect(details._ping_frequency)
-                .to.be.bignumber.equal(details_before_upgrade._ping_frequency, 'Wrong booster account ping frequency');
             expect(details._rewarder)
                 .to.be.equal(details_before_upgrade._rewarder, 'Wrong booster account rewarder');
             expect(details._reward_fee)

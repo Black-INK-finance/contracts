@@ -46,7 +46,7 @@ contract BoosterAccount_V2 is
 
             address _passport,
             address _user_data,
-            address _ping_sponsor,
+            bool _token_processing,
 
             mapping (address => uint128) _balances,
             mapping (address => uint128) _received,
@@ -67,7 +67,7 @@ contract BoosterAccount_V2 is
             data,
             (
                 address, address, address, uint,
-                address, address, address,
+                address, address, bool,
 
                 mapping (address => uint128),
                 mapping (address => uint128),
@@ -86,7 +86,7 @@ contract BoosterAccount_V2 is
 
         passport = _passport;
         user_data = _user_data;
-        ping_sponsor = _ping_sponsor;
+        token_processing = _token_processing;
 
         balances = _balances;
         received = _received;

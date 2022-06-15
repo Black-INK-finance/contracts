@@ -7,6 +7,7 @@ pragma AbiHeader expire;
 import "./../TransferUtils.sol";
 import "./../Constants.sol";
 import "./../Errors.sol";
+import "./../Gas.sol";
 
 import "./../interfaces/IBoosterPassport.sol";
 import "./../interfaces/IBoosterAccount.sol";
@@ -141,7 +142,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         address account,
         uint128 frequency
     ) external override onlyOwner accountExists(account) cashBack(msg.sender) {
-        require(frequency >= Constants.MIN_PING_FREQUENCY);
+        require(frequency >= Constants.MIN_PING_FREQUENCY, Errors.BOOSTER_PASSPORT_PING_FREQUENCY_TOO_LOW);
 
         accounts[account].ping_frequency = frequency;
 
@@ -173,6 +174,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
 
     function registerAccount(
         address account,
+        address farming_pool,
         uint128 ping_frequency,
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
@@ -180,6 +182,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
 
         accounts[account] = AccountSettings({
             ping_frequency: ping_frequency,
+            farming_pool: farming_pool,
             last_ping: 0,
             ping_counter: 0,
             auto_ping_enabled: true
@@ -212,7 +215,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         uint128 price,
         address account,
         uint counter
-    ) external override onlyManager {
+    ) external override onlyManager accountExists(account) {
         // - Manager uses external in message, passport pays itself
         tvm.accept();
 
@@ -222,6 +225,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         require(settings.ping_counter == counter, Errors.BOOSTER_PASSPORT_WRONG_COUNTER);
         require(ping_max_price >= price, Errors.BOOSTER_PASSPORT_PRICE_TOO_HIGH);
         require(settings.auto_ping_enabled, Errors.BOOSTER_PASSPORT_AUTO_PING_DISABLED);
+        require(settings.last_ping + settings.ping_frequency <= now, Errors.BOOSTER_PASSPORT_PING_TOO_OFTEN);
 
         _updateAccountLastPing(account, counter, true);
 
@@ -236,6 +240,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
             owner,
             counter,
             account,
+            settings.farming_pool,
             price,
             _requiredTopUp()
         );
@@ -249,7 +254,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     function pingByOwner(
         address account,
         uint counter
-    ) external override onlyOwner reserveAtLeastTargetBalance accountExists(account) {
+    ) external override onlyOwner reserveBalance accountExists(account) {
         AccountSettings settings = accounts[account];
 
         require(settings.ping_counter == counter, Errors.BOOSTER_PASSPORT_WRONG_COUNTER);
@@ -302,7 +307,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     }
 
     function _targetBalance() internal pure override returns(uint128) {
-        return 1 ton;
+        return Gas.BOOSTER_PASSPORT_TARGET_BALANCE;
     }
 
     function _isArrayIncludes(uint target, uint[] elements) internal pure returns(bool) {

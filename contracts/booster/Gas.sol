@@ -9,6 +9,7 @@ library Gas {
     uint128 constant BOOSTER_ACCOUNT_TARGET_BALANCE = 20 ton;
 
     // Booster factory
+    uint128 constant BOOSTER_FACTORY_ACCOUNT_SKIM = 3 ton;
     uint128 constant BOOSTER_FACTORY_ACCOUNT_UPDATE = 0.5 ton;
     uint128 constant BOOSTER_FACTORY_PASSPORT_UPDATE = 0.5 ton;
     uint128 constant BOOSTER_FACTORY_ACCOUNT_UPGRADE = 1 ton;
@@ -28,6 +29,11 @@ library Gas {
     uint128 constant BOOSTER_ACCOUNT_DEX_SWAP = 5 ton;
     uint128 constant BOOSTER_ACCOUNT_DEPOSIT_TOKEN_TO_DEX = 5 ton;
     uint128 constant BOOSTER_ACCOUNT_TRANSFER_FEES = 0.5 ton;
+
+    // Booster keeper attach exceeding gas to every ping
+    // Once the value is over the target balance more than this value
+    // it will be sent back to the factory
+    uint128 constant BOOSTER_ACCOUNT_EXCEEDING_GAS_LIMIT = 3 ton;
 
     uint128 constant BOOSTER_BUYBACK_DEX_SWAP = 5 ton;
 

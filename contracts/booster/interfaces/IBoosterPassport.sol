@@ -3,6 +3,7 @@ pragma ton-solidity ^0.57.1;
 
 interface IBoosterPassport {
     struct AccountSettings {
+        address farming_pool;
         uint128 ping_frequency;
         uint128 last_ping;
         uint ping_counter;
@@ -26,6 +27,7 @@ interface IBoosterPassport {
 
     function registerAccount(
         address account,
+        address farming_pool,
         uint128 ping_frequency,
         address remainingGasTo
     ) external;

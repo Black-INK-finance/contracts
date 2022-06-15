@@ -23,6 +23,7 @@
 		{
 			"name": "skim",
 			"inputs": [
+				{"name":"remainingGasTo","type":"address"}
 			],
 			"outputs": [
 			]
@@ -103,6 +104,13 @@
 			]
 		},
 		{
+			"name": "toggleTokenProcessing",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "getDetails",
 			"inputs": [
 			],
@@ -113,6 +121,7 @@
 				{"name":"_farming_pool","type":"address"},
 				{"name":"_passport","type":"address"},
 				{"name":"_user_data","type":"address"},
+				{"name":"_token_processing","type":"bool"},
 				{"name":"_balances","type":"map(address,uint128)"},
 				{"name":"_received","type":"map(address,uint128)"},
 				{"name":"_wallets","type":"map(address,address)"},
@@ -207,11 +216,11 @@
 			]
 		},
 		{
-			"name": "ping_sponsor",
+			"name": "token_processing",
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"ping_sponsor","type":"address"}
+				{"name":"token_processing","type":"bool"}
 			]
 		},
 		{
@@ -310,7 +319,7 @@
 		{"name":"version","type":"uint256"},
 		{"name":"passport","type":"address"},
 		{"name":"user_data","type":"address"},
-		{"name":"ping_sponsor","type":"address"},
+		{"name":"token_processing","type":"bool"},
 		{"name":"balances","type":"map(address,uint128)"},
 		{"name":"received","type":"map(address,uint128)"},
 		{"name":"wallets","type":"map(address,address)"},

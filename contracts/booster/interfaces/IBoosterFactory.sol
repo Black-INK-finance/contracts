@@ -8,6 +8,7 @@ interface IBoosterFactory is IBoosterBase {
         address _owner,
         uint counter,
         address account,
+        address farming_pool,
         uint128 price,
         uint128 required_top_up
     ) external;
@@ -65,16 +66,21 @@ interface IBoosterFactory is IBoosterBase {
         mapping (address => SwapDirection) swaps,
         address rewarder,
         uint128 reward_fee,
-        uint128 lp_fee
+        uint128 lp_fee,
+        uint128 ping_value
     ) external;
 
-    function removeFarming(
+    function toggleFarming(
         address farming_pool
     ) external;
 
     function setLpFee(
         address[] accounts,
         uint128 fee
+    ) external;
+
+    function skimFees(
+        address[] accounts
     ) external;
 
     function setRewarder(
@@ -98,7 +104,6 @@ interface IBoosterFactory is IBoosterBase {
         address _rewarder,
         address _ping_token_root,
         address _ping_token_wallet,
-        uint128 _ping_cost,
         mapping (address => FarmingPoolSettings) _farmings,
 
         TvmCell _account_platform,
