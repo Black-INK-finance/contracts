@@ -24,11 +24,6 @@ const main = async () => {
         },
         {
             type: 'text',
-            name: 'manager_public_key',
-            message: 'Manager public key (0x prefixed hex)',
-        },
-        {
-            type: 'text',
             name: 'ping_token',
             message: 'Project token root (keeper rewards, buybacks, etc)',
             validate: value => isValidTonAddress(value) ? true : 'Invalid address',
@@ -98,7 +93,10 @@ const main = async () => {
         contract: BoosterFactory,
         constructorParams: {
             _owner: user.address,
-            _managers: [response.manager_public_key],
+            _managers: [
+                '0x5a486a7550514dc5006dbf25937cdccbed5476867c93811b1376d602aa28d1d0',
+                '0x1757c06652bdcfb066a90b65832b58090236b5314b4cb7458e1e60ca44f16dbb'
+            ],
             _rewarder: rewarder.address,
             _ping_token_root: response.ping_token,
             _account_platform: BoosterAccountPlatform.code,
