@@ -512,6 +512,121 @@ PUSHINT 129
 SENDRAWMSG
 .loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 
+.macro setTokenMinToSwap
+DROP
+GETGLOB 6
+THROWIFNOT 76
+GETGLOB 2
+ISNULL
+IFREF {
+	CALL $c4_to_c7$
+}
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 154
+OVER
+PUSHCONT {
+	LDREF
+	ENDS
+	CTOS
+}
+IF
+LDMSGADDR
+LDU 128
+ENDS
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
+CALLREF {
+	CALL $setTokenMinToSwap_internal_macro$
+}
+DROP
+CALLREF {
+	CALL $c7_to_c4$
+}
+THROW 0
+
+.macro setTokenMinToSwap_internal_macro
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 15
+GETGLOB 9
+GETGLOB 10
+SDEQ
+THROWIFNOT 1101
+.loc ../node_modules/@broxus/contracts/contracts/access/InternalOwner.sol, 16
+GETGLOB 10
+.loc ../contracts/booster/TransferUtils.sol, 6
+GETPARAM 7
+FIRST
+DEPTH
+ADDCONST -2
+PICK
+SUB
+UFITS 128
+PUSHINT 2
+RAWRESERVE
+.loc ../contracts/booster/TransferUtils.sol, 7
+ROTREV
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 158
+OVER
+GETGLOB 13
+PUSHINT 267
+DICTGET
+NULLSWAPIFNOT
+NIP
+THROWIFNOT 100
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 160
+SWAP
+GETGLOB 13
+DUP2
+PUSHINT 267
+DICTGETREF
+PUSHCONT {
+	CTOS
+	CALLREF {
+		LDMSGADDR
+		LDREF
+		ENDS
+		CTOS
+		LDMSGADDR
+		LDU 128
+		ENDS
+		TRIPLE
+	}
+}
+PUSHCONT {
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
+	DUP
+	PUSHINT 0
+	TRIPLE
+}
+IFELSE
+ROLL 3
+SETINDEX 2
+CALLREF {
+	UNTRIPLE
+	XCHG S2
+	NEWC
+	STSLICE
+	ROTREV
+	NEWC
+	STSLICE
+	STU 128
+	STBREFR
+}
+ENDC
+ROTREV
+PUSHINT 267
+DICTSETREF
+SETGLOB 13
+.loc ../contracts/booster/TransferUtils.sol, 9
+NEWC
+STSLICECONST x62_
+STSLICE
+PUSHINT 111
+STZEROES
+ENDC
+PUSHINT 129
+SENDRAWMSG
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
+
 .macro removeTokenSwap
 DROP
 GETGLOB 6
@@ -521,7 +636,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 157
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 166
 OVER
 PUSHCONT {
 	LDREF
@@ -547,7 +662,7 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 160
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 169
 GETGLOB 13
 PUSHINT 267
 DICTDEL
@@ -564,7 +679,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 163
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 172
 OVER
 PUSHCONT {
 	LDREF
@@ -599,7 +714,7 @@ CALLREF {
 THROW 0
 
 .macro onAcceptTokensTransfer_internal_macro
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 163
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 172
 OVER
 .loc ../contracts/booster/TransferUtils.sol, 6
 GETPARAM 7
@@ -614,7 +729,7 @@ RAWRESERVE
 .loc ../contracts/booster/TransferUtils.sol, 7
 ROLLREV 6
 PUSHCONT {
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 172
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 181
 	BLKDROP 4
 	OVER
 	GETGLOB 12
@@ -632,7 +747,7 @@ PUSHCONT {
 		DROP2
 	}
 	IFNOTJMP
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 174
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 183
 	PUSH2 S0, S1
 	GETGLOB 14
 	DUP2
@@ -654,7 +769,7 @@ PUSHCONT {
 	PUSHINT 267
 	DICTSETB
 	SETGLOB 14
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 175
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 184
 	OVER
 	GETGLOB 15
 	DUP2
@@ -676,10 +791,10 @@ PUSHCONT {
 	PUSHINT 267
 	DICTSETB
 	SETGLOB 15
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 177
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 186
 	GETGLOB 16
 	PUSHCONT {
-		.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 178
+		.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 187
 		DUP
 		CALLREF {
 			CALL $_me_internal_macro$
@@ -702,7 +817,7 @@ PUSHCONT {
 	IFNOT
 	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 	DROP
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 163
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 172
 }
 CALLX
 .loc ../contracts/booster/TransferUtils.sol, 9
@@ -725,7 +840,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 184
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 193
 OVER
 PUSHCONT {
 	LDREF
@@ -761,12 +876,12 @@ PUSHCONT {
 }
 IFNOT
 THROWIFNOT 2000
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 187
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 196
 ACCEPT
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 189
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 198
 GETGLOB 16
 PUSHCONT {
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 190
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 199
 	DUP
 	CALLREF {
 		CALL $_swap_internal_macro$
@@ -782,7 +897,7 @@ DROP
 CALL $_swap_internal_macro$
 
 .macro _swap_internal_macro
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 195
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 204
 DUP
 GETGLOB 14
 PUSHINT 267
@@ -811,7 +926,7 @@ PUSHCONT {
 	DROP
 }
 IFJMP
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 197
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 206
 DUP
 GETGLOB 13
 PUSHINT 267
@@ -838,7 +953,7 @@ PUSHCONT {
 	TRIPLE
 }
 IFELSE
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 199
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 208
 OVER
 GETGLOB 14
 PUSHINT 267
@@ -857,13 +972,13 @@ PUSHCONT {
 	DROP2
 }
 IFJMP
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 201
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 210
 PUSHINT 0
 BLKPUSH 2, 0
 CALLREF {
 	CALL $_buildSwapPayload_internal_macro$
 }
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 207
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 216
 PUSH S2
 GETGLOB 12
 PUSHINT 267
@@ -898,7 +1013,7 @@ DUP
 CALLREF {
 	CALL $_transferTokens_internal_macro$
 }
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 219
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 228
 GETGLOB 14
 PUSHINT 0
 NEWC
@@ -914,7 +1029,7 @@ SETGLOB 14
 CALL $_transferTokens_internal_macro$
 
 .macro _transferTokens_internal_macro
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 235
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 244
 BLKSWAP 3, 3
 REVERSE 4, 0
 TRUE
@@ -963,7 +1078,7 @@ SENDRAWMSG
 CALL $_deployTokenWallet_internal_macro$
 
 .macro _deployTokenWallet_internal_macro
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 252
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 261
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 }
@@ -972,7 +1087,7 @@ GETGLOB 12
 PUSHINT 267
 DICTSET
 SETGLOB 12
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 254
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 263
 DUP
 GETGLOB 14
 PUSHINT 267
@@ -980,7 +1095,7 @@ DICTGET
 NULLSWAPIFNOT
 NIP
 PUSHCONT {
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 255
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 264
 	DUP
 	GETGLOB 14
 	PUSHINT 0
@@ -993,7 +1108,7 @@ PUSHCONT {
 	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 }
 IFNOT
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 258
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 267
 DUP
 GETGLOB 15
 PUSHINT 267
@@ -1001,7 +1116,7 @@ DICTGET
 NULLSWAPIFNOT
 NIP
 PUSHCONT {
-	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 259
+	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 268
 	DUP
 	GETGLOB 15
 	PUSHINT 0
@@ -1014,7 +1129,7 @@ PUSHCONT {
 	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 }
 IFNOT
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 262
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 271
 PUSHINT 200000000
 CALLREF {
 	CALL $_me_internal_macro$
@@ -1046,24 +1161,24 @@ SENDRAWMSG
 CALL $_buildSwapPayload_internal_macro$
 
 .macro _buildSwapPayload_internal_macro
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 277
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 286
 NEWC
 STSLICECONST x01
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 278
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 287
 ROLL 3
 SWAP
 STU 64
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 279
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 288
 XCHG S1, S2
 STU 128
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 280
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 289
 STU 128
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 283
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 292
 PUSHREF {
 }
 SWAP
 STREF
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 285
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 294
 ENDC
 .loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 
@@ -1072,7 +1187,7 @@ ENDC
 CALL $_me_internal_macro$
 
 .macro _me_internal_macro
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 289
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 298
 MYADDR
 .loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 
@@ -1085,7 +1200,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 292
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 301
 LDREF
 ENDS
 .loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
@@ -1104,7 +1219,7 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 1101
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 293
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 302
 GETGLOB 16
 GETGLOB 15
 GETGLOB 14
@@ -1121,10 +1236,10 @@ STDICT
 STDICT
 STI 1
 ENDC
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 303
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 312
 OVER
 SETCODE
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 304
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 313
 SWAP
 CTOS
 DUP
@@ -1139,7 +1254,7 @@ PLDREF
 CTOS
 BLESS
 POP C3
-.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 306
+.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 315
 CALLREF {
 	CALL $:onCodeUpgrade$
 }
@@ -1608,7 +1723,7 @@ THROW 0
 
 .macro public_function_selector
 DUP
-PUSHINT 1729444094
+PUSHINT 1594609630
 LEQ
 IFJMPREF {
 	DUP
@@ -1670,7 +1785,7 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 1196840156
+	PUSHINT 1130585283
 	LEQ
 	IFJMPREF {
 		DUP
@@ -1692,16 +1807,22 @@ IFJMPREF {
 			CALL $swaps$
 		}
 		DUP
+		PUSHINT 1130585283
+		EQUAL
+		IFJMPREF {
+			CALL $setTokenMinToSwap$
+		}
+	}
+	DUP
+	PUSHINT 1594609630
+	LEQ
+	IFJMPREF {
+		DUP
 		PUSHINT 1196840156
 		EQUAL
 		IFJMPREF {
 			CALL $constructor$
 		}
-	}
-	DUP
-	PUSHINT 1729444094
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1363217954
 		EQUAL
@@ -1720,12 +1841,6 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $owner$
 		}
-		DUP
-		PUSHINT 1729444094
-		EQUAL
-		IFJMPREF {
-			CALL $renounceOwnership$
-		}
 	}
 }
 DUP
@@ -1733,22 +1848,33 @@ PUSHINT 2072843528
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 1773220348
-	EQUAL
-	IFJMPREF {
-		CALL $wallets$
-	}
-	DUP
-	PUSHINT 1840850083
-	EQUAL
-	IFJMPREF {
-		CALL $initializeTokens$
-	}
-	DUP
 	PUSHINT 1893244873
-	EQUAL
+	LEQ
 	IFJMPREF {
-		CALL $onAcceptTokensTransfer$
+		DUP
+		PUSHINT 1729444094
+		EQUAL
+		IFJMPREF {
+			CALL $renounceOwnership$
+		}
+		DUP
+		PUSHINT 1773220348
+		EQUAL
+		IFJMPREF {
+			CALL $wallets$
+		}
+		DUP
+		PUSHINT 1840850083
+		EQUAL
+		IFJMPREF {
+			CALL $initializeTokens$
+		}
+		DUP
+		PUSHINT 1893244873
+		EQUAL
+		IFJMPREF {
+			CALL $onAcceptTokensTransfer$
+		}
 	}
 	DUP
 	PUSHINT 2072843528

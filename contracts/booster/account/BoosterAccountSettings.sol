@@ -29,11 +29,18 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         rewarder = _rewarder;
     }
 
-    /// @notice Toggle token processing
-    /// If disabled, than all received tokens will be immediately sent to owner
+    /// @notice Toggle token auto reinvestment
+    /// If disabled, than all received rewards will be immediately sent to owner
+    /// If enabled, than rewards will
     /// Can be called only by `owner`
-    function toggleTokenProcessing() external override onlyOwner cashBack(owner) {
-        token_processing = !token_processing;
+    function toggleAutoReinvestment() external override onlyOwner cashBack(owner) {
+        _toggleAutoReinvestment();
+    }
+
+    function _toggleAutoReinvestment() internal {
+        auto_reinvestment = !auto_reinvestment;
+
+        emit AutoReinvestmentUpdated(auto_reinvestment);
     }
 
     function _transferTokens(

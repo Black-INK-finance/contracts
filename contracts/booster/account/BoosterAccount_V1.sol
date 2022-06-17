@@ -22,7 +22,7 @@ contract BoosterAccount_V1 is
 
         TvmCell data = abi.encode(
             owner, factory, farming_pool, _version,
-            passport, user_data, token_processing,
+            passport, user_data, auto_reinvestment,
             balances, received, wallets, fees,
             lp, pair, left, right, rewards,
             swaps, rewarder, reward_fee, lp_fee
@@ -65,7 +65,7 @@ contract BoosterAccount_V1 is
         version = _version;
         passport = _passport;
 
-        token_processing = true;
+        auto_reinvestment = true;
 
         lp = settings.lp;
         pair = settings.pair;

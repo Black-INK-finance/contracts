@@ -29,6 +29,13 @@
 			]
 		},
 		{
+			"name": "skimGas",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "onAcceptTokensTransfer",
 			"inputs": [
 				{"name":"root","type":"address"},
@@ -96,10 +103,22 @@
 			]
 		},
 		{
-			"name": "toggleTokenProcessing",
+			"name": "toggleAutoReinvestment",
 			"inputs": [
 			],
 			"outputs": [
+			]
+		},
+		{
+			"name": "encodeTokenDepositPayload",
+			"inputs": [
+				{"name":"update_frequency","type":"bool"},
+				{"name":"frequency","type":"uint128"},
+				{"name":"toggle_auto_ping","type":"bool"},
+				{"name":"toggle_auto_reinvestment","type":"bool"}
+			],
+			"outputs": [
+				{"name":"value0","type":"cell"}
 			]
 		},
 		{
@@ -113,7 +132,7 @@
 				{"name":"_farming_pool","type":"address"},
 				{"name":"_passport","type":"address"},
 				{"name":"_user_data","type":"address"},
-				{"name":"_token_processing","type":"bool"},
+				{"name":"_auto_reinvestment","type":"bool"},
 				{"name":"_balances","type":"map(address,uint128)"},
 				{"name":"_received","type":"map(address,uint128)"},
 				{"name":"_wallets","type":"map(address,address)"},
@@ -208,11 +227,11 @@
 			]
 		},
 		{
-			"name": "token_processing",
+			"name": "auto_reinvestment",
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"token_processing","type":"bool"}
+				{"name":"auto_reinvestment","type":"bool"}
 			]
 		},
 		{
@@ -299,6 +318,33 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "AccountGainedReward",
+			"inputs": [
+				{"name":"reward","type":"address"},
+				{"name":"gain","type":"uint128"},
+				{"name":"fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AccountGainedLp",
+			"inputs": [
+				{"name":"gain","type":"uint128"},
+				{"name":"fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AutoReinvestmentUpdated",
+			"inputs": [
+				{"name":"auto_reinvestment","type":"bool"}
+			],
+			"outputs": [
+			]
 		}
 	],
 	"fields": [
@@ -311,7 +357,7 @@
 		{"name":"version","type":"uint256"},
 		{"name":"passport","type":"address"},
 		{"name":"user_data","type":"address"},
-		{"name":"token_processing","type":"bool"},
+		{"name":"auto_reinvestment","type":"bool"},
 		{"name":"balances","type":"map(address,uint128)"},
 		{"name":"received","type":"map(address,uint128)"},
 		{"name":"wallets","type":"map(address,address)"},

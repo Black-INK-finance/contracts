@@ -23,6 +23,11 @@ interface IBoosterBuyBack {
         SwapDirection swap
     ) external;
 
+    function setTokenMinToSwap(
+        address token,
+        uint128 amount
+    ) external;
+
     function removeTokenSwap(
         address token
     ) external;

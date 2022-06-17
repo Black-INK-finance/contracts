@@ -62,6 +62,15 @@
 			]
 		},
 		{
+			"name": "setTokenMinToSwap",
+			"inputs": [
+				{"name":"token","type":"address"},
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "removeTokenSwap",
 			"inputs": [
 				{"name":"token","type":"address"}

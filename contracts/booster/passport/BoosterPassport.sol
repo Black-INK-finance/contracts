@@ -41,6 +41,12 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         _;
     }
 
+    modifier onlyOwnerOrAccount(address account) {
+        require(msg.sender == owner || msg.sender == account, Errors.WRONG_SENDER);
+
+        _;
+    }
+
     modifier onlyFactory() {
         require(msg.sender == factory, Errors.WRONG_SENDER);
 
@@ -141,7 +147,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     function setPingFrequency(
         address account,
         uint128 frequency
-    ) external override onlyOwner accountExists(account) cashBack(msg.sender) {
+    ) external override onlyOwnerOrAccount(account) accountExists(account) cashBack(msg.sender) {
         require(frequency >= Constants.MIN_PING_FREQUENCY, Errors.BOOSTER_PASSPORT_PING_FREQUENCY_TOO_LOW);
 
         accounts[account].ping_frequency = frequency;
@@ -198,7 +204,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     /// @param account Booster account address
     function toggleAccountAutoPing(
         address account
-    ) external override onlyOwner accountExists(account) cashBack(msg.sender) {
+    ) external override onlyOwnerOrAccount(account) accountExists(account) cashBack(msg.sender) {
         accounts[account].auto_ping_enabled = !accounts[account].auto_ping_enabled;
 
         emit AutoPingUpdated(account, accounts[account].auto_ping_enabled);
@@ -254,7 +260,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     function pingByOwner(
         address account,
         uint counter
-    ) external override onlyOwner reserveBalance accountExists(account) {
+    ) external override onlyOwner reserveAtLeastTargetBalance accountExists(account) {
         AccountSettings settings = accounts[account];
 
         require(settings.ping_counter == counter, Errors.BOOSTER_PASSPORT_WRONG_COUNTER);
@@ -298,12 +304,13 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         accounts[account].ping_counter++;
     }
 
-    /// @notice Top up required in case balance is less than half of the `_targetBalance`
+    /// @notice Top up required in case balance is less than target
     function _requiredTopUp() internal pure returns(uint128) {
-        uint128 threshold = _targetBalance() / 2;
-        uint128 balance = address(this).balance;
+        if (address(this).balance + Gas.BOOSTER_PASSPORT_SPENT_GAS_LIMIT < _targetBalance()) {
+            return _targetBalance() - address(this).balance;
+        }
 
-        return (address(this).balance < threshold) ? (balance - threshold) : 0;
+        return 0;
     }
 
     function _targetBalance() internal pure override returns(uint128) {
@@ -315,6 +322,6 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
             if (target == element) return true;
         }
 
-    return false;
+        return false;
     }
 }

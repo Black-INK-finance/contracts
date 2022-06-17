@@ -151,6 +151,15 @@ contract BoosterBuyBack is
         }
     }
 
+    function setTokenMinToSwap(
+        address token,
+        uint128 amount
+    ) external override onlyOwner cashBack(owner) {
+        require(swaps.exists(token));
+
+        swaps[token].minToSwap = amount;
+    }
+
     /// @notice Remove swap rules for token
     /// Can be called only by `owner`
     /// @param token Token address

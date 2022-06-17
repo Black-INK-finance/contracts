@@ -5,7 +5,7 @@ library Gas {
     // Common gas values
     uint128 constant DEPLOY_TOKEN_WALLET = 0.2 ton;
 
-    uint128 constant BOOSTER_PASSPORT_TARGET_BALANCE = 2 ton;
+    uint128 constant BOOSTER_PASSPORT_TARGET_BALANCE = 5 ton;
     uint128 constant BOOSTER_ACCOUNT_TARGET_BALANCE = 20 ton;
 
     // Booster factory
@@ -32,9 +32,14 @@ library Gas {
     uint128 constant BOOSTER_ACCOUNT_TRANSFER_FEES = 0.5 ton;
 
     // Booster keeper attach exceeding gas to every ping
-    // Once the value is over the target balance more than this value
+    // Once the balance is over than the BOOSTER_ACCOUNT_TARGET_BALANCE more than this value
     // it will be sent back to the factory
     uint128 constant BOOSTER_ACCOUNT_EXCEEDING_GAS_LIMIT = 3 ton;
+
+    // Passport pays itself for keeper external in calls, so it's balance decreases
+    // Once the balance is less than the BOOSTER_PASSPORT_TARGET_BALANCE more than this value
+    // Factory will top up the passport balance
+    uint128 constant BOOSTER_PASSPORT_SPENT_GAS_LIMIT = 2 ton;
 
     uint128 constant BOOSTER_BUYBACK_DEX_SWAP = 5 ton;
 

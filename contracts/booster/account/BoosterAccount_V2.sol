@@ -46,7 +46,7 @@ contract BoosterAccount_V2 is
 
             address _passport,
             address _user_data,
-            bool _token_processing,
+            bool _auto_reinvestment,
 
             mapping (address => uint128) _balances,
             mapping (address => uint128) _received,
@@ -86,7 +86,7 @@ contract BoosterAccount_V2 is
 
         passport = _passport;
         user_data = _user_data;
-        token_processing = _token_processing;
+        auto_reinvestment = _auto_reinvestment;
 
         balances = _balances;
         received = _received;

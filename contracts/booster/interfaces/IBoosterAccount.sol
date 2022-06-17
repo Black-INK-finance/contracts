@@ -43,6 +43,7 @@ interface IBoosterAccount is IBoosterBase {
     ) external;
 
     function skim(address remainingGasTo) external;
+    function skimGas() external;
 
     // Factory methods
     function setFees(
@@ -55,7 +56,7 @@ interface IBoosterAccount is IBoosterBase {
         address _rewarder,
         address remainingGasTo
     ) external;
-    function toggleTokenProcessing() external;
+    function toggleAutoReinvestment() external;
 
     function acceptUpgrade(
         TvmCell code,
@@ -72,4 +73,8 @@ interface IBoosterAccount is IBoosterBase {
     // Technical methods
     function receiveTokenWallet(address wallet) external;
     function receiveFarmingUserData(address _user_data) external;
+
+    event AccountGainedReward(address reward, uint128 gain, uint128 fee);
+    event AccountGainedLp(uint128 gain, uint128 fee);
+    event AutoReinvestmentUpdated(bool auto_reinvestment);
 }

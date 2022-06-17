@@ -253,7 +253,7 @@
 			"name": "Ping",
 			"inputs": [
 				{"name":"account","type":"address"},
-				{"name":"_timestamp","type":"uint256"},
+				{"name":"_timestamp","type":"uint128"},
 				{"name":"counter","type":"uint256"},
 				{"name":"byManager","type":"bool"}
 			],

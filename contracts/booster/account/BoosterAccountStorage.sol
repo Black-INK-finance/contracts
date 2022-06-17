@@ -16,7 +16,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     uint public version; // Account code version
     address public passport; // Owner's passport
     address public user_data; // Booster farming user data
-    bool public token_processing; // Disabled swaps / supplies / deposits. Instead, transfer all tokens to owner
+    bool public auto_reinvestment;
 
     // Booster token stats
     mapping (address => uint128) balances; // Token balances
@@ -59,6 +59,15 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         _;
     }
 
+    function encodeTokenDepositPayload(
+        bool update_frequency,
+        uint128 frequency,
+        bool toggle_auto_ping,
+        bool toggle_auto_reinvestment
+    ) external pure returns(TvmCell) {
+        return abi.encode(update_frequency, frequency, toggle_auto_ping, toggle_auto_reinvestment);
+    }
+
     function getDetails() external override view returns (
         address _owner,
         uint _version,
@@ -66,7 +75,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         address _farming_pool,
         address _passport,
         address _user_data,
-        bool _token_processing,
+        bool _auto_reinvestment,
 
         mapping (address => uint128) _balances,
         mapping (address => uint128) _received,
@@ -91,7 +100,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
             farming_pool,
             passport,
             user_data,
-            token_processing,
+            auto_reinvestment,
 
             balances,
             received,

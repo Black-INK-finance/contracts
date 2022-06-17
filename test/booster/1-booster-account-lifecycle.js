@@ -226,9 +226,11 @@ describe('Test booster lifecycle', async function() {
             });
 
             it('Setup USDT/USDC LP token', async () => {
-                const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
+                const token_roots = await dex_pair_USDT_USDC.call({
+                    method: 'getTokenRoots',
+                });
 
-                LP = await Token.from_addr(lp_address, alice);
+                LP = await Token.from_addr(token_roots.lp, alice);
                 LP.token.name = 'Token root [LP USDT/USDC]';
             });
         });
@@ -305,10 +307,6 @@ describe('Test booster lifecycle', async function() {
         });
 
         it('Deploy farming pool', async () => {
-            const lp = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
-
-            logger.log(`Pair LP root: ${lp}`);
-
             farming_pool = await farming_factory.deployPool({
                 pool_owner: god,
                 reward_rounds: [
@@ -320,7 +318,7 @@ describe('Test booster lifecycle', async function() {
                         ]
                     }
                 ],
-                tokenRoot: lp,
+                tokenRoot: LP.address,
                 rewardTokenRoot: [QUBE.address, BRIDGE.address],
                 vestingPeriod: 0,
                 vestingRatio: 0,
@@ -437,8 +435,6 @@ describe('Test booster lifecycle', async function() {
         });
 
         it('Alice supplies USDT/USDC to the pool', async () => {
-            const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
-
             const tx = await alice.runTarget({
                 contract: alice_dex_account,
                 method: 'depositLiquidity',
@@ -448,7 +444,7 @@ describe('Test booster lifecycle', async function() {
                     left_amount: dex_pair_initial_supply,
                     right_root: USDC.address,
                     right_amount: dex_pair_initial_supply,
-                    expected_lp_root: lp_address,
+                    expected_lp_root: LP.address,
                     auto_change: true,
                     send_gas_to: alice.address
                 },
@@ -482,31 +478,47 @@ describe('Test booster lifecycle', async function() {
                     _rewarder: rewarder.address,
                     _ping_token_root: PING.address,
                     _account_platform: BoosterAccountPlatform.code,
-                    _account_implementation: BoosterAccount.code,
+                    _account_implementation: '',
                     _passport_platform: BoosterPassportPlatform.code,
-                    _passport_implementation: BoosterPassport.code
+                    _passport_implementation: ''
                 },
-            }, locklift.utils.convertCrystal(50, 'nano'));
+            }, locklift.utils.convertCrystal(60, 'nano'));
 
             await logContract(booster_factory);
+
+            await god.runTarget({
+                contract: booster_factory,
+                method: 'upgradeAccountCode',
+                params: {
+                    _account_implementation: BoosterAccount.code
+                }
+            });
+
+            await god.runTarget({
+                contract: booster_factory,
+                method: 'upgradePassportCode',
+                params: {
+                    _passport_implementation: BoosterPassport.code
+                }
+            });
 
             const details = await booster_factory.call({ method: 'getDetails' });
 
             expect(details._version)
                 .to.be.bignumber.equal(0, 'Wrong factory version');
             expect(details._account_version)
-                .to.be.bignumber.equal(0, 'Wrong factory account version');
+                .to.be.bignumber.equal(1, 'Wrong factory account version');
+            expect(details._passport_version)
+                .to.be.bignumber.equal(1, 'Wrong factory passport version');
         });
 
         it('Add farming pool to the booster factory', async () => {
-            const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
-
             await god.runTarget({
                 contract: booster_factory,
                 method: 'addFarming',
                 params: {
                     farming_pool: farming_pool.address,
-                    lp: lp_address,
+                    lp: LP.address,
                     pair: dex_pair_USDT_USDC.address,
                     left: USDC.address,
                     right: USDT.address,
@@ -588,7 +600,7 @@ describe('Test booster lifecycle', async function() {
             expect(details._factory)
                 .to.be.equal(booster_factory.address, 'Wrong passport factory');
             expect(details._version)
-                .to.be.bignumber.equal(0, 'Wrong passport version');
+                .to.be.bignumber.equal(1, 'Wrong passport version');
             expect(details._managers)
                 .to.be.eql(await booster_factory.call({ method: 'managers' }), 'Wrong passport managers');
             expect(details._ping_balance)
@@ -615,7 +627,7 @@ describe('Test booster lifecycle', async function() {
             expect(details._owner)
                 .to.be.equal(alice.address, 'Wrong booster owner');
             expect(details._version)
-                .to.be.bignumber.equal(0, 'Wrong booster version');
+                .to.be.bignumber.equal(1, 'Wrong booster version');
             expect(details._factory)
                 .to.be.equal(booster_factory.address, 'Wrong booster factory');
             expect(details._farming_pool)
@@ -738,12 +750,19 @@ describe('Test booster lifecycle', async function() {
         });
 
         it('Alice transfers some LP to the booster account', async () => {
-            const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
-
-            const lp = await Token.from_addr(lp_address, alice);
-            const wallet = await lp.wallet(alice);
+            const wallet = await LP.wallet(alice);
 
             const amount = (await wallet.balance()).div(2).toFixed();
+
+            const payload = await alice_booster_account.call({
+                method: 'encodeTokenDepositPayload',
+                params: {
+                    update_frequency: false,
+                    frequency: 0,
+                    toggle_auto_ping: false,
+                    toggle_auto_reinvestment: false
+                }
+            });
 
             const tx = await alice.runTarget({
                 contract: wallet.wallet,
@@ -754,7 +773,7 @@ describe('Test booster lifecycle', async function() {
                     deployWalletValue: 0,
                     remainingGasTo: alice.address,
                     notify: true,
-                    payload: ''
+                    payload
                 },
                 value: locklift.utils.convertCrystal(3, 'nano'),
             });
@@ -765,9 +784,9 @@ describe('Test booster lifecycle', async function() {
 
             const details = await alice_booster_account.call({ method: 'getDetails' });
 
-            expect(details._balances[lp_address])
+            expect(details._balances[LP.address])
                 .to.be.bignumber.equal(0, 'Booster LP balance should be zero');
-            expect(details._received[lp_address])
+            expect(details._received[LP.address])
                 .to.be.bignumber.equal(amount, 'Booster LP received should be positive');
         });
 
@@ -780,12 +799,10 @@ describe('Test booster lifecycle', async function() {
 
             const [event] = events;
 
-            const lp_address = await dex_pair_USDT_USDC.call({ method: 'lp_root' });
-
             expect(event.value.user)
                 .to.be.equal(alice_booster_account.address, 'Wrong farming deposit author');
             expect(event.value.amount)
-                .to.be.bignumber.equal(details._received[lp_address], 'Wrong farming deposit amount');
+                .to.be.bignumber.equal(details._received[LP.address], 'Wrong farming deposit amount');
 
             // Save Alice booster user data
             alice_booster_account_user_data = await locklift.factory.getContract('UserDataV3');
@@ -872,7 +889,7 @@ describe('Test booster lifecycle', async function() {
                         account: alice_booster_account.address,
                         counter: 1
                     },
-                    value: locklift.utils.convertCrystal(2, 'nano')
+                    value: locklift.utils.convertCrystal(3, 'nano')
                 });
 
                 logger.success(`Second ping by Alice tx: ${tx.transaction.id}`);
@@ -899,6 +916,16 @@ describe('Test booster lifecycle', async function() {
 
                 const amount = await wallet.balance();
 
+                const payload = await alice_booster_account.call({
+                    method: 'encodeTokenDepositPayload',
+                    params: {
+                        update_frequency: false,
+                        frequency: 0,
+                        toggle_auto_ping: false,
+                        toggle_auto_reinvestment: false
+                    }
+                });
+
                 const tx = await alice.runTarget({
                     contract: wallet.wallet,
                     method: 'transfer',
@@ -908,7 +935,7 @@ describe('Test booster lifecycle', async function() {
                         deployWalletValue: 0,
                         remainingGasTo: alice.address,
                         notify: true,
-                        payload: ''
+                        payload
                     },
                     value: locklift.utils.convertCrystal(3, 'nano'),
                 });
@@ -942,6 +969,16 @@ describe('Test booster lifecycle', async function() {
 
                 const wallet = await USDT.wallet(alice);
 
+                const payload = await alice_booster_account.call({
+                    method: 'encodeTokenDepositPayload',
+                    params: {
+                        update_frequency: false,
+                        frequency: 0,
+                        toggle_auto_ping: false,
+                        toggle_auto_reinvestment: false
+                    }
+                });
+
                 const tx = await alice.runTarget({
                     contract: wallet.wallet,
                     method: 'transfer',
@@ -951,7 +988,7 @@ describe('Test booster lifecycle', async function() {
                         deployWalletValue: 0,
                         remainingGasTo: alice.address,
                         notify: true,
-                        payload: ''
+                        payload
                     },
                     value: locklift.utils.convertCrystal(1, 'nano'),
                 });
@@ -982,6 +1019,16 @@ describe('Test booster lifecycle', async function() {
 
                 const wallet = await BRIDGE.wallet(alice);
 
+                const payload = await alice_booster_account.call({
+                    method: 'encodeTokenDepositPayload',
+                    params: {
+                        update_frequency: false,
+                        frequency: 0,
+                        toggle_auto_ping: false,
+                        toggle_auto_reinvestment: false
+                    }
+                });
+
                 const tx = await alice.runTarget({
                     contract: wallet.wallet,
                     method: 'transfer',
@@ -991,7 +1038,7 @@ describe('Test booster lifecycle', async function() {
                         deployWalletValue: 0,
                         remainingGasTo: alice.address,
                         notify: true,
-                        payload: ''
+                        payload
                     },
                     value: locklift.utils.convertCrystal(1, 'nano'),
                 });
@@ -1029,11 +1076,11 @@ describe('Test booster lifecycle', async function() {
             it('Alice pauses booster token processing', async () => {
                 await alice.runTarget({
                     contract: alice_booster_account,
-                    method: 'toggleTokenProcessing',
+                    method: 'toggleAutoReinvestment',
                     value: locklift.utils.convertCrystal(1, 'nano')
                 });
 
-                expect(await alice_booster_account.call({ method: 'token_processing' }))
+                expect(await alice_booster_account.call({ method: 'auto_reinvestment' }))
                     .to.be.equal(false);
             });
 
@@ -1102,11 +1149,11 @@ describe('Test booster lifecycle', async function() {
             it('Alice unpauses booster token processing', async () => {
                 await alice.runTarget({
                     contract: alice_booster_account,
-                    method: 'toggleTokenProcessing',
+                    method: 'toggleAutoReinvestment',
                     value: locklift.utils.convertCrystal(1, 'nano')
                 });
 
-                expect(await alice_booster_account.call({ method: 'token_processing' }))
+                expect(await alice_booster_account.call({ method: 'auto_reinvestment' }))
                     .to.be.equal(true);
             });
         });

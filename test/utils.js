@@ -875,7 +875,13 @@ const setupDex = async (god) => {
     await god.runTarget({
         contract: dex_root,
         method: 'installOrUpdatePairCode',
-        params: {code: DexPair.code},
+        params: {code: DexPair.code, pool_type: 1},
+    });
+
+    await god.runTarget({
+        contract: dex_root,
+        method: 'installOrUpdatePairCode',
+        params: {code: DexPair.code, pool_type: 2},
     });
 
     await god.runTarget({
@@ -918,16 +924,15 @@ const deployDexPair = async (owner, dex_root, left, right) => {
 
     await logContract(DexPair);
 
-    const dex_pair_lp_root = await DexPair.call({
-        method: 'lp_root',
-        params: {}
+    const token_roots = await DexPair.call({
+        method: 'getTokenRoots',
     });
 
     const DexPairLp = await locklift.factory.getContract(
         'TokenRoot',
         TOKEN_CONTRACTS_PATH
     );
-    DexPairLp.setAddress(dex_pair_lp_root);
+    DexPairLp.setAddress(token_roots.lp);
 
     DexPairLp.name = `Dex pair LP root [${left_symbol}-${right_symbol}]`;
 

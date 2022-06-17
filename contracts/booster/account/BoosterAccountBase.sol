@@ -12,6 +12,7 @@ import "flatqube/contracts/interfaces/IDexRoot.sol";
 import "flatqube/contracts/interfaces/IDexAccount.sol";
 import "flatqube/contracts/libraries/DexOperationTypes.sol";
 
+import "./../interfaces/IBoosterPassport.sol";
 import "./../../v3/interfaces/IEverFarmPool.sol";
 
 import "./BoosterAccountSettings.sol";
@@ -35,12 +36,13 @@ abstract contract BoosterAccountBase is
     ) external override {
         require(msg.sender == passport || msg.sender == factory, Errors.WRONG_SENDER);
 
-        // Skim exceeding gas
-        if ((address(this).balance - msg.value - _targetBalance()) > Gas.BOOSTER_ACCOUNT_EXCEEDING_GAS_LIMIT) {
-            factory.transfer({
+        // Automatically skim gas to owner
+        // After balance exceeds some constant
+        if (address(this).balance > _targetBalance() + Gas.BOOSTER_ACCOUNT_EXCEEDING_GAS_LIMIT) {
+            owner.transfer({
                 flag: 0,
                 bounce: false,
-                value: address(this).balance - msg.value - _targetBalance()
+                value: address(this).balance - _targetBalance()
             });
         }
 
@@ -57,6 +59,18 @@ abstract contract BoosterAccountBase is
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
         _skimFees(remainingGasTo);
+    }
+
+    /// @notice Skim gas from the booster account
+    /// Can be called only by `owner`
+    function skimGas() external override onlyOwner {
+        tvm.rawReserve(_targetBalance(), 0);
+
+        owner.transfer({
+            value: 0,
+            bounce: false,
+            flag: MsgFlag.ALL_NOT_RESERVED
+        });
     }
 
     /// @notice Receive tokens
@@ -79,7 +93,7 @@ abstract contract BoosterAccountBase is
         if (
             !wallets.exists(root) || msg.sender != wallets[root] ||
             (root == lp && sender == farming_pool) ||
-            token_processing == false
+            auto_reinvestment == false
         ) {
             TvmCell empty;
 
@@ -100,6 +114,36 @@ abstract contract BoosterAccountBase is
             return;
         }
 
+        // Owner can change account / passport settings at the time of sending tokens
+        if (sender == owner) {
+            (
+                bool update_frequency, uint128 frequency,
+                bool toggle_auto_ping,
+                bool toggle_auto_reinvestment
+            ) = abi.decode(payload, (bool, uint128, bool, bool));
+
+            if (update_frequency && frequency > 0) {
+                IBoosterPassport(passport).setPingFrequency{
+                    bounce: true,
+                    flag: 0,
+                    value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
+                }(_me(), frequency);
+            }
+
+            if (toggle_auto_ping) {
+                IBoosterPassport(passport).toggleAccountAutoPing{
+                    bounce: true,
+                    flag: 0,
+                    value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
+                }(_me());
+            }
+
+            if (toggle_auto_reinvestment) {
+                _toggleAutoReinvestment();
+            }
+        }
+
+        // Consider reward fees in case they are sent from the farming pool
         if (_isArrayIncludes(root, rewards) && sender == farming_pool) {
             // Get management fees from reward, which are sent from the farming pool
             uint128 fee = math.muldivr(amount, reward_fee, Constants.BPS);
@@ -107,6 +151,10 @@ abstract contract BoosterAccountBase is
             // Consider fees
             _considerTokensFee(root, fee);
             _considerTokensArrival(root, amount - fee);
+
+            emit AccountGainedReward(root, amount, fee);
+
+            if (fee == amount) return;
 
             // Check reward transfer payload
             (uint32 nonce) = abi.decode(payload, (uint32));
@@ -135,16 +183,18 @@ abstract contract BoosterAccountBase is
         TvmCell
     ) external override {
         // Unknown token
-        if (!wallets.exists(root) || wallets[root] != msg.sender || token_processing == false) {
+        if (!wallets.exists(root) || wallets[root] != msg.sender || auto_reinvestment == false) {
             TvmCell empty;
 
             _transferTokens(
                 msg.sender,
                 amount,
                 owner,
+
                 _me(),
                 false,
                 empty,
+
                 0,
                 MsgFlag.REMAINING_GAS,
                 true
@@ -159,6 +209,10 @@ abstract contract BoosterAccountBase is
 
             _considerTokensFee(lp, fee);
             _considerTokensArrival(lp, amount - fee);
+
+            emit AccountGainedLp(amount, fee);
+
+            if (fee == amount) return;
         } else {
             _considerTokensArrival(root, amount);
         }
@@ -352,7 +406,7 @@ abstract contract BoosterAccountBase is
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
             bounce: false
-        }(amount, msg.sender, 0);
+        }(amount, msg.sender, Constants.NO_REINVEST_REQUIRED);
     }
 
     function _requestFarmingUserData() internal view {
