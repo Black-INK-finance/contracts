@@ -6,7 +6,7 @@ const BigNumber = require("bignumber.js");
 const main = async () => {
     // Initialize booster factory
     const booster_factory = await locklift.factory.getContract('BoosterFactory');
-    booster_factory.setAddress('0:e972b8959cdebcf37415ce01e9f0310e12ce76cdb8822fd167aa791a53136734');
+    booster_factory.setAddress('0:81ca282730d343e570a9808b5769bbaf6c1e8b00f65c294f926beb1a894ae1c9');
 
     const [manager_key] = await locklift.keys.getKeyPairs();
 
@@ -18,7 +18,7 @@ const main = async () => {
     const accounts = events.map(e => e.value.account);
 
     // Get ping price in PING tokens
-    const ping_price = 1;
+    const ping_price = 0;
 
     logger.log(`Ping price: ${ping_price}`);
 

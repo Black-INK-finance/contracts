@@ -43,7 +43,7 @@ const main = async () => {
         {
             type: 'toggle',
             name: 'add_farming_pools',
-            message: 'Add USDT/USDC and WEVER/QUBE farmings as a preset (cant do this with UI)',
+            message: 'Add some farmings as a preset (cant do this with UI)',
             initial: true,
             active: 'yes',
             inactive: 'no'

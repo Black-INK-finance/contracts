@@ -42,7 +42,9 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     }
 
     modifier onlyOwnerOrAccount(address account) {
-        require(msg.sender == owner || msg.sender == account, Errors.WRONG_SENDER);
+        if (msg.sender != owner) {
+            require(accounts.exists(msg.sender) && msg.sender == account, Errors.WRONG_SENDER);
+        }
 
         _;
     }
@@ -146,7 +148,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     /// @param frequency New ping frequency
     function setPingFrequency(
         address account,
-        uint128 frequency
+        uint64 frequency
     ) external override onlyOwnerOrAccount(account) accountExists(account) cashBack(msg.sender) {
         require(frequency >= Constants.MIN_PING_FREQUENCY, Errors.BOOSTER_PASSPORT_PING_FREQUENCY_TOO_LOW);
 
@@ -160,7 +162,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     /// @param price New ping max price
     function setPingMaxPrice(
         uint128 price
-    ) external override onlyOwner cashBack(msg.sender) {
+    ) external override onlyOwnerOrAccount(msg.sender) cashBack(msg.sender) {
         ping_max_price = price;
 
         emit PingMaxPriceUpdated(ping_max_price);
@@ -181,7 +183,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     function registerAccount(
         address account,
         address farming_pool,
-        uint128 ping_frequency,
+        uint64 ping_frequency,
         address remainingGasTo
     ) external override onlyFactory cashBack(remainingGasTo) {
         require(!accounts.exists(account), Errors.BOOSTER_PASSPORT_ACCOUNT_ALREADY_REGISTERED);
@@ -189,7 +191,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         accounts[account] = AccountSettings({
             ping_frequency: ping_frequency,
             farming_pool: farming_pool,
-            last_ping: 0,
+            last_ping: now,
             ping_counter: 0,
             auto_ping_enabled: true
         });
@@ -220,7 +222,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     function pingByManager(
         uint128 price,
         address account,
-        uint counter
+        uint64 counter
     ) external override onlyManager accountExists(account) {
         // - Manager uses external in message, passport pays itself
         tvm.accept();
@@ -259,7 +261,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     /// @param counter Booster account pings counter, used to prevent double-ping
     function pingByOwner(
         address account,
-        uint counter
+        uint64 counter
     ) external override onlyOwner reserveAtLeastTargetBalance accountExists(account) {
         AccountSettings settings = accounts[account];
 
@@ -295,8 +297,8 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         );
     }
 
-    function _updateAccountLastPing(address account, uint counter, bool byManager) internal {
-        uint128 _now = now;
+    function _updateAccountLastPing(address account, uint64 counter, bool byManager) internal {
+        uint64 _now = now;
 
         emit Ping(account, _now, counter, byManager);
 

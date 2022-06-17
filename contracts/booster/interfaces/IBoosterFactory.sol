@@ -10,7 +10,7 @@ interface IBoosterFactory is IBoosterBase {
 
     function pingAccount(
         address _owner,
-        uint counter,
+        uint64 counter,
         address account,
         address farming_pool,
         uint128 price,
@@ -36,7 +36,7 @@ interface IBoosterFactory is IBoosterBase {
 
     function deployAccount(
         address farming_pool,
-        uint128 ping_frequency,
+        uint64 ping_frequency,
         uint128 max_ping_price,
         bool deploy_passport
     ) external;

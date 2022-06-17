@@ -60,12 +60,16 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     }
 
     function encodeTokenDepositPayload(
-        bool update_frequency,
-        uint128 frequency,
+        bool update_frequency, uint64 frequency,
+        bool update_max_ping_price, uint128 max_ping_price,
         bool toggle_auto_ping,
         bool toggle_auto_reinvestment
     ) external pure returns(TvmCell) {
-        return abi.encode(update_frequency, frequency, toggle_auto_ping, toggle_auto_reinvestment);
+        return abi.encode(
+            update_frequency, frequency,
+            update_max_ping_price, max_ping_price,
+            toggle_auto_ping, toggle_auto_reinvestment
+        );
     }
 
     function getDetails() external override view returns (

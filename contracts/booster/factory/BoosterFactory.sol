@@ -172,7 +172,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
     /// @param farming_pool Farming pool address
     function deployAccount(
         address farming_pool,
-        uint128 ping_frequency,
+        uint64 ping_frequency,
         uint128 max_ping_price,
         bool deploy_passport
     ) external override reserveBalance farmingPoolExists(farming_pool) {

@@ -15,7 +15,7 @@
 		{
 			"name": "ping",
 			"inputs": [
-				{"name":"counter","type":"uint256"}
+				{"name":"counter","type":"uint64"}
 			],
 			"outputs": [
 			]
@@ -113,7 +113,9 @@
 			"name": "encodeTokenDepositPayload",
 			"inputs": [
 				{"name":"update_frequency","type":"bool"},
-				{"name":"frequency","type":"uint128"},
+				{"name":"frequency","type":"uint64"},
+				{"name":"update_max_ping_price","type":"bool"},
+				{"name":"max_ping_price","type":"uint128"},
 				{"name":"toggle_auto_ping","type":"bool"},
 				{"name":"toggle_auto_reinvestment","type":"bool"}
 			],

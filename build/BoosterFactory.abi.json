@@ -81,7 +81,7 @@
 			"name": "deployAccount",
 			"inputs": [
 				{"name":"farming_pool","type":"address"},
-				{"name":"ping_frequency","type":"uint128"},
+				{"name":"ping_frequency","type":"uint64"},
 				{"name":"max_ping_price","type":"uint128"},
 				{"name":"deploy_passport","type":"bool"}
 			],
@@ -165,7 +165,7 @@
 			"name": "pingAccount",
 			"inputs": [
 				{"name":"_owner","type":"address"},
-				{"name":"counter","type":"uint256"},
+				{"name":"counter","type":"uint64"},
 				{"name":"account","type":"address"},
 				{"name":"farming_pool","type":"address"},
 				{"name":"price","type":"uint128"},

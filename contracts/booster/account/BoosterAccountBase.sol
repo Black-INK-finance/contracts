@@ -32,7 +32,7 @@ abstract contract BoosterAccountBase is
     /// Can be called only by `passport` or `factory`
     /// @param counter Current ping order number
     function ping(
-        uint counter
+        uint64 counter
     ) external override {
         require(msg.sender == passport || msg.sender == factory, Errors.WRONG_SENDER);
 
@@ -117,10 +117,11 @@ abstract contract BoosterAccountBase is
         // Owner can change account / passport settings at the time of sending tokens
         if (sender == owner) {
             (
-                bool update_frequency, uint128 frequency,
+                bool update_frequency, uint64 frequency,
+                bool update_max_ping_price, uint128 max_ping_price,
                 bool toggle_auto_ping,
                 bool toggle_auto_reinvestment
-            ) = abi.decode(payload, (bool, uint128, bool, bool));
+            ) = abi.decode(payload, (bool, uint64, bool, uint128, bool, bool));
 
             if (update_frequency && frequency > 0) {
                 IBoosterPassport(passport).setPingFrequency{
@@ -128,6 +129,14 @@ abstract contract BoosterAccountBase is
                     flag: 0,
                     value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
                 }(_me(), frequency);
+            }
+
+            if (update_max_ping_price && max_ping_price > 0) {
+                IBoosterPassport(passport).setPingMaxPrice{
+                    bounce: true,
+                    flag: 0,
+                    value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
+                }(max_ping_price);
             }
 
             if (toggle_auto_ping) {

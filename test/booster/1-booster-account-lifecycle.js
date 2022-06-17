@@ -612,7 +612,7 @@ describe('Test booster lifecycle', async function() {
             const account = details._accounts[alice_booster_account.address];
 
             expect(account.last_ping)
-                .to.be.bignumber.equal(0, 'Wrong passport account last ping');
+                .to.be.bignumber.greaterThan(0, 'Wrong passport account last ping');
             expect(account.ping_frequency)
                 .to.be.bignumber.equal(ping_frequency, 'Wrong passport account ping frequency');
             expect(account.ping_counter)
@@ -759,6 +759,8 @@ describe('Test booster lifecycle', async function() {
                 params: {
                     update_frequency: false,
                     frequency: 0,
+                    update_max_ping_price: false,
+                    max_ping_price: 0,
                     toggle_auto_ping: false,
                     toggle_auto_reinvestment: false
                 }
@@ -818,7 +820,7 @@ describe('Test booster lifecycle', async function() {
             let _details, _position;
 
             it('Sleep 10 seconds to achieve farming rewards', async () => {
-                await sleep(10 * 1000);
+                await sleep(20 * 1000);
             });
 
             it('Save metrics before ping', async () => {
@@ -921,6 +923,8 @@ describe('Test booster lifecycle', async function() {
                     params: {
                         update_frequency: false,
                         frequency: 0,
+                        update_max_ping_price: false,
+                        max_ping_price: 0,
                         toggle_auto_ping: false,
                         toggle_auto_reinvestment: false
                     }
@@ -974,6 +978,8 @@ describe('Test booster lifecycle', async function() {
                     params: {
                         update_frequency: false,
                         frequency: 0,
+                        update_max_ping_price: false,
+                        max_ping_price: 0,
                         toggle_auto_ping: false,
                         toggle_auto_reinvestment: false
                     }
@@ -1024,6 +1030,8 @@ describe('Test booster lifecycle', async function() {
                     params: {
                         update_frequency: false,
                         frequency: 0,
+                        update_max_ping_price: false,
+                        max_ping_price: 0,
                         toggle_auto_ping: false,
                         toggle_auto_reinvestment: false
                     }
@@ -1121,7 +1129,7 @@ describe('Test booster lifecycle', async function() {
             });
 
             it('Ping booster to claim rewards and transfer them to the user', async () => {
-                await sleep(10 * 1000);
+                await sleep(20 * 1000);
 
                 const tx = await alice_passport.run({
                     method: 'pingByManager',
@@ -1271,7 +1279,7 @@ describe('Test booster lifecycle', async function() {
             });
 
             it('Sleep a little to achieve rewards', async () => {
-                await sleep(10 * 1000);
+                await sleep(20 * 1000);
             });
 
             it('Ping', async () => {
@@ -1287,7 +1295,7 @@ describe('Test booster lifecycle', async function() {
                     keyPair: manager2
                 });
 
-                logger.success(`Fourth ping tx (reinvest after enabling back): ${tx.transaction.id}`);
+                logger.success(`Fourth ping tx (non-zero price): ${tx.transaction.id}`);
 
                 await sleep(3000);
 

@@ -4,9 +4,9 @@ pragma ton-solidity ^0.57.1;
 interface IBoosterPassport {
     struct AccountSettings {
         address farming_pool;
-        uint128 ping_frequency;
-        uint128 last_ping;
-        uint ping_counter;
+        uint64 ping_frequency;
+        uint64 last_ping;
+        uint64 ping_counter;
         bool auto_ping_enabled;
     }
 
@@ -28,13 +28,13 @@ interface IBoosterPassport {
     function registerAccount(
         address account,
         address farming_pool,
-        uint128 ping_frequency,
+        uint64 ping_frequency,
         address remainingGasTo
     ) external;
 
     function setPingFrequency(
         address account,
-        uint128 frequency
+        uint64 frequency
     ) external;
 
     function setPingMaxPrice(
@@ -53,12 +53,12 @@ interface IBoosterPassport {
     function pingByManager(
         uint128 price,
         address account,
-        uint counter
+        uint64 counter
     ) external;
 
     function pingByOwner(
         address account,
-        uint counter
+        uint64 counter
     ) external;
 
     function getDetails() external view returns(
@@ -75,9 +75,9 @@ interface IBoosterPassport {
     event PingTokensWithdrawn(uint128 amount);
 
     event AccountRegistered(address account);
-    event PingFrequencyUpdated(address account, uint128 frequency);
+    event PingFrequencyUpdated(address account, uint64 frequency);
     event PingMaxPriceUpdated(uint128 price);
     event AutoPingUpdated(address account, bool status);
-    event Ping(address account, uint128 _timestamp, uint counter, bool byManager);
+    event Ping(address account, uint64 _timestamp, uint64 counter, bool byManager);
     event ManagersUpdated(uint[] managers);
 }

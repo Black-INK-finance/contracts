@@ -10,10 +10,10 @@ library Constants {
     // - Prod
     // uint constant MIN_PING_FREQUENCY = 60 * 15; // 15 minutes
     // - Test
-    uint constant MIN_PING_FREQUENCY = 10; // 10 seconds
+    uint64 constant MIN_PING_FREQUENCY = 10; // 10 seconds
 
     // How often to skim LP & rewards fees from account
-    uint constant PINGS_PER_SKIM = 10; // Skim fees every 10th ping
+    uint64 constant PINGS_PER_SKIM = 10; // Skim fees every 10th ping
 
     // -- Farming Nonce
     uint32 constant REINVEST_REQUIRED = 11;

@@ -46,7 +46,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     /// @param required_top_up How many EVERs needs to be sent
     function pingAccount(
         address _owner,
-        uint counter,
+        uint64 counter,
         address account,
         address farming_pool,
         uint128 price,

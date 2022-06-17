@@ -39,7 +39,7 @@ interface IBoosterAccount is IBoosterBase {
 
     // Manager methods
     function ping(
-        uint counter
+        uint64 counter
     ) external;
 
     function skim(address remainingGasTo) external;

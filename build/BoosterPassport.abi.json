@@ -41,7 +41,7 @@
 			"name": "setPingFrequency",
 			"inputs": [
 				{"name":"account","type":"address"},
-				{"name":"frequency","type":"uint128"}
+				{"name":"frequency","type":"uint64"}
 			],
 			"outputs": [
 			]
@@ -68,7 +68,7 @@
 			"inputs": [
 				{"name":"account","type":"address"},
 				{"name":"farming_pool","type":"address"},
-				{"name":"ping_frequency","type":"uint128"},
+				{"name":"ping_frequency","type":"uint64"},
 				{"name":"remainingGasTo","type":"address"}
 			],
 			"outputs": [
@@ -87,7 +87,7 @@
 			"inputs": [
 				{"name":"price","type":"uint128"},
 				{"name":"account","type":"address"},
-				{"name":"counter","type":"uint256"}
+				{"name":"counter","type":"uint64"}
 			],
 			"outputs": [
 			]
@@ -96,7 +96,7 @@
 			"name": "pingByOwner",
 			"inputs": [
 				{"name":"account","type":"address"},
-				{"name":"counter","type":"uint256"}
+				{"name":"counter","type":"uint64"}
 			],
 			"outputs": [
 			]
@@ -112,7 +112,7 @@
 				{"name":"_managers","type":"uint256[]"},
 				{"name":"_ping_balance","type":"uint128"},
 				{"name":"_ping_max_price","type":"uint128"},
-				{"components":[{"name":"farming_pool","type":"address"},{"name":"ping_frequency","type":"uint128"},{"name":"last_ping","type":"uint128"},{"name":"ping_counter","type":"uint256"},{"name":"auto_ping_enabled","type":"bool"}],"name":"_accounts","type":"map(address,tuple)"}
+				{"components":[{"name":"farming_pool","type":"address"},{"name":"ping_frequency","type":"uint64"},{"name":"last_ping","type":"uint64"},{"name":"ping_counter","type":"uint64"},{"name":"auto_ping_enabled","type":"bool"}],"name":"_accounts","type":"map(address,tuple)"}
 			]
 		},
 		{
@@ -183,7 +183,7 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"farming_pool","type":"address"},{"name":"ping_frequency","type":"uint128"},{"name":"last_ping","type":"uint128"},{"name":"ping_counter","type":"uint256"},{"name":"auto_ping_enabled","type":"bool"}],"name":"accounts","type":"map(address,tuple)"}
+				{"components":[{"name":"farming_pool","type":"address"},{"name":"ping_frequency","type":"uint64"},{"name":"last_ping","type":"uint64"},{"name":"ping_counter","type":"uint64"},{"name":"auto_ping_enabled","type":"bool"}],"name":"accounts","type":"map(address,tuple)"}
 			]
 		}
 	],
@@ -227,7 +227,7 @@
 			"name": "PingFrequencyUpdated",
 			"inputs": [
 				{"name":"account","type":"address"},
-				{"name":"frequency","type":"uint128"}
+				{"name":"frequency","type":"uint64"}
 			],
 			"outputs": [
 			]
@@ -253,8 +253,8 @@
 			"name": "Ping",
 			"inputs": [
 				{"name":"account","type":"address"},
-				{"name":"_timestamp","type":"uint128"},
-				{"name":"counter","type":"uint256"},
+				{"name":"_timestamp","type":"uint64"},
+				{"name":"counter","type":"uint64"},
 				{"name":"byManager","type":"bool"}
 			],
 			"outputs": [
@@ -279,6 +279,6 @@
 		{"name":"managers","type":"uint256[]"},
 		{"name":"ping_balance","type":"uint128"},
 		{"name":"ping_max_price","type":"uint128"},
-		{"components":[{"name":"farming_pool","type":"address"},{"name":"ping_frequency","type":"uint128"},{"name":"last_ping","type":"uint128"},{"name":"ping_counter","type":"uint256"},{"name":"auto_ping_enabled","type":"bool"}],"name":"accounts","type":"map(address,tuple)"}
+		{"components":[{"name":"farming_pool","type":"address"},{"name":"ping_frequency","type":"uint64"},{"name":"last_ping","type":"uint64"},{"name":"ping_counter","type":"uint64"},{"name":"auto_ping_enabled","type":"bool"}],"name":"accounts","type":"map(address,tuple)"}
 	]
 }
