@@ -183,7 +183,7 @@ contract BoosterBuyBack is
         balances[root] += amount;
         received[root] += amount;
 
-        if (!paused) {
+        if (!paused && swaps.exists(root) && balances[root] >= swaps[root].minToSwap) {
             IBoosterBuyBack(_me()).triggerSwap{
                 value: 0.01 ton
             }(root);

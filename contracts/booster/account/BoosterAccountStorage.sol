@@ -25,12 +25,16 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     mapping (address => uint128) fees; // Recorded fees
 
     // Farming pool settings
+    address public vault; // Dex vault
     address public lp; // Farming LP
     address public pair; // Farming pair
     address public left; // Farming pair left token
     address public right; // Farming pair right token
     address[] public rewards; // Farming pool reward tokens
     mapping (address => SwapDirection) public swaps; // Swaps directions
+    uint32 public pairBalancePending;
+    mapping (address => PairBalance) public pairBalances; // Pair balances for pairs from swaps
+    uint128 public slippage; // Preferred slippage
     address public rewarder; // Fee receiver
     uint128 public reward_fee; // Reward fee amount in BPS
     uint128 public lp_fee; // LP fee amount in BPS
@@ -39,6 +43,11 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
 
     function _me() internal pure returns(address) {
         return address(this);
+    }
+
+    modifier onlyDexPair() {
+        require(pairBalances.exists(msg.sender), Errors.WRONG_SENDER);
+        _;
     }
 
     modifier tokenExists(address token) {
@@ -62,17 +71,19 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     function encodeTokenDepositPayload(
         bool update_frequency, uint64 frequency,
         bool update_max_ping_price, uint128 max_ping_price,
+        bool update_slippage, uint128 _slippage,
         bool toggle_auto_ping,
         bool toggle_auto_reinvestment
-    ) external pure returns(TvmCell) {
+    ) external virtual pure returns(TvmCell) {
         return abi.encode(
             update_frequency, frequency,
             update_max_ping_price, max_ping_price,
+            update_slippage, _slippage,
             toggle_auto_ping, toggle_auto_reinvestment
         );
     }
 
-    function getDetails() external override view returns (
+    function getDetails() external virtual override view returns (
         address _owner,
         uint _version,
         address _factory,
@@ -124,7 +135,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         );
     }
 
-    function isInitialized() public override view returns(bool) {
+    function isInitialized() public override virtual view returns(bool) {
         bool _initialized = true;
 
         address zero_address = address.makeAddrStd(0, 0);

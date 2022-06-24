@@ -26,6 +26,7 @@ library Gas {
     uint128 constant FARMING_REQUEST_USER_DATA = 1 ton;
     uint128 constant FARMING_WITHDRAW_LP = 5 ton;
 
+    uint128 constant BOOSTER_ACCOUNT_REQUEST_DEX_PAIR_BALANCES = 0.3 ton;
     uint128 constant BOOSTER_ACCOUNT_DEPOSIT_LP_TO_FARMING = 5 ton;
     uint128 constant BOOSTER_ACCOUNT_DEX_SWAP = 5 ton;
     uint128 constant BOOSTER_ACCOUNT_DEPOSIT_TOKEN_TO_DEX = 5 ton;

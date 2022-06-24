@@ -12,7 +12,6 @@ describe('Test booster updatability', async function() {
     this.timeout(3000000000000);
 
     let god, alice, rewarder;
-    let manager;
 
     let left, right, lp, reward, ping;
     let farming_factory, farming_pool;
@@ -25,23 +24,6 @@ describe('Test booster updatability', async function() {
         god = await deployUser('God');
         alice = await deployUser('Alice');
         rewarder = await deployUser('Rewarder');
-    });
-
-    it('Setup booster manager', async () => {
-        const [keyPair] = await locklift.keys.getKeyPairs();
-
-        const BoosterManager = await locklift.factory.getContract('BoosterManager');
-        manager = await locklift.giver.deployContract({
-            contract: BoosterManager,
-            constructorParams: {
-                _owner: `0x${keyPair.public}`,
-                _internalOwner: god.address
-            }
-        }, locklift.utils.convertCrystal(100, 'nano'));
-        manager.name = 'Manager';
-        manager.setKeyPair(keyPair);
-
-        await logContract(manager);
     });
 
     it('Setup tokens', async () => {
@@ -61,6 +43,7 @@ describe('Test booster updatability', async function() {
         const BoosterPassportPlatform = await locklift.factory.getContract('BoosterPassportPlatform');
         const BoosterPassport = await locklift.factory.getContract('BoosterPassport');
 
+
         booster_factory = await locklift.giver.deployContract({
             contract: BoosterFactory,
             constructorParams: {
@@ -69,13 +52,31 @@ describe('Test booster updatability', async function() {
                 _rewarder: rewarder.address,
                 _ping_token_root: ping.address,
                 _account_platform: BoosterAccountPlatform.code,
-                _account_implementation: BoosterAccount.code,
+                _account_implementation: '',
                 _passport_platform: BoosterPassportPlatform.code,
-                _passport_implementation: BoosterPassport.code
+                _passport_implementation: ''
             },
-        });
+        }, locklift.utils.convertCrystal(60, 'nano'));
 
         await logContract(booster_factory);
+
+        await logContract(booster_factory);
+
+        await god.runTarget({
+            contract: booster_factory,
+            method: 'upgradeAccountCode',
+            params: {
+                _account_implementation: BoosterAccount.code
+            }
+        });
+
+        await god.runTarget({
+            contract: booster_factory,
+            method: 'upgradePassportCode',
+            params: {
+                _passport_implementation: BoosterPassport.code
+            }
+        });
     });
 
     it('Add dummy farming', async () => {
@@ -99,7 +100,7 @@ describe('Test booster updatability', async function() {
             contract: booster_factory,
             method: 'addFarming',
             params: {
-                dex: locklift.utils.zeroAddress,
+                vault: god.address,
                 farming_pool: farming_pool.address,
                 lp: lp.address,
                 pair: locklift.utils.zeroAddress,
@@ -109,6 +110,7 @@ describe('Test booster updatability', async function() {
                 swaps: {
                     [reward.address]: {
                         token: left.address,
+                        pairType: 0,
                         pair: locklift.utils.zeroAddress
                     }
                 },
@@ -145,8 +147,6 @@ describe('Test booster updatability', async function() {
 
             expect(details._version)
                 .to.be.bignumber.equal(details_before_upgrade._version.plus(1), 'Wrong new factory version');
-            expect(details._manager)
-                .to.be.equal(details_before_upgrade._manager, 'Wrong new factory manager');
             expect(details._account)
                 .to.be.equal(details_before_upgrade._account, 'Wrong new factory account code');
             expect(details._account_platform)
@@ -159,37 +159,6 @@ describe('Test booster updatability', async function() {
 
             expect(await booster_factory.call({ method: 'owner' }))
                 .to.be.equal(god.address, 'Wrong new factory owner');
-        });
-    });
-
-    describe('Upgrade booster manager', async () => {
-        let details_before_upgrade;
-
-        it('Save old booster manager state', async () => {
-            details_before_upgrade = await manager.call({ method: 'getDetails' });
-        });
-
-        it('Upgrade booster manager', async () => {
-            const BoosterManager = await locklift.factory.getContract('BoosterManager');
-
-            await god.runTarget({
-                contract: manager,
-                method: 'upgrade',
-                params: {
-                    code: BoosterManager.code
-                }
-            });
-        });
-
-        it('Check new manager state', async () => {
-            const details = await manager.call({ method: 'getDetails' });
-
-            expect(details._version)
-                .to.be.bignumber.equal(details_before_upgrade._version.plus(1), 'Wrong new manager version');
-            expect(details._owner)
-                .to.be.bignumber.equal(details_before_upgrade._owner, 'Wrong new manager owner');
-            expect(details._internalOwner)
-                .to.be.equal(god.address, 'Wrong new manager internal owner');
         });
     });
 
@@ -279,8 +248,6 @@ describe('Test booster updatability', async function() {
                 .to.be.equal(details_before_upgrade._factory, 'Wrong booster account factory');
             expect(details._farming_pool)
                 .to.be.equal(details_before_upgrade._farming_pool, 'Wrong booster account farming pool');
-            expect(details._manager)
-                .to.be.equal(details_before_upgrade._manager, 'Wrong booster account manager');
             expect(details._user_data)
                 .to.be.equal(details_before_upgrade._user_data, 'Wrong booster account user data');
             expect(details._rewards)

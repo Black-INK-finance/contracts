@@ -24,8 +24,9 @@ contract BoosterAccount_V1 is
             owner, factory, farming_pool, _version,
             passport, user_data, auto_reinvestment,
             balances, received, wallets, fees,
-            lp, pair, left, right, rewards,
-            swaps, rewarder, reward_fee, lp_fee
+            vault, lp, pair, left, right, rewards,
+            swaps, pairBalancePending, pairBalances, slippage,
+            rewarder, reward_fee, lp_fee
         );
 
         tvm.setcode(code);
@@ -67,6 +68,7 @@ contract BoosterAccount_V1 is
 
         auto_reinvestment = true;
 
+        vault = settings.vault;
         lp = settings.lp;
         pair = settings.pair;
         left = settings.left;
@@ -74,6 +76,11 @@ contract BoosterAccount_V1 is
         rewards = settings.rewards;
 
         swaps = settings.swaps;
+
+        for ((, SwapDirection swap): swaps) {
+            pairBalances[swap.pair] = PairBalance(0,0);
+        }
+        slippage = 20;
 
         rewarder = settings.rewarder;
         reward_fee = settings.reward_fee;

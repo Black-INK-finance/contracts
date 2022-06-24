@@ -2,12 +2,16 @@ pragma ton-solidity ^0.57.1;
 
 
 interface IBoosterBase {
+    enum PairType { ConstantProduct, Stable }
+
     struct SwapDirection {
         address token;
         address pair;
+        PairType pairType;
     }
 
     struct FarmingPoolSettings {
+        address vault;
         address lp;
         address pair;
         address left;

@@ -57,8 +57,9 @@ interface IBoosterPassport {
     ) external;
 
     function pingByOwner(
-        address account,
-        uint64 counter
+        address[] _accounts,
+        uint64[] _counters,
+        uint128 ping_value
     ) external;
 
     function getDetails() external view returns(
@@ -78,6 +79,6 @@ interface IBoosterPassport {
     event PingFrequencyUpdated(address account, uint64 frequency);
     event PingMaxPriceUpdated(uint128 price);
     event AutoPingUpdated(address account, bool status);
-    event Ping(address account, uint64 _timestamp, uint64 counter, bool byManager);
+    event Ping(address account, uint128 price, uint64 _timestamp, uint64 counter, bool byManager);
     event ManagersUpdated(uint[] managers);
 }

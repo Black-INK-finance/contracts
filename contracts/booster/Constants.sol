@@ -7,13 +7,15 @@ library Constants {
     // Max value in BPS for (LP fee + rewards fee)
     uint128 constant MAX_FEE = 50;
 
+    uint128 constant MIN_SLIPPAGE = 10;
+
     // - Prod
     // uint constant MIN_PING_FREQUENCY = 60 * 15; // 15 minutes
     // - Test
     uint64 constant MIN_PING_FREQUENCY = 10; // 10 seconds
 
     // How often to skim LP & rewards fees from account
-    uint64 constant PINGS_PER_SKIM = 10; // Skim fees every 10th ping
+    uint64 constant PINGS_PER_SKIM = 3; // Skim fees every 10th ping
 
     // -- Farming Nonce
     uint32 constant REINVEST_REQUIRED = 11;

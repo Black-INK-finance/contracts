@@ -53,6 +53,7 @@ contract BoosterAccount_V2 is
             mapping (address => address) _wallets,
             mapping (address => uint128) _fees,
 
+            address _vault,
             address _lp,
             address _pair,
             address _left,
@@ -60,6 +61,10 @@ contract BoosterAccount_V2 is
             address[] _rewards,
 
             mapping (address => SwapDirection) _swaps,
+            uint32 _pairBalancePending,
+            mapping (address => PairBalance) _pairBalances,
+            uint128 _slippage,
+
             address _rewarder,
             uint128 _reward_fee,
             uint128 _lp_fee
@@ -73,8 +78,9 @@ contract BoosterAccount_V2 is
                 mapping (address => uint128),
                 mapping (address => address),
                 mapping (address => uint128),
-                address, address, address, address, address[],
+                address, address, address, address, address, address[],
                 mapping (address => SwapDirection),
+                uint32, mapping (address => PairBalance), uint128,
                 address, uint128, uint128
             )
         );
@@ -93,6 +99,7 @@ contract BoosterAccount_V2 is
         wallets = _wallets;
         fees = _fees;
 
+        vault = _vault;
         lp = _lp;
         pair = _pair;
         left = _left;
@@ -100,6 +107,9 @@ contract BoosterAccount_V2 is
         rewards = _rewards;
 
         swaps = _swaps;
+        pairBalancePending = _pairBalancePending;
+        pairBalances = _pairBalances;
+        slippage = _slippage;
 
         rewarder = _rewarder;
         reward_fee = _reward_fee;

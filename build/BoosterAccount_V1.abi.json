@@ -21,6 +21,14 @@
 			]
 		},
 		{
+			"name": "receiveDexPairBalances",
+			"inputs": [
+				{"components":[{"name":"lp_supply","type":"uint128"},{"name":"left_balance","type":"uint128"},{"name":"right_balance","type":"uint128"}],"name":"balances","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "skim",
 			"inputs": [
 				{"name":"remainingGasTo","type":"address"}
@@ -54,7 +62,7 @@
 				{"name":"root","type":"address"},
 				{"name":"amount","type":"uint128"},
 				{"name":"value2","type":"address"},
-				{"name":"value3","type":"cell"}
+				{"name":"payload","type":"cell"}
 			],
 			"outputs": [
 			]
@@ -78,7 +86,8 @@
 		{
 			"name": "requestFarmingLP",
 			"inputs": [
-				{"name":"amount","type":"uint128"}
+				{"name":"amount","type":"uint128"},
+				{"name":"toggle_auto_reinvestment","type":"bool"}
 			],
 			"outputs": [
 			]
@@ -110,12 +119,30 @@
 			]
 		},
 		{
+			"name": "updateSlippage",
+			"inputs": [
+				{"name":"_slippage","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "updateSettings",
+			"inputs": [
+				{"name":"settings","type":"cell"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "encodeTokenDepositPayload",
 			"inputs": [
 				{"name":"update_frequency","type":"bool"},
 				{"name":"frequency","type":"uint64"},
 				{"name":"update_max_ping_price","type":"bool"},
 				{"name":"max_ping_price","type":"uint128"},
+				{"name":"update_slippage","type":"bool"},
+				{"name":"_slippage","type":"uint128"},
 				{"name":"toggle_auto_ping","type":"bool"},
 				{"name":"toggle_auto_reinvestment","type":"bool"}
 			],
@@ -144,7 +171,7 @@
 				{"name":"_left","type":"address"},
 				{"name":"_right","type":"address"},
 				{"name":"_rewards","type":"address[]"},
-				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"_swaps","type":"map(address,tuple)"},
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"_swaps","type":"map(address,tuple)"},
 				{"name":"_rewarder","type":"address"},
 				{"name":"_reward_fee","type":"uint128"},
 				{"name":"_lp_fee","type":"uint128"}
@@ -237,6 +264,14 @@
 			]
 		},
 		{
+			"name": "vault",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"vault","type":"address"}
+			]
+		},
+		{
 			"name": "lp",
 			"inputs": [
 			],
@@ -281,7 +316,31 @@
 			"inputs": [
 			],
 			"outputs": [
-				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"}
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"swaps","type":"map(address,tuple)"}
+			]
+		},
+		{
+			"name": "pairBalancePending",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"pairBalancePending","type":"uint32"}
+			]
+		},
+		{
+			"name": "pairBalances",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"left","type":"uint128"},{"name":"right","type":"uint128"}],"name":"pairBalances","type":"map(address,tuple)"}
+			]
+		},
+		{
+			"name": "slippage",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"slippage","type":"uint128"}
 			]
 		},
 		{
@@ -347,6 +406,14 @@
 			],
 			"outputs": [
 			]
+		},
+		{
+			"name": "SlippageUpdated",
+			"inputs": [
+				{"name":"slippage","type":"uint128"}
+			],
+			"outputs": [
+			]
 		}
 	],
 	"fields": [
@@ -364,12 +431,16 @@
 		{"name":"received","type":"map(address,uint128)"},
 		{"name":"wallets","type":"map(address,address)"},
 		{"name":"fees","type":"map(address,uint128)"},
+		{"name":"vault","type":"address"},
 		{"name":"lp","type":"address"},
 		{"name":"pair","type":"address"},
 		{"name":"left","type":"address"},
 		{"name":"right","type":"address"},
 		{"name":"rewards","type":"address[]"},
-		{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},
+		{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"swaps","type":"map(address,tuple)"},
+		{"name":"pairBalancePending","type":"uint32"},
+		{"components":[{"name":"left","type":"uint128"},{"name":"right","type":"uint128"}],"name":"pairBalances","type":"map(address,tuple)"},
+		{"name":"slippage","type":"uint128"},
 		{"name":"rewarder","type":"address"},
 		{"name":"reward_fee","type":"uint128"},
 		{"name":"lp_fee","type":"uint128"}

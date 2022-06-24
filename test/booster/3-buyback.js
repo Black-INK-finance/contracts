@@ -171,9 +171,11 @@ describe('Test buyback functionality', async function () {
             });
 
             it('Setup QUBE/BRIDGE LP token', async () => {
-                const lp_address = await dex_pair_QUBE_BRIDGE.call({ method: 'lp_root' });
+                const token_roots = await dex_pair_QUBE_BRIDGE.call({
+                    method: 'getTokenRoots',
+                });
 
-                LP = await Token.from_addr(lp_address, alice);
+                LP = await Token.from_addr(token_roots.lp, alice);
                 LP.token.name = 'Token root [LP QUBE/BRIDGE]';
             });
         });

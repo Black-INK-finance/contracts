@@ -62,6 +62,7 @@ interface IBoosterFactory is IBoosterBase {
 
     function addFarming(
         address farming_pool,
+        address vault,
         address lp,
         address pair,
         address left,

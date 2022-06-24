@@ -7,8 +7,8 @@ const BigNumber = require("bignumber.js");
 
 const main = async () => {
     logger.log('Dont forget to check default values in the following contracts!!');
-    logger.log('contracts/Gas.sol');
-    logger.log('contracts/Constants.sol');
+    logger.log('contracts/booster/Gas.sol');
+    logger.log('contracts/booster/Constants.sol');
 
     const [key] = await locklift.keys.getKeyPairs();
 
@@ -142,12 +142,14 @@ const main = async () => {
         const QUBE = '0:9f20666ce123602fd7a995508aeaa0ece4f92133503c0dfbd609b3239f3901e2';
         const WEVER = '0:a49cd4e158a9a15555e624759e2e4e766d22600b7800d891e46f9291f044a93d';
 
+        const vault = "0:6fa537fa97adf43db0206b5bec98eb43474a9836c016a190ac8b792feb852230";
 
         spinner.start('Adding QUBE/WEVER farming');
         await user.runTarget({
             contract: factory,
             method: 'addFarming',
             params: {
+                vault,
                 farming_pool: "0:f96da52e928cf4d8e54dcec0e7f7fefddfb7592590f05705dcaa9f211102fbc5",
                 lp: "0:0bf177d4dcc468293502ce81fd9a05285f7621814a705a000020dc15fa8258f8",
                 pair: dex_pair_QUBE_WEVER,
@@ -170,6 +172,7 @@ const main = async () => {
             contract: factory,
             method: 'addFarming',
             params: {
+                vault,
                 farming_pool: "0:60efb0dbae8fddadb844d3e5a2d6ece2739d0fe38dd5b4ce7f60f53a2d2b676f",
                 lp: "0:1ddd1a0a7d6ee3cef8ccb9e6aa02f5c142658522ddd40f21ae7160177ced0e12",
                 pair: dex_pair_USDT_USDC,
@@ -179,10 +182,12 @@ const main = async () => {
                 swaps: {
                     [QUBE]: {
                         token: WEVER,
+                        pairType: 0,
                         pair: dex_pair_QUBE_WEVER
                     },
                     [WEVER]: {
                         token: USDT,
+                        pairType: 0,
                         pair: dex_pair_WEVER_USDT
                     }
                 },

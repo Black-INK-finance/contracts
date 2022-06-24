@@ -147,6 +147,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     /// @param lp_fee LP fee amount in BPS
     function addFarming(
         address farming_pool,
+        address vault,
         address lp,
         address pair,
         address left,
@@ -163,6 +164,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         require(ping_value >= Gas.BOOSTER_FACTORY_MIN_PING_VALUE, Errors.BOOSTER_FACTORY_PING_VALUE_TOO_LOW);
 
         farmings[farming_pool] = FarmingPoolSettings({
+            vault: vault,
             lp: lp,
             pair: pair,
             left: left,
@@ -184,7 +186,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     function setPingValue(
         address farming_pool,
         uint128 ping_value
-    ) external override onlyOwner farmingPoolExists(farming_pool) {
+    ) external override onlyOwner farmingPoolExists(farming_pool) cashBack(owner) {
         require(ping_value >= Gas.BOOSTER_FACTORY_MIN_PING_VALUE, Errors.BOOSTER_FACTORY_PING_VALUE_TOO_LOW);
 
         farmings[farming_pool].ping_value = ping_value;

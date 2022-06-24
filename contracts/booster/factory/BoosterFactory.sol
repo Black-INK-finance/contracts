@@ -170,6 +170,9 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
     /// @notice Deploy booster account
     /// One booster account per (user, farming pool)
     /// @param farming_pool Farming pool address
+    /// @param ping_frequency Desired ping frequency
+    /// @param max_ping_price Max price per ping in ping_token
+    /// @param deploy_passport Deploy passport or not
     function deployAccount(
         address farming_pool,
         uint64 ping_frequency,

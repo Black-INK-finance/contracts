@@ -9,7 +9,7 @@
 				{"name":"code","type":"cell"},
 				{"name":"version","type":"uint256"},
 				{"name":"passport","type":"address"},
-				{"components":[{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"},{"name":"ping_value","type":"uint128"},{"name":"enabled","type":"bool"}],"name":"settings","type":"tuple"},
+				{"components":[{"name":"vault","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"},{"name":"ping_value","type":"uint128"},{"name":"enabled","type":"bool"}],"name":"settings","type":"tuple"},
 				{"name":"remainingGasTo","type":"address"}
 			],
 			"outputs": [

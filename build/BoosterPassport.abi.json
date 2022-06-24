@@ -95,8 +95,9 @@
 		{
 			"name": "pingByOwner",
 			"inputs": [
-				{"name":"account","type":"address"},
-				{"name":"counter","type":"uint64"}
+				{"name":"_accounts","type":"address[]"},
+				{"name":"_counters","type":"uint64[]"},
+				{"name":"ping_value","type":"uint128"}
 			],
 			"outputs": [
 			]
@@ -253,6 +254,7 @@
 			"name": "Ping",
 			"inputs": [
 				{"name":"account","type":"address"},
+				{"name":"price","type":"uint128"},
 				{"name":"_timestamp","type":"uint64"},
 				{"name":"counter","type":"uint64"},
 				{"name":"byManager","type":"bool"}

@@ -224,9 +224,6 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         address account,
         uint64 counter
     ) external override onlyManager accountExists(account) {
-        // - Manager uses external in message, passport pays itself
-        tvm.accept();
-
         AccountSettings settings = accounts[account];
 
         require(ping_balance >= price, Errors.BOOSTER_PASSPORT_PING_BALANCE_TOO_LOW);
@@ -235,7 +232,10 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         require(settings.auto_ping_enabled, Errors.BOOSTER_PASSPORT_AUTO_PING_DISABLED);
         require(settings.last_ping + settings.ping_frequency <= now, Errors.BOOSTER_PASSPORT_PING_TOO_OFTEN);
 
-        _updateAccountLastPing(account, counter, true);
+        // - Manager uses external in message, passport pays itself
+        tvm.accept();
+
+        _updateAccountLastPing(account, price, counter, true);
 
         ping_balance -= price;
 
@@ -257,24 +257,34 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
     /// @notice Ping booster account by owner with internal message
     /// Can be called only by `owner`
     /// Can be called anytime after the previous ping is finished (see Constants.PING_DURATION)
-    /// @param account Booster account address
-    /// @param counter Booster account pings counter, used to prevent double-ping
+    /// @param _accounts List of booster account addresses
+    /// @param _counters List of account ping counters
     function pingByOwner(
-        address account,
-        uint64 counter
-    ) external override onlyOwner reserveAtLeastTargetBalance accountExists(account) {
-        AccountSettings settings = accounts[account];
+        address[] _accounts,
+        uint64[] _counters,
+        uint128 ping_value
+    ) external override onlyOwner cashBack(owner) {
+        require(_accounts.length == _counters.length);
+        require(ping_value >= Gas.BOOSTER_FACTORY_MIN_PING_VALUE);
 
-        require(settings.ping_counter == counter, Errors.BOOSTER_PASSPORT_WRONG_COUNTER);
+        for (uint i = 0; i < _accounts.length; i++) {
+            address account = _accounts[i];
+            uint64 counter = _counters[i];
 
-        _updateAccountLastPing(account, counter, false);
+            require(accounts.exists(account), Errors.BOOSTER_PASSPORT_ACCOUNT_NOT_EXISTS);
 
-        // Attach gas to the ping
-        IBoosterAccount(account).ping{
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: false
-        }(counter);
+            AccountSettings settings = accounts[account];
+
+            if(settings.ping_counter != counter) continue;
+
+            _updateAccountLastPing(account, 0, counter, false);
+
+            // Attach gas to the ping
+            IBoosterAccount(account).ping{
+                value: ping_value,
+                bounce: false
+            }(counter);
+        }
     }
 
     function getDetails() external override view returns(
@@ -297,10 +307,10 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         );
     }
 
-    function _updateAccountLastPing(address account, uint64 counter, bool byManager) internal {
+    function _updateAccountLastPing(address account, uint128 price, uint64 counter, bool byManager) internal {
         uint64 _now = now;
 
-        emit Ping(account, _now, counter, byManager);
+        emit Ping(account, price, _now, counter, byManager);
 
         accounts[account].last_ping = _now;
         accounts[account].ping_counter++;

@@ -793,6 +793,62 @@ PUSHCONT {
 	SETGLOB 15
 	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 186
 	GETGLOB 16
+	NOT
+	DUP
+	PUSHCONT {
+		DROP
+		DUP
+		GETGLOB 13
+		PUSHINT 267
+		DICTGET
+		NULLSWAPIFNOT
+		NIP
+		DUP
+		PUSHCONT {
+			DROP
+			DUP
+			GETGLOB 14
+			PUSHINT 267
+			DICTGET
+			PUSHCONT {
+				PLDU 128
+			}
+			PUSHCONT {
+				PUSHINT 0
+			}
+			IFELSE
+			OVER
+			GETGLOB 13
+			PUSHINT 267
+			DICTGETREF
+			PUSHCONT {
+				CTOS
+				CALLREF {
+					LDMSGADDR
+					LDREF
+					ENDS
+					CTOS
+					LDMSGADDR
+					LDU 128
+					ENDS
+					TRIPLE
+				}
+			}
+			PUSHCONT {
+				PUSHREFSLICE {
+					.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+				}
+				DUP
+				PUSHINT 0
+				TRIPLE
+			}
+			IFELSE
+			THIRD
+			GEQ
+		}
+		IF
+	}
+	IF
 	PUSHCONT {
 		.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 187
 		DUP
@@ -814,7 +870,7 @@ PUSHCONT {
 		SENDRAWMSG
 		.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 	}
-	IFNOT
+	IF
 	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 0
 	DROP
 	.loc ../contracts/booster/buyback/BoosterBuyBack.sol, 172

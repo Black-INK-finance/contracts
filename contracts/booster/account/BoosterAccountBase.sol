@@ -8,6 +8,9 @@ import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenRoot.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/IAcceptTokensTransferCallback.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/IAcceptTokensMintCallback.sol";
 
+import {
+    IDexPair
+} from "flatqube/contracts/interfaces/IDexPair.sol";
 import "flatqube/contracts/interfaces/IDexRoot.sol";
 import "flatqube/contracts/interfaces/IDexAccount.sol";
 import "flatqube/contracts/libraries/DexOperationTypes.sol";
@@ -50,7 +53,33 @@ abstract contract BoosterAccountBase is
             _skimFees(_me());
         }
 
-        _claimReward();
+        _loadDexRates();
+    }
+
+    function _loadDexRates() internal {
+        for ((, SwapDirection swap): swaps) {
+            pairBalancePending++;
+
+            IDexPair(swap.pair).getBalances{
+                value: Gas.BOOSTER_ACCOUNT_REQUEST_DEX_PAIR_BALANCES,
+                bounce: false,
+                callback: BoosterAccountBase.receiveDexPairBalances
+            }();
+        }
+    }
+
+    function receiveDexPairBalances(
+        IDexPair.IDexPairBalances balances
+    ) external override onlyDexPair {
+        pairBalances[msg.sender].left = balances.left_balance;
+        pairBalances[msg.sender].right = balances.left_balance;
+
+        pairBalancePending--;
+
+        if (pairBalancePending == 0) {
+            // Rates for involved pairs are discovered, claim fees
+            _claimReward();
+        }
     }
 
     /// @notice Keeper method for skimming fees
@@ -86,7 +115,7 @@ abstract contract BoosterAccountBase is
         address,
         address remainingGasTo,
         TvmCell payload
-    ) external override {
+    ) external virtual override {
         // Received unknown token, return back with all remaining gas
         // - Or received LP from farming pool, which means user requested LP withdraw
         // - Or tokens processing is disabled
@@ -116,40 +145,7 @@ abstract contract BoosterAccountBase is
 
         // Owner can change account / passport settings at the time of sending tokens
         if (sender == owner) {
-            (
-                bool update_frequency, uint64 frequency,
-                bool update_max_ping_price, uint128 max_ping_price,
-                bool toggle_auto_ping,
-                bool toggle_auto_reinvestment
-            ) = abi.decode(payload, (bool, uint64, bool, uint128, bool, bool));
-
-            if (update_frequency && frequency > 0) {
-                IBoosterPassport(passport).setPingFrequency{
-                    bounce: true,
-                    flag: 0,
-                    value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
-                }(_me(), frequency);
-            }
-
-            if (update_max_ping_price && max_ping_price > 0) {
-                IBoosterPassport(passport).setPingMaxPrice{
-                    bounce: true,
-                    flag: 0,
-                    value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
-                }(max_ping_price);
-            }
-
-            if (toggle_auto_ping) {
-                IBoosterPassport(passport).toggleAccountAutoPing{
-                    bounce: true,
-                    flag: 0,
-                    value: Gas.BOOSTER_FACTORY_PASSPORT_UPDATE
-                }(_me());
-            }
-
-            if (toggle_auto_reinvestment) {
-                _toggleAutoReinvestment();
-            }
+            _updateSettings(payload);
         }
 
         // Consider reward fees in case they are sent from the farming pool
@@ -171,14 +167,23 @@ abstract contract BoosterAccountBase is
             if (nonce == Constants.NO_REINVEST_REQUIRED) {
                 return;
             }
+
+            _processTokensArrival(root, _me(), true);
         } else {
             _considerTokensArrival(root, amount);
-        }
 
-        _processTokensArrival(
-            root,
-            _me()
-        );
+            // In case tokens are sent
+            if (sender == vault) {
+                (bool succeeded, bool gained) = abi.decode(payload, (bool, bool));
+
+                // For some reason swap / lp deposit failed, try next ping
+                if (!succeeded) return;
+
+                _processTokensArrival(root, _me(), gained);
+            }
+
+            _processTokensArrival(root, _me(), false);
+        }
     }
 
     /// @notice Accepts tokens mint
@@ -189,9 +194,9 @@ abstract contract BoosterAccountBase is
         address root,
         uint128 amount,
         address,
-        TvmCell
-    ) external override {
-        // Unknown token
+        TvmCell payload
+    ) external virtual override {
+        // Unknown token or auto reinvestment disabled
         if (!wallets.exists(root) || wallets[root] != msg.sender || auto_reinvestment == false) {
             TvmCell empty;
 
@@ -212,21 +217,36 @@ abstract contract BoosterAccountBase is
             return;
         }
 
+        // Account received some minted LPs
         if (root == lp) {
-            // Get management fees from LP
-            uint128 fee = math.muldivr(amount, lp_fee, Constants.BPS);
+            // See if minted LPs can be traced back to the rewards
+            (bool succeeded, bool gained) = abi.decode(payload, (bool, bool));
 
-            _considerTokensFee(lp, fee);
-            _considerTokensArrival(lp, amount - fee);
+            if (gained) {
+                // Get management fees from LP
+                uint128 fee = math.muldivr(amount, lp_fee, Constants.BPS);
 
-            emit AccountGainedLp(amount, fee);
+                _considerTokensFee(lp, fee);
+                _considerTokensArrival(lp, amount - fee);
 
-            if (fee == amount) return;
+                emit AccountGainedLp(amount, fee);
+
+                if (fee == amount) return;
+            } else {
+                // Eg LPs are produced from left tokens
+                // which owner sent to the account as a deposit
+                // dont charge this operations
+                _considerTokensArrival(root, amount);
+            }
+
+            if (!succeeded) return;
+
+            _processTokensArrival(root, _me(), gained);
         } else {
             _considerTokensArrival(root, amount);
-        }
 
-        _processTokensArrival(root, _me());
+            _processTokensArrival(root, _me(), false);
+        }
     }
 
     function _considerTokensFee(
@@ -244,17 +264,21 @@ abstract contract BoosterAccountBase is
         received[token] += amount;
     }
 
-    function _processTokensArrival(address token, address remainingGasTo) internal {
+    function _processTokensArrival(
+        address token,
+        address remainingGasTo,
+        bool gained
+    ) internal {
         // Handle received token
         if (token == lp) {
             // - Received token is LP, deposit it into farming
             _depositToFarming(remainingGasTo);
         } else if (token == left || token == right) {
             // - Received token is pool left or right, deposit it to pair
-            _depositLiquidityToPair(token);
+            _depositLiquidityToPair(token, gained);
         } else if (swaps.exists(token)) {
             // - Received token should be swapped
-            _swap(token);
+            _swap(token, gained);
         }
     }
 
@@ -263,7 +287,7 @@ abstract contract BoosterAccountBase is
     function receiveTokenWallet(
         address wallet
     ) external override {
-        require(wallets.exists(msg.sender));
+        require(wallets.exists(msg.sender), Errors.WRONG_SENDER);
 
         wallets[msg.sender] = wallet;
 
@@ -281,7 +305,7 @@ abstract contract BoosterAccountBase is
     function receiveFarmingUserData(
         address _user_data
     ) external override {
-        require(msg.sender == farming_pool);
+        require(msg.sender == farming_pool, Errors.WRONG_SENDER);
 
         user_data = _user_data;
     }
@@ -311,13 +335,15 @@ abstract contract BoosterAccountBase is
     }
 
     function _depositLiquidityToPair(
-        address token
+        address token,
+        bool gained
     ) internal {
         if (balances[token] == 0) return;
 
         TvmCell payload = _buildDepositPayload(
             now,
-            0 // Deploy wallet value = 0
+            0, // Deploy wallet value = 0
+            gained
         );
 
         _transferTokens(
@@ -342,20 +368,28 @@ abstract contract BoosterAccountBase is
         }(_me(), Constants.REINVEST_REQUIRED);
     }
 
-    function _swap(address token) internal {
+    function _swap(
+        address token,
+        bool gained
+    ) internal {
         if (balances[token] == 0) return;
 
+        uint128 amount = balances[token];
+
         SwapDirection direction = swaps[token];
+
+        uint128 expectedAmount = _getExpectedAmount(token, direction, amount);
 
         TvmCell payload = _buildSwapPayload(
             0,
             0, // Deploy wallet value = 0
-            0 // Expected amount = 0
+            expectedAmount,
+            gained
         );
 
         _transferTokens(
             wallets[token],
-            balances[token],
+            amount,
             direction.pair,
             _me(),
             true,
@@ -366,6 +400,33 @@ abstract contract BoosterAccountBase is
         );
 
         balances[token] = 0;
+    }
+
+    function _getExpectedAmount(
+        address token,
+        SwapDirection direction,
+        uint128 amount
+    ) internal view returns(uint128) {
+        uint128 exactExpectedAmount;
+
+        if (direction.pairType == PairType.Stable) {
+            exactExpectedAmount = amount;
+        } else {
+            PairBalance balance = pairBalances[direction.pair];
+
+            if (balance.left == 0 || balance.right == 0) return 0;
+
+            if (token.value < direction.token.value) {
+                // Sent token is left
+                exactExpectedAmount = math.muldiv(amount, balance.right, balance.left);
+            } else {
+                // Received token is left
+                exactExpectedAmount = math.muldiv(amount, balance.left, balance.right);
+            }
+        }
+
+        // Consider slippage
+        return math.muldiv(exactExpectedAmount, Constants.BPS - slippage, Constants.BPS);
     }
 
     function _deployTokenWallet(
@@ -406,15 +467,21 @@ abstract contract BoosterAccountBase is
     }
 
     /// @notice Rewards withdrawing LPs from farming to owner
-    /// Can be called only by `manager` or `owner`
+    /// Can be called only by `owner`
     /// @param amount Amount of LP to request
+    /// @param toggle_auto_reinvestment Toggle auto reinvestment
     function requestFarmingLP(
-        uint128 amount
+        uint128 amount,
+        bool toggle_auto_reinvestment
     ) external override onlyOwner reserveBalance {
+        if (toggle_auto_reinvestment) {
+            _toggleAutoReinvestment();
+        }
+
         IEverFarmPool(farming_pool).withdraw{
             value: 0,
             flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: false
+            bounce: true
         }(amount, msg.sender, Constants.NO_REINVEST_REQUIRED);
     }
 
@@ -428,15 +495,19 @@ abstract contract BoosterAccountBase is
 
     function _buildDepositPayload(
         uint64 id,
-        uint128 deploy_wallet_grams
+        uint128 deploy_wallet_grams,
+        bool gained
     ) internal pure returns(TvmCell) {
         TvmBuilder builder;
         builder.store(DexOperationTypes.DEPOSIT_LIQUIDITY);
         builder.store(id);
         builder.store(deploy_wallet_grams);
 
-        TvmCell empty;
-        builder.store(empty);
+        TvmCell success = abi.encode(true, gained);
+        builder.store(success);
+
+        TvmCell cancel = abi.encode(false, gained);
+        builder.store(cancel);
 
         return builder.toCell();
     }
@@ -444,7 +515,8 @@ abstract contract BoosterAccountBase is
     function _buildSwapPayload(
         uint64 id,
         uint128 deploy_wallet_grams,
-        uint128 expected_amount
+        uint128 expected_amount,
+        bool gained
     ) internal pure returns(TvmCell) {
         TvmBuilder builder;
         builder.store(DexOperationTypes.EXCHANGE);
@@ -452,8 +524,11 @@ abstract contract BoosterAccountBase is
         builder.store(deploy_wallet_grams);
         builder.store(expected_amount);
 
-        TvmCell empty;
-        builder.store(empty);
+        TvmCell success = abi.encode(true, gained);
+        builder.store(success);
+
+        TvmCell cancel = abi.encode(false, gained);
+        builder.store(cancel);
 
         return builder.toCell();
     }

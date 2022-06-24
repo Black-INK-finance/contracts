@@ -211,7 +211,7 @@ describe('Test booster lifecycle', async function() {
                     });
                 }
 
-                await sleep(1000);
+                await sleep(2000);
             });
 
             it('Check pair reserves', async () => {
@@ -518,6 +518,7 @@ describe('Test booster lifecycle', async function() {
                 method: 'addFarming',
                 params: {
                     farming_pool: farming_pool.address,
+                    vault: dex_vault.address,
                     lp: LP.address,
                     pair: dex_pair_USDT_USDC.address,
                     left: USDC.address,
@@ -526,17 +527,19 @@ describe('Test booster lifecycle', async function() {
                     swaps: {
                         [BRIDGE.address]: {
                             token: USDT.address,
+                            pairType: 0,
                             pair: dex_pair_BRIDGE_USDT.address
                         },
                         [QUBE.address]: {
                             token: USDC.address,
+                            pairType: 0,
                             pair: dex_pair_QUBE_USDC.address
                         }
                     },
                     rewarder: rewarder.address,
                     reward_fee: 5,
                     lp_fee: 5,
-                    ping_value: locklift.utils.convertCrystal(1.8, 'nano')
+                    ping_value: locklift.utils.convertCrystal(2.5, 'nano')
                 }
             });
 
@@ -761,6 +764,8 @@ describe('Test booster lifecycle', async function() {
                     frequency: 0,
                     update_max_ping_price: false,
                     max_ping_price: 0,
+                    update_slippage: false,
+                    _slippage: 0,
                     toggle_auto_ping: false,
                     toggle_auto_reinvestment: false
                 }
@@ -888,8 +893,9 @@ describe('Test booster lifecycle', async function() {
                     contract: alice_passport,
                     method: 'pingByOwner',
                     params: {
-                        account: alice_booster_account.address,
-                        counter: 1
+                        _accounts: [alice_booster_account.address],
+                        _counters: [1],
+                        ping_value: locklift.utils.convertCrystal(2, 'nano')
                     },
                     value: locklift.utils.convertCrystal(3, 'nano')
                 });
@@ -925,6 +931,8 @@ describe('Test booster lifecycle', async function() {
                         frequency: 0,
                         update_max_ping_price: false,
                         max_ping_price: 0,
+                        update_slippage: false,
+                        _slippage: 0,
                         toggle_auto_ping: false,
                         toggle_auto_reinvestment: false
                     }
@@ -980,6 +988,8 @@ describe('Test booster lifecycle', async function() {
                         frequency: 0,
                         update_max_ping_price: false,
                         max_ping_price: 0,
+                        update_slippage: false,
+                        _slippage: 0,
                         toggle_auto_ping: false,
                         toggle_auto_reinvestment: false
                     }
@@ -1032,6 +1042,8 @@ describe('Test booster lifecycle', async function() {
                         frequency: 0,
                         update_max_ping_price: false,
                         max_ping_price: 0,
+                        update_slippage: false,
+                        _slippage: 0,
                         toggle_auto_ping: false,
                         toggle_auto_reinvestment: false
                     }
@@ -1108,7 +1120,8 @@ describe('Test booster lifecycle', async function() {
                     contract: alice_booster_account,
                     method: 'requestFarmingLP',
                     params: {
-                        amount: lp_to_withdraw
+                        amount: lp_to_withdraw,
+                        toggle_auto_reinvestment: false
                     },
                     value: locklift.utils.convertCrystal(5, 'nano')
                 });

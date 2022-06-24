@@ -1,6 +1,7 @@
 pragma ton-solidity ^0.57.1;
 
 import "./IBoosterBase.sol";
+import {IDexPair} from "flatqube/contracts/interfaces/IDexPair.sol";
 
 
 interface IBoosterAccount is IBoosterBase {
@@ -9,6 +10,16 @@ interface IBoosterAccount is IBoosterBase {
         uint128 received;
         address wallet;
         uint128 fee;
+    }
+
+    struct PairBalance {
+        uint128 left;
+        uint128 right;
+    }
+
+    struct PairBalancesLoader {
+        uint32 total;
+        uint32 loaded;
     }
 
     function getDetails() external view returns (
@@ -58,6 +69,12 @@ interface IBoosterAccount is IBoosterBase {
     ) external;
     function toggleAutoReinvestment() external;
 
+    function updateSlippage(
+        uint128 _slippage
+    ) external;
+
+    function updateSettings(TvmCell settings) external;
+
     function acceptUpgrade(
         TvmCell code,
         uint version
@@ -67,14 +84,17 @@ interface IBoosterAccount is IBoosterBase {
 
     // Owner methods
     function requestFarmingLP(
-        uint128 amount
+        uint128 amount,
+        bool toggle_auto_reinvestment
     ) external;
 
     // Technical methods
     function receiveTokenWallet(address wallet) external;
     function receiveFarmingUserData(address _user_data) external;
+    function receiveDexPairBalances(IDexPair.IDexPairBalances balances) external;
 
     event AccountGainedReward(address reward, uint128 gain, uint128 fee);
     event AccountGainedLp(uint128 gain, uint128 fee);
     event AutoReinvestmentUpdated(bool auto_reinvestment);
+    event SlippageUpdated(uint128 slippage);
 }

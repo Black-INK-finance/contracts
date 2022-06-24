@@ -24,5 +24,7 @@ library Errors {
     uint16 constant BOOSTER_FACTORY_FEE_TOO_HIGH = 2205;
 
     // Account
+    uint16 constant BOOSTER_ACCOUNT_SLIPPAGE_TOO_LOW = 2300;
+
     // Buyback
 }
