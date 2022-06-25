@@ -109,7 +109,15 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
         }
 
         // Top up specified passport
-        (address passport) = abi.decode(payload, (address));
+        (bool deploy_passport, uint128 max_ping_price) = abi.decode(payload, (bool, uint128));
+
+        TvmCell passportStateInit = _buildPassportPlatformStateInit(sender);
+
+        if (deploy_passport) {
+            _deployPassport(sender, passportStateInit, max_ping_price);
+        }
+
+        address passport = address(tvm.hash(passportStateInit));
 
         IBoosterPassport(passport).acceptPingTokens{
             value: 0,
@@ -193,20 +201,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
 
         // Deploy passport if required
         if (deploy_passport) {
-            new BoosterPassportPlatform{
-                stateInit: passportStateInit,
-                value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE * 2,
-                bounce: false,
-                flag: 0
-            }(
-                passport_implementation,
-                passport_version,
-                managers,
-                max_ping_price,
-                msg.sender
-            );
-
-            emit PassportDeployed(msg.sender, passport);
+            _deployPassport(msg.sender, passportStateInit, max_ping_price);
         }
 
         // Register booster account in passport
@@ -235,6 +230,27 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             settings, // farming settings
             msg.sender // remaining gas
         );
+    }
+
+    function _deployPassport(
+        address owner,
+        TvmCell passportStateInit,
+        uint128 max_ping_price
+    ) internal view {
+        new BoosterPassportPlatform{
+            stateInit: passportStateInit,
+            value: Gas.BOOSTER_PASSPORT_TARGET_BALANCE * 2,
+            bounce: false,
+            flag: 0
+        }(
+            passport_implementation,
+            passport_version,
+            managers,
+            max_ping_price,
+            owner
+        );
+
+        emit PassportDeployed(owner, address(tvm.hash(passportStateInit)));
     }
 
     /// @notice Upgrade booster account code
@@ -297,9 +313,10 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
     }
 
     function encodePingTopUp(
-        address passport
-    ) external override pure returns(TvmCell) {
-        return abi.encode(passport);
+        bool deploy_passport,
+        uint128 max_ping_price
+    ) external pure returns(TvmCell) {
+        return abi.encode(deploy_passport, max_ping_price);
     }
 
     /// @notice Upgrade booster factory
@@ -322,6 +339,7 @@ contract BoosterFactory is IAcceptTokensTransferCallback, IBoosterFactory, Boost
             account_platform,
             account_implementation,
             account_version,
+
             passport_platform,
             passport_implementation,
             passport_version

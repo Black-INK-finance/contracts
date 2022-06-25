@@ -139,7 +139,8 @@
 		{
 			"name": "encodePingTopUp",
 			"inputs": [
-				{"name":"passport","type":"address"}
+				{"name":"deploy_passport","type":"bool"},
+				{"name":"max_ping_price","type":"uint128"}
 			],
 			"outputs": [
 				{"name":"value0","type":"cell"}

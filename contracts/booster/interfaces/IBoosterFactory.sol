@@ -56,10 +56,6 @@ interface IBoosterFactory is IBoosterBase {
     function getAccountPlatformCodeHash() external returns(uint);
     function getPassportPlatformCodeHash() external returns(uint);
 
-    function encodePingTopUp(
-        address account
-    ) external pure returns(TvmCell);
-
     function addFarming(
         address farming_pool,
         address vault,
