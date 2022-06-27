@@ -394,6 +394,25 @@
 			]
 		},
 		{
+			"name": "AccountReceivedTokensTransfer",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"},
+				{"name":"sender","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AccountReceivedTokensMint",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "AccountGainedReward",
 			"inputs": [
 				{"name":"reward","type":"address"},

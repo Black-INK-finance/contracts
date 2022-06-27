@@ -142,6 +142,8 @@ abstract contract BoosterAccountBase is
             return;
         }
 
+        emit AccountReceivedTokensTransfer(root, amount, sender);
+
         // Owner can change account / passport settings at the time of sending tokens
         if (sender == owner) {
             _updateSettings(payload);
@@ -215,6 +217,8 @@ abstract contract BoosterAccountBase is
 
             return;
         }
+
+        emit AccountReceivedTokensMint(root, amount);
 
         // Account received some minted LPs
         if (root == lp) {

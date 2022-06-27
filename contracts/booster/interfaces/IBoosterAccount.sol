@@ -102,6 +102,9 @@ interface IBoosterAccount is IBoosterBase {
     function receiveFarmingUserData(address _user_data) external;
     function receiveDexPairBalances(IDexPair.IDexPairBalances balances) external;
 
+    event AccountReceivedTokensTransfer(address root, uint128 amount, address sender);
+    event AccountReceivedTokensMint(address root, uint128 amount);
+
     event AccountGainedReward(address reward, uint128 gain, uint128 fee);
     event AccountGainedLp(uint128 gain, uint128 fee);
     event AccountSwap(address _from, address _to, uint128 expectedAmount, bool gained);
