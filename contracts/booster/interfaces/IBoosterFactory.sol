@@ -91,6 +91,13 @@ interface IBoosterFactory is IBoosterBase {
         bool save_as_default
     ) external;
 
+    function setSwaps(
+        address farming_pool,
+        address[] accounts,
+        mapping (address => SwapDirection) swaps,
+        bool save_as_default
+    ) external;
+
     function toggleFarming(
         address farming_pool
     ) external;
@@ -128,4 +135,9 @@ interface IBoosterFactory is IBoosterBase {
 
     event PassportDeployed(address owner, address passport);
     event AccountDeployed(address owner, address account);
+    event FarmingPoolCreated(address farming_pool, FarmingPoolSettings settings);
+    event FarmingPoolUpdateSwaps(address farming_pool, mapping (address => SwapDirection) swaps);
+    event FarmingPoolUpdateFees(address farming_pool, uint128 lp_fee, uint128 reward_fee);
+    event FarmingPoolUpdateRewarder(address farming_pool, address rewarder);
+    event FarmingPoolUpdateEnabled(address farming_pool, bool enabled);
 }

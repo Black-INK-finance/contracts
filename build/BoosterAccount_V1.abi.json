@@ -68,14 +68,6 @@
 			]
 		},
 		{
-			"name": "receiveTokenWallet",
-			"inputs": [
-				{"name":"wallet","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
 			"name": "receiveFarmingUserData",
 			"inputs": [
 				{"name":"_user_data","type":"address"}
@@ -88,6 +80,14 @@
 			"inputs": [
 				{"name":"amount","type":"uint128"},
 				{"name":"toggle_auto_reinvestment","type":"bool"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "receiveTokenWallet",
+			"inputs": [
+				{"name":"wallet","type":"address"}
 			],
 			"outputs": [
 			]
@@ -106,6 +106,15 @@
 			"name": "setRewarder",
 			"inputs": [
 				{"name":"_rewarder","type":"address"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setSwaps",
+			"inputs": [
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"_swaps","type":"map(address,tuple)"},
 				{"name":"remainingGasTo","type":"address"}
 			],
 			"outputs": [
@@ -166,12 +175,16 @@
 				{"name":"_received","type":"map(address,uint128)"},
 				{"name":"_wallets","type":"map(address,address)"},
 				{"name":"_fees","type":"map(address,uint128)"},
+				{"name":"_vault","type":"address"},
 				{"name":"_lp","type":"address"},
 				{"name":"_pair","type":"address"},
 				{"name":"_left","type":"address"},
 				{"name":"_right","type":"address"},
 				{"name":"_rewards","type":"address[]"},
 				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"_swaps","type":"map(address,tuple)"},
+				{"name":"_pairBalancePending","type":"uint32"},
+				{"components":[{"name":"left","type":"uint128"},{"name":"right","type":"uint128"}],"name":"_pairBalances","type":"map(address,tuple)"},
+				{"name":"_slippage","type":"uint128"},
 				{"name":"_rewarder","type":"address"},
 				{"name":"_reward_fee","type":"uint128"},
 				{"name":"_lp_fee","type":"uint128"}
@@ -395,6 +408,17 @@
 			"inputs": [
 				{"name":"gain","type":"uint128"},
 				{"name":"fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "AccountSwap",
+			"inputs": [
+				{"name":"_from","type":"address"},
+				{"name":"_to","type":"address"},
+				{"name":"expectedAmount","type":"uint128"},
+				{"name":"gained","type":"bool"}
 			],
 			"outputs": [
 			]

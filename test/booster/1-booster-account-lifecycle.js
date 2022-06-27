@@ -952,7 +952,7 @@ describe('Test booster lifecycle', async function() {
                     value: locklift.utils.convertCrystal(3, 'nano'),
                 });
 
-                await sleep(1000);
+                await sleep(3000);
 
                 logger.log(`Alice second LP deposit to booster tx: ${tx.transaction.id}`);
             });
@@ -1275,6 +1275,7 @@ describe('Test booster lifecycle', async function() {
                 const payload = await booster_factory.call({
                     method: 'encodePingTopUp',
                     params: {
+                        passport: alice_passport.address,
                         deploy_passport: false,
                         max_ping_price: 0,
                     }

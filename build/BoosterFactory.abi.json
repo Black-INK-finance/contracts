@@ -139,6 +139,7 @@
 		{
 			"name": "encodePingTopUp",
 			"inputs": [
+				{"name":"passport","type":"address"},
 				{"name":"deploy_passport","type":"bool"},
 				{"name":"max_ping_price","type":"uint128"}
 			],
@@ -199,6 +200,17 @@
 			"inputs": [
 				{"name":"farming_pool","type":"address"},
 				{"name":"ping_value","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setSwaps",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"accounts","type":"address[]"},
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"swaps","type":"map(address,tuple)"},
+				{"name":"save_as_default","type":"bool"}
 			],
 			"outputs": [
 			]
@@ -434,6 +446,52 @@
 			"inputs": [
 				{"name":"owner","type":"address"},
 				{"name":"account","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FarmingPoolCreated",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"components":[{"name":"vault","type":"address"},{"name":"lp","type":"address"},{"name":"pair","type":"address"},{"name":"left","type":"address"},{"name":"right","type":"address"},{"name":"rewards","type":"address[]"},{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"swaps","type":"map(address,tuple)"},{"name":"rewarder","type":"address"},{"name":"reward_fee","type":"uint128"},{"name":"lp_fee","type":"uint128"},{"name":"ping_value","type":"uint128"},{"name":"enabled","type":"bool"}],"name":"settings","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FarmingPoolUpdateSwaps",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"pairType","type":"uint8"}],"name":"swaps","type":"map(address,tuple)"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FarmingPoolUpdateFees",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"lp_fee","type":"uint128"},
+				{"name":"reward_fee","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FarmingPoolUpdateRewarder",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"rewarder","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "FarmingPoolUpdateEnabled",
+			"inputs": [
+				{"name":"farming_pool","type":"address"},
+				{"name":"enabled","type":"bool"}
 			],
 			"outputs": [
 			]

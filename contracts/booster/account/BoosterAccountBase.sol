@@ -4,7 +4,6 @@ pragma ton-solidity ^0.57.1;
 import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
-import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenRoot.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/IAcceptTokensTransferCallback.sol";
 import "broxus-ton-tokens-contracts/contracts/interfaces/IAcceptTokensMintCallback.sol";
 
@@ -72,7 +71,7 @@ abstract contract BoosterAccountBase is
         IDexPair.IDexPairBalances balances
     ) external override onlyDexPair {
         pairBalances[msg.sender].left = balances.left_balance;
-        pairBalances[msg.sender].right = balances.left_balance;
+        pairBalances[msg.sender].right = balances.right_balance;
 
         pairBalancePending--;
 
@@ -172,11 +171,11 @@ abstract contract BoosterAccountBase is
         } else {
             _considerTokensArrival(root, amount);
 
-            // In case tokens are sent
-            if (sender == vault) {
+            // In case tokens are sent from vault or pair
+            if (sender == vault || pairBalances.exists(sender)) {
                 (bool succeeded, bool gained) = abi.decode(payload, (bool, bool));
 
-                // For some reason swap / lp deposit failed, try next ping
+                // For some reason swap / lp deposit failed, try on next ping
                 if (!succeeded) return;
 
                 _processTokensArrival(root, _me(), gained);
@@ -282,24 +281,6 @@ abstract contract BoosterAccountBase is
         }
     }
 
-    /// @notice Receives token wallet address from the token root
-    /// Only initialized tokens are allowed
-    function receiveTokenWallet(
-        address wallet
-    ) external override {
-        require(wallets.exists(msg.sender), Errors.WRONG_SENDER);
-
-        wallets[msg.sender] = wallet;
-
-        tvm.rawReserve(_targetBalance(), 0);
-
-        owner.transfer({
-            value: 0,
-            flag: MsgFlag.ALL_NOT_RESERVED,
-            bounce: false
-        });
-    }
-
     /// @notice Receives booster farming user data
     /// @param _user_data Booster farming user data
     function receiveFarmingUserData(
@@ -387,6 +368,8 @@ abstract contract BoosterAccountBase is
             gained
         );
 
+        emit AccountSwap(token, direction.token, expectedAmount, gained);
+
         _transferTokens(
             wallets[token],
             amount,
@@ -427,23 +410,6 @@ abstract contract BoosterAccountBase is
 
         // Consider slippage
         return math.muldiv(exactExpectedAmount, Constants.BPS - slippage, Constants.BPS);
-    }
-
-    function _deployTokenWallet(
-        address token
-    ) internal {
-        balances[token] = 0;
-        received[token] = 0;
-        fees[token] = 0;
-        wallets[token] = address.makeAddrStd(0, 0);
-
-        ITokenRoot(token).deployWallet{
-            value: Gas.DEPLOY_TOKEN_WALLET * 2,
-            callback: BoosterAccountBase.receiveTokenWallet
-        }(
-            _me(),
-            Gas.DEPLOY_TOKEN_WALLET
-        );
     }
 
     function _depositToFarming(address remainingGasTo) internal {

@@ -6,10 +6,30 @@ import "./BoosterAccountStorage.sol";
 import "./../interfaces/IBoosterPassport.sol";
 
 import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
+
 import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenWallet.sol";
+import "broxus-ton-tokens-contracts/contracts/interfaces/ITokenRoot.sol";
 
 
 abstract contract BoosterAccountSettings is BoosterAccountStorage {
+    /// @notice Receives token wallet address from the token root
+    /// Only initialized tokens are allowed
+    function receiveTokenWallet(
+        address wallet
+    ) external override {
+        require(wallets.exists(msg.sender), Errors.WRONG_SENDER);
+
+        wallets[msg.sender] = wallet;
+
+        tvm.rawReserve(_targetBalance(), 0);
+
+        owner.transfer({
+            value: 0,
+            flag: MsgFlag.ALL_NOT_RESERVED,
+            bounce: false
+        });
+    }
+
     /// @notice Set LP and reward fee in BPS
     /// Can be called only by `factory`
     function setFees(
@@ -29,6 +49,27 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         address remainingGasTo
     ) external virtual override onlyFactory cashBack(remainingGasTo) {
         rewarder = _rewarder;
+    }
+
+    function setSwaps(
+        mapping (address => SwapDirection) _swaps,
+        address remainingGasTo
+    ) external override virtual onlyFactory cashBack(remainingGasTo) {
+        swaps = _swaps;
+
+        for ((, SwapDirection swap): swaps) {
+            pairBalances[swap.pair] = PairBalance(0,0);
+        }
+
+        for ((address _from, SwapDirection direction): swaps) {
+            if (!wallets.exists(_from)) {
+                _deployTokenWallet(_from);
+            }
+
+            if (!wallets.exists(direction.token)) {
+                _deployTokenWallet(direction.token);
+            }
+        }
     }
 
     /// @notice Toggle token auto reinvestment
@@ -108,6 +149,23 @@ abstract contract BoosterAccountSettings is BoosterAccountStorage {
         auto_reinvestment = !auto_reinvestment;
 
         emit AutoReinvestmentUpdated(auto_reinvestment);
+    }
+
+    function _deployTokenWallet(
+        address token
+    ) internal {
+        balances[token] = 0;
+        received[token] = 0;
+        fees[token] = 0;
+        wallets[token] = address.makeAddrStd(0, 0);
+
+        ITokenRoot(token).deployWallet{
+            value: Gas.DEPLOY_TOKEN_WALLET * 2,
+            callback: BoosterAccountSettings.receiveTokenWallet
+        }(
+            _me(),
+            Gas.DEPLOY_TOKEN_WALLET
+        );
     }
 
     function _transferTokens(

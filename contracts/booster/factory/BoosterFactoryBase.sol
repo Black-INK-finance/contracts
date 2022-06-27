@@ -177,6 +177,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
             ping_value: ping_value,
             enabled: true
         });
+
+        emit FarmingPoolCreated(farming_pool, farmings[farming_pool]);
     }
 
     /// @notice Set new ping value
@@ -190,6 +192,31 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         require(ping_value >= Gas.BOOSTER_FACTORY_MIN_PING_VALUE, Errors.BOOSTER_FACTORY_PING_VALUE_TOO_LOW);
 
         farmings[farming_pool].ping_value = ping_value;
+    }
+
+    /// @notice Update swap rules for specific farming pool
+    /// Can be called only by owner
+    /// @param farming_pool Farming pool address
+    /// @param accounts List of accounts, which should inherit update
+    /// @param swaps New swap rules
+    function setSwaps(
+        address farming_pool,
+        address[] accounts,
+        mapping (address => SwapDirection) swaps,
+        bool save_as_default
+    ) external override onlyOwner farmingPoolExists(farming_pool) cashBack(owner) {
+        if (save_as_default) {
+            farmings[farming_pool].swaps = swaps;
+
+            emit FarmingPoolUpdateSwaps(farming_pool, swaps);
+        }
+
+        for (address account: accounts) {
+            IBoosterAccount(account).setSwaps{
+                value: Gas.BOOSTER_FACTORY_ACCOUNT_UPDATE,
+                bounce: true
+            }(swaps, msg.sender);
+        }
     }
 
     /// @notice Update manager on specific accounts
@@ -230,6 +257,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         if (save_as_default) {
             farmings[farming_pool].lp_fee = lp_fee;
             farmings[farming_pool].reward_fee = reward_fee;
+
+            emit FarmingPoolUpdateFees(farming_pool, lp_fee, reward_fee);
         }
 
         for (address account: accounts) {
@@ -266,6 +295,8 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
     ) external override cashBack(owner) onlyOwner farmingPoolExists(farming_pool) {
         if (save_as_default) {
             farmings[farming_pool].rewarder = rewarder;
+
+            emit FarmingPoolUpdateRewarder(farming_pool, rewarder);
         }
 
         /// A.K. protection
@@ -286,5 +317,7 @@ abstract contract BoosterFactoryBase is BoosterFactoryStorage, TransferUtils {
         address farming_pool
     ) external override onlyOwner farmingPoolExists(farming_pool) cashBack(owner) {
         farmings[farming_pool].enabled = !farmings[farming_pool].enabled;
+
+        emit FarmingPoolUpdateEnabled(farming_pool, farmings[farming_pool].enabled);
     }
 }

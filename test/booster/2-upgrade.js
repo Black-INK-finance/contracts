@@ -242,16 +242,28 @@ describe('Test booster updatability', async function() {
         it('Check new booster account state', async () => {
             const details = await alice_booster_account.call({ method: 'getDetails' });
 
+            // console.log(details);
+
+            expect(details._owner)
+                .to.be.equal(details_before_upgrade._owner, 'Wrong booster account owner');
             expect(details._version)
                 .to.be.bignumber.equal(details_before_upgrade._version.plus(1), 'Wrong booster account version');
             expect(details._factory)
                 .to.be.equal(details_before_upgrade._factory, 'Wrong booster account factory');
             expect(details._farming_pool)
                 .to.be.equal(details_before_upgrade._farming_pool, 'Wrong booster account farming pool');
+
+            expect(details._passport)
+                .to.be.equal(details_before_upgrade._passport, 'Wrong booster account passport');
             expect(details._user_data)
                 .to.be.equal(details_before_upgrade._user_data, 'Wrong booster account user data');
+            expect(details._auto_reinvestment)
+                .to.be.equal(details_before_upgrade._auto_reinvestment, 'Wrong booster account auto reinvestment');
+
             expect(details._rewards)
                 .to.be.eql(details_before_upgrade._rewards, 'Wrong booster account reward tokens');
+            expect(details._slippage)
+                .to.be.bignumber.equal(details_before_upgrade._slippage, 'Wrong booster account slippage');
             expect(details._rewarder)
                 .to.be.equal(details_before_upgrade._rewarder, 'Wrong booster account rewarder');
             expect(details._reward_fee)

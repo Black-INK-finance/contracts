@@ -29,13 +29,14 @@ interface IBoosterAccount is IBoosterBase {
         address _farming_pool,
         address _passport,
         address _user_data,
-        bool _token_processing,
+        bool _auto_reinvestment,
 
         mapping (address => uint128) _balances,
         mapping (address => uint128) _received,
         mapping (address => address) _wallets,
         mapping (address => uint128) _fees,
 
+        address _vault,
         address _lp,
         address _pair,
         address _left,
@@ -43,6 +44,9 @@ interface IBoosterAccount is IBoosterBase {
         address[] _rewards,
 
         mapping (address => SwapDirection) _swaps,
+        uint32 _pairBalancePending,
+        mapping (address => PairBalance) _pairBalances,
+        uint128 _slippage,
         address _rewarder,
         uint128 _reward_fee,
         uint128 _lp_fee
@@ -60,6 +64,11 @@ interface IBoosterAccount is IBoosterBase {
     function setFees(
         uint128 _lp_fee,
         uint128 _reward_fee,
+        address remainingGasTo
+    ) external;
+
+    function setSwaps(
+        mapping (address => SwapDirection) _swaps,
         address remainingGasTo
     ) external;
 
@@ -95,6 +104,7 @@ interface IBoosterAccount is IBoosterBase {
 
     event AccountGainedReward(address reward, uint128 gain, uint128 fee);
     event AccountGainedLp(uint128 gain, uint128 fee);
+    event AccountSwap(address _from, address _to, uint128 expectedAmount, bool gained);
     event AutoReinvestmentUpdated(bool auto_reinvestment);
     event SlippageUpdated(uint128 slippage);
 }

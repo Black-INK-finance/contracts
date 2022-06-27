@@ -97,6 +97,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         mapping (address => address) _wallets,
         mapping (address => uint128) _fees,
 
+        address _vault,
         address _lp,
         address _pair,
         address _left,
@@ -104,6 +105,9 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         address[] _rewards,
 
         mapping (address => SwapDirection) _swaps,
+        uint32 _pairBalancePending,
+        mapping (address => PairBalance) _pairBalances,
+        uint128 _slippage,
         address _rewarder,
         uint128 _reward_fee,
         uint128 _lp_fee
@@ -122,6 +126,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
             wallets,
             fees,
 
+            vault,
             lp,
             pair,
             left,
@@ -129,6 +134,9 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
             rewards,
 
             swaps,
+            pairBalancePending,
+            pairBalances,
+            slippage,
             rewarder,
             reward_fee,
             lp_fee
