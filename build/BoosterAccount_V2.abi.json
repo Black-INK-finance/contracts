@@ -413,6 +413,16 @@
 			]
 		},
 		{
+			"name": "AccountTokensSentToOwner",
+			"inputs": [
+				{"name":"root","type":"address"},
+				{"name":"sender","type":"address"},
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "AccountGainedReward",
 			"inputs": [
 				{"name":"reward","type":"address"},

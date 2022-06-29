@@ -115,15 +115,17 @@ abstract contract BoosterAccountBase is
         address remainingGasTo,
         TvmCell payload
     ) external virtual override {
+        bool unknown_token = (!wallets.exists(root) || msg.sender != wallets[root]);
+        bool lp_withdraw = (root == lp && sender == farming_pool);
+        bool claim_with_no_reinvest = (auto_reinvestment == false && sender == farming_pool);
+
         // Received unknown token, return back with all remaining gas
         // - Or received LP from farming pool, which means user requested LP withdraw
         // - Or tokens processing is disabled
-        if (
-            !wallets.exists(root) || msg.sender != wallets[root] ||
-            (root == lp && sender == farming_pool) ||
-            auto_reinvestment == false
-        ) {
+        if (unknown_token || lp_withdraw || claim_with_no_reinvest) {
             TvmCell empty;
+
+            emit AccountTokensSentToOwner(root, sender, amount);
 
             _transferTokens(
                 msg.sender,
@@ -198,7 +200,7 @@ abstract contract BoosterAccountBase is
         TvmCell payload
     ) external virtual override {
         // Unknown token or auto reinvestment disabled
-        if (!wallets.exists(root) || wallets[root] != msg.sender || auto_reinvestment == false) {
+        if (!wallets.exists(root) || wallets[root] != msg.sender) {
             TvmCell empty;
 
             _transferTokens(

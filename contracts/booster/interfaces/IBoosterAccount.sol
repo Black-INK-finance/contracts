@@ -105,6 +105,7 @@ interface IBoosterAccount is IBoosterBase {
     event AccountReceivedTokensTransfer(address root, uint128 amount, address sender);
     event AccountReceivedTokensMint(address root, uint128 amount);
 
+    event AccountTokensSentToOwner(address root, address sender, uint128 amount);
     event AccountGainedReward(address reward, uint128 gain, uint128 fee);
     event AccountGainedLp(uint128 gain, uint128 fee);
     event AccountSwap(address _from, address _to, uint128 expectedAmount, bool gained);
