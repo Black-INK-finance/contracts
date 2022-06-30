@@ -136,11 +136,13 @@ const main = async () => {
         const dex_pair_USDT_USDC = '0:b3b454752cf29575ba0f79cd6ee7fb5ed5fe2ad06555e28c12f7ee88835d728f';
         const dex_pair_WEVER_USDT = '0:771e3d124c7a824d341484718fcf1af03dd4ba1baf280adeb0663bb030ce2bf9';
         const dex_pair_QUBE_WEVER = '0:c8021e99e5329cd863ed206e2729be28586dc2ab398ed4d5f2bbddf2f44d8b01';
+        const dex_pair_WEVER_DUSA = '0:e4bcb973497707dad7a2129361941cfafe3391f6ac40dda7cf2ca29c2d6ceabd';
 
         const USDT = '0:a519f99bb5d6d51ef958ed24d337ad75a1c770885dcd42d51d6663f9fcdacfb2';
         const USDC = '0:c37b3fafca5bf7d3704b081fde7df54f298736ee059bf6d32fac25f5e6085bf6';
         const QUBE = '0:9f20666ce123602fd7a995508aeaa0ece4f92133503c0dfbd609b3239f3901e2';
         const WEVER = '0:a49cd4e158a9a15555e624759e2e4e766d22600b7800d891e46f9291f044a93d';
+        const DUSA = '0:b3ed4b9402881c7638566b410dda055344679b065dce19807497c62202ba9ce3';
 
         const vault = "0:6fa537fa97adf43db0206b5bec98eb43474a9836c016a190ac8b792feb852230";
 
@@ -194,6 +196,28 @@ const main = async () => {
                 rewarder: rewarder.address,
                 reward_fee: 5,
                 lp_fee: 5,
+                ping_value: locklift.utils.convertCrystal(2, 'nano')
+            },
+            value: locklift.utils.convertCrystal(1, 'nano')
+        });
+        spinner.stop();
+
+        spinner.start('Adding WEVER/DUSA farming');
+        await user.runTarget({
+            contract: factory,
+            method: 'addFarming',
+            params: {
+                vault,
+                farming_pool: "0:2147e2dc27660d8bf9311974ed14ac936cb8be2520330f1d0c87590db466809c",
+                lp: "0:36af9d44defe010defa71d53b2986d82bac935edfb29a831076c657bbd9b804e",
+                pair: dex_pair_WEVER_DUSA,
+                left: WEVER,
+                right: DUSA,
+                rewards: [DUSA],
+                swaps: {},
+                rewarder: rewarder.address,
+                reward_fee: 10,
+                lp_fee: 10,
                 ping_value: locklift.utils.convertCrystal(2, 'nano')
             },
             value: locklift.utils.convertCrystal(1, 'nano')

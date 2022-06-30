@@ -56,6 +56,8 @@ abstract contract BoosterAccountBase is
     }
 
     function _loadDexRates() internal {
+        pairBalancePending = 0;
+
         for ((, SwapDirection swap): swaps) {
             pairBalancePending++;
 
@@ -64,6 +66,11 @@ abstract contract BoosterAccountBase is
                 bounce: false,
                 callback: BoosterAccountBase.receiveDexPairBalances
             }();
+        }
+
+        // No swaps are involved
+        if (pairBalancePending == 0) {
+            _claimReward();
         }
     }
 
