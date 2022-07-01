@@ -287,7 +287,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         }
     }
 
-    function getDetails() external override view returns(
+    function getDetails() external responsible override view returns(
         address _owner,
         address _factory,
         uint _version,
@@ -296,7 +296,7 @@ contract BoosterPassport is TransferUtils, IBoosterPassport, InternalOwner {
         uint128 _ping_max_price,
         mapping (address => AccountSettings) _accounts
     ) {
-        return (
+        return {value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS}(
             owner,
             factory,
             version,

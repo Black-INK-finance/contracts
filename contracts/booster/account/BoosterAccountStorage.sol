@@ -4,6 +4,7 @@ pragma ton-solidity ^0.57.1;
 import "../TransferUtils.sol";
 import "../interfaces/IBoosterAccount.sol";
 import "@broxus/contracts/contracts/access/InternalOwner.sol";
+import "@broxus/contracts/contracts/libraries/MsgFlag.sol";
 
 import "./../Constants.sol";
 import "./../Errors.sol";
@@ -31,6 +32,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
     address public left; // Farming pair left token
     address public right; // Farming pair right token
     address[] public rewards; // Farming pool reward tokens
+
     mapping (address => SwapDirection) public swaps; // Swaps directions
     uint32 public pairBalancePending;
     mapping (address => PairBalance) public pairBalances; // Pair balances for pairs from swaps
@@ -83,7 +85,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         );
     }
 
-    function getDetails() external virtual override view returns (
+    function getDetails() external responsible virtual override view returns (
         address _owner,
         uint _version,
         address _factory,
@@ -112,7 +114,7 @@ abstract contract BoosterAccountStorage is IBoosterAccount, InternalOwner, Trans
         uint128 _reward_fee,
         uint128 _lp_fee
     ) {
-        return (
+        return {value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS}(
             owner,
             version,
             factory,

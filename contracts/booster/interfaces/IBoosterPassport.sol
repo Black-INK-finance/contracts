@@ -62,7 +62,7 @@ interface IBoosterPassport {
         uint128 ping_value
     ) external;
 
-    function getDetails() external view returns(
+    function getDetails() external responsible view returns(
         address _owner,
         address _factory,
         uint _version,

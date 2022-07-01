@@ -183,7 +183,7 @@ abstract contract BoosterAccountBase is
             _considerTokensArrival(root, amount);
 
             // In case tokens are sent from vault or pair
-            if (sender == vault || pairBalances.exists(sender)) {
+            if (sender == vault || pairBalances.exists(sender) || sender == pair) {
                 (bool succeeded, bool gained) = abi.decode(payload, (bool, bool));
 
                 // For some reason swap / lp deposit failed, try on next ping

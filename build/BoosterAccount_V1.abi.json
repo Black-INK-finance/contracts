@@ -162,6 +162,7 @@
 		{
 			"name": "getDetails",
 			"inputs": [
+				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
 				{"name":"_owner","type":"address"},

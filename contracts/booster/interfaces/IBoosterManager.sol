@@ -15,5 +15,5 @@ interface IBoosterManager {
         TvmCell code
     ) external;
 
-    function getDetails() external view returns(uint _owner, address _internalOwner, uint _version);
+    function getDetails() external responsible view returns(uint _owner, address _internalOwner, uint _version);
 }

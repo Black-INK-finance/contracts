@@ -36,12 +36,14 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
         _;
     }
 
-    function getDetails() external override returns (
+    function getDetails() responsible external override returns (
         uint _version,
         uint[] _managers,
         address _rewarder,
+
         address _ping_token_root,
         address _ping_token_wallet,
+
         mapping (address => FarmingPoolSettings) _farmings,
 
         TvmCell _account_platform,
@@ -52,7 +54,7 @@ abstract contract BoosterFactoryStorage is IBoosterFactory, InternalOwner {
         TvmCell _passport_implementation,
         uint _passport_version
     ) {
-        return (
+        return {value: 0, bounce: false, flag: MsgFlag.REMAINING_GAS}(
             version,
             managers,
             rewarder,

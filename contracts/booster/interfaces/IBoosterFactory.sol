@@ -112,7 +112,7 @@ interface IBoosterFactory is IBoosterBase {
         bool save_as_default
     ) external;
 
-    function getDetails() external returns (
+    function getDetails() external responsible returns (
         uint _version,
         uint[] _managers,
         address _rewarder,

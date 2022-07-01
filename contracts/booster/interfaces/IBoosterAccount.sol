@@ -22,7 +22,7 @@ interface IBoosterAccount is IBoosterBase {
         uint32 loaded;
     }
 
-    function getDetails() external view returns (
+    function getDetails() external responsible view returns (
         address _owner,
         uint _version,
         address _factory,

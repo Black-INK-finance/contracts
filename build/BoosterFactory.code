@@ -3952,6 +3952,11 @@ IFREF {
 	CALL $c4_to_c7$
 }
 .loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 39
+LDU 32
+GETGLOB 4
+ROT
+SETINDEXQ 5
+SETGLOB 4
 ENDS
 .loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 0
 CALLREF {
@@ -3972,7 +3977,7 @@ PUSHCONT {
 	STUR 98
 	REVERSE 13, 0
 	NEWC
-	STSLICECONST x9a721876
+	STSLICECONST xf3269d44
 	STU 256
 	SWAP
 	UNPAIR
@@ -4001,12 +4006,65 @@ PUSHCONT {
 	STBREFR
 	ENDC
 	PUSHINT 0
-	SENDRAWMSG
 }
 PUSHCONT {
-	BLKDROP 12
+	GETGLOB 4
+	DUP
+	INDEX 3
+	OVER
+	THIRD
+	GETGLOB 9
+	ROLL 3
+	SECOND
+	NEWC
+	PUSHINT 2
+	STZEROES
+	STI 1
+	PUSHINT 3
+	STZEROES
+	STSLICE
+	SWAP
+	STGRAMS
+	STDICT
+	PUSHINT 1
+	STUR 106
+	REVERSE 13, 0
+	NEWC
+	GETGLOB 4
+	INDEX 5
+	STUR 32
+	STU 256
+	SWAP
+	UNPAIR
+	XCHG S2
+	STU 32
+	STDICT
+	STSLICE
+	ROLLREV 9
+	NEWC
+	STSLICE
+	ROLLREV 8
+	NEWC
+	STSLICE
+	STDICT
+	STREF
+	STREF
+	STU 256
+	ROLLREV 3
+	NEWC
+	STREF
+	STREF
+	STU 256
+	STBREFR
+	STBREFR
+	STBREFR
+	STBREFR
+	ENDC
+	GETGLOB 4
+	INDEX 4
 }
 IFELSE
+SENDRAWMSG
 DROP
 CALLREF {
 	CALL $c7_to_c4$
@@ -4014,7 +4072,15 @@ CALLREF {
 THROW 0
 
 .macro getDetails_internal_macro
-.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 55
+.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 57
+GETGLOB 4
+PUSHINT 0
+SETINDEXQ 2
+FALSE
+SETINDEXQ 1
+PUSHINT 64
+SETINDEXQ 4
+SETGLOB 4
 GETGLOB 11
 GETGLOB 12
 GETGLOB 13
@@ -4034,7 +4100,7 @@ GETGLOB 23
 CALL $_me_internal_macro$
 
 .macro _me_internal_macro
-.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 76
+.loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 78
 MYADDR
 .loc ../contracts/booster/factory/BoosterFactoryStorage.sol, 0
 
@@ -4739,7 +4805,7 @@ THROW 0
 
 .macro public_function_selector
 DUP
-PUSHINT 665656942
+PUSHINT 671925038
 LEQ
 IFJMPREF {
 	DUP
@@ -4801,7 +4867,7 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 443684982
+	PUSHINT 519261921
 	LEQ
 	IFJMPREF {
 		DUP
@@ -4823,22 +4889,16 @@ IFJMPREF {
 			CALL $farmings$
 		}
 		DUP
-		PUSHINT 443684982
-		EQUAL
-		IFJMPREF {
-			CALL $getDetails$
-		}
-	}
-	DUP
-	PUSHINT 665656942
-	LEQ
-	IFJMPREF {
-		DUP
 		PUSHINT 519261921
 		EQUAL
 		IFJMPREF {
 			CALL $skimFees$
 		}
+	}
+	DUP
+	PUSHINT 671925038
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 536860789
 		EQUAL
@@ -4857,22 +4917,22 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $withdrawPingTokens$
 		}
-	}
-}
-DUP
-PUSHINT 1521521533
-LEQ
-IFJMPREF {
-	DUP
-	PUSHINT 829865649
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 671925038
 		EQUAL
 		IFJMPREF {
 			CALL $upgradeAccountCode$
 		}
+	}
+}
+DUP
+PUSHINT 1586270318
+LEQ
+IFJMPREF {
+	DUP
+	PUSHINT 952135651
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 773710668
 		EQUAL
@@ -4891,17 +4951,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $managers$
 		}
-	}
-	DUP
-	PUSHINT 998533190
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 952135651
 		EQUAL
 		IFJMPREF {
 			CALL $getPassportPlatformCodeHash$
 		}
+	}
+	DUP
+	PUSHINT 1035044561
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 972623552
 		EQUAL
@@ -4920,17 +4980,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $derivePassport$
 		}
-	}
-	DUP
-	PUSHINT 1259122277
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1035044561
 		EQUAL
 		IFJMPREF {
 			CALL $addFarming$
 		}
+	}
+	DUP
+	PUSHINT 1299788324
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1157941498
 		EQUAL
@@ -4949,17 +5009,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $ping_token_root$
 		}
-	}
-	DUP
-	PUSHINT 1521521533
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1299788324
 		EQUAL
 		IFJMPREF {
 			CALL $version$
 		}
+	}
+	DUP
+	PUSHINT 1586270318
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1440261805
 		EQUAL
@@ -4978,6 +5038,12 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $toggleFarming$
 		}
+		DUP
+		PUSHINT 1586270318
+		EQUAL
+		IFJMPREF {
+			CALL $setFees$
+		}
 	}
 }
 DUP
@@ -4985,15 +5051,9 @@ PUSHINT 2099274339
 LEQ
 IFJMPREF {
 	DUP
-	PUSHINT 1729444094
+	PUSHINT 1780351064
 	LEQ
 	IFJMPREF {
-		DUP
-		PUSHINT 1586270318
-		EQUAL
-		IFJMPREF {
-			CALL $setFees$
-		}
 		DUP
 		PUSHINT 1594609630
 		EQUAL
@@ -5012,17 +5072,17 @@ IFJMPREF {
 		IFJMPREF {
 			CALL $renounceOwnership$
 		}
-	}
-	DUP
-	PUSHINT 1907596290
-	LEQ
-	IFJMPREF {
 		DUP
 		PUSHINT 1780351064
 		EQUAL
 		IFJMPREF {
 			CALL $ping_token_wallet$
 		}
+	}
+	DUP
+	PUSHINT 1931910468
+	LEQ
+	IFJMPREF {
 		DUP
 		PUSHINT 1820757222
 		EQUAL
@@ -5040,6 +5100,12 @@ IFJMPREF {
 		EQUAL
 		IFJMPREF {
 			CALL $account_implementation$
+		}
+		DUP
+		PUSHINT 1931910468
+		EQUAL
+		IFJMPREF {
+			CALL $getDetails$
 		}
 	}
 	DUP
