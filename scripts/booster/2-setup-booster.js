@@ -164,7 +164,7 @@ const main = async () => {
             _randomNonce: locklift.utils.getRandomNonce()
         },
         keyPair,
-    }, locklift.utils.convertCrystal(10, 'nano'));
+    }, locklift.utils.convertCrystal(5, 'nano'));
 
     user.setKeyPair(keyPair);
     spinner.stop();
@@ -177,7 +177,7 @@ const main = async () => {
         constructorParams: {
             _owner: user.address,
             _managers: [
-                '0x5a486a7550514dc5006dbf25937cdccbed5476867c93811b1376d602aa28d1d0',
+                // '0x5a486a7550514dc5006dbf25937cdccbed5476867c93811b1376d602aa28d1d0',
                 '0x1757c06652bdcfb066a90b65832b58090236b5314b4cb7458e1e60ca44f16dbb',
             ],
             _rewarder: rewarder.address,
