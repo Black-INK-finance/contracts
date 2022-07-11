@@ -1,3 +1,5 @@
-# Yield Farming
+# Black INK protocol
 
-Freeton yield farming contracts
+The booster functionality is built above the FlatQube farming contracts.
+
+Contracts are located at `contracts/booster/`.
