@@ -405,5 +405,19 @@ describe('Test buyback functionality', async function () {
                     );
             });
         });
+
+        describe('Unwrap LP token', async () => {
+            it('Initialize unwrap rules', async () => {
+
+            });
+
+            it('Alice transfers LPs to rewarder', async () => {
+
+            });
+
+            it('Check rewarder unwrapped LPs', async () => {
+
+            });
+        });
     });
 });

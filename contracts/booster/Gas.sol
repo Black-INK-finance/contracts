@@ -43,6 +43,7 @@ library Gas {
     uint128 constant BOOSTER_PASSPORT_SPENT_GAS_LIMIT = 2 ton;
 
     uint128 constant BOOSTER_BUYBACK_DEX_SWAP = 5 ton;
+    uint128 constant BOOSTER_BUYBACK_LP_UNWRAP = 5 ton;
 
     uint128 constant BOOSTER_ACCOUNT_CYCLE_COST = 3 ton;
 }

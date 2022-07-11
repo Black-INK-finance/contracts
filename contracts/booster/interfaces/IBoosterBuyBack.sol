@@ -10,6 +10,11 @@ interface IBoosterBuyBack {
         uint128 minToSwap;
     }
 
+    struct Unwrap {
+        address pair;
+        uint128 minToUnwrap;
+    }
+
     function skimGas(
         uint128 reserve
     ) external;
@@ -23,12 +28,26 @@ interface IBoosterBuyBack {
         SwapDirection swap
     ) external;
 
+    function setTokenUnwrap(
+        address token,
+        Unwrap unwrap
+    ) external;
+
     function setTokenMinToSwap(
         address token,
         uint128 amount
     ) external;
 
+    function setTokenMinToUnwrap(
+        address token,
+        uint128 amount
+    ) external;
+
     function removeTokenSwap(
+        address token
+    ) external;
+
+    function removeTokenUnwrap(
         address token
     ) external;
 
@@ -46,6 +65,10 @@ interface IBoosterBuyBack {
     ) external;
 
     function triggerSwap(
+        address token
+    ) external;
+
+    function triggerUnwrap(
         address token
     ) external;
 

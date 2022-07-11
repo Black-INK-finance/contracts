@@ -30,6 +30,7 @@ contract BoosterBuyBack is
 {
     mapping (address => address) public wallets;
     mapping (address => SwapDirection) public swaps;
+    mapping (address => Unwrap) public unwraps;
     mapping (address => uint128) public balances;
     mapping (address => uint128) public received;
 
@@ -151,6 +152,17 @@ contract BoosterBuyBack is
         }
     }
 
+    function setTokenUnwrap(
+        address token,
+        Unwrap unwrap
+    ) external override onlyOwner cashBack(owner) {
+        unwraps[token] = unwrap;
+
+        if (!wallets.exists(token)) {
+            _deployTokenWallet(token);
+        }
+    }
+
     function setTokenMinToSwap(
         address token,
         uint128 amount
@@ -160,6 +172,15 @@ contract BoosterBuyBack is
         swaps[token].minToSwap = amount;
     }
 
+    function setTokenMinToUnwrap(
+        address token,
+        uint128 amount
+    ) external override onlyOwner cashBack(owner) {
+        require(unwraps.exists(token));
+
+        unwraps[token].minToUnwrap = amount;
+    }
+
     /// @notice Remove swap rules for token
     /// Can be called only by `owner`
     /// @param token Token address
@@ -167,6 +188,12 @@ contract BoosterBuyBack is
         address token
     ) external override onlyOwner {
         delete swaps[token];
+    }
+
+    function removeTokenUnwrap(
+        address token
+    ) external override onlyOwner {
+        delete unwraps[token];
     }
 
     function onAcceptTokensTransfer(
@@ -188,6 +215,12 @@ contract BoosterBuyBack is
                 value: 0.01 ton
             }(root);
         }
+
+        if (!paused && unwraps.exists(root) && balances[root] >= unwraps[root].minToUnwrap) {
+            IBoosterBuyBack(_me()).triggerUnwrap{
+                value: 0.01 ton
+            }(root);
+        }
     }
 
     function triggerSwap(
@@ -197,6 +230,16 @@ contract BoosterBuyBack is
 
         if (!paused) {
             _swap(token);
+        }
+    }
+
+    function triggerUnwrap(
+        address token
+    ) external override onlyMeOrOwner {
+        tvm.accept();
+
+        if (!paused) {
+            _unwrap(token);
         }
     }
 
@@ -221,6 +264,30 @@ contract BoosterBuyBack is
             true,
             payload,
             Gas.BOOSTER_BUYBACK_DEX_SWAP,
+            0,
+            false
+        );
+
+        balances[token] = 0;
+    }
+
+    function _unwrap(address token) internal {
+        if (balances[token] == 0 || !unwraps.exists(token)) return;
+
+        Unwrap unwrap = unwraps[token];
+
+        if (balances[token] < unwrap.minToUnwrap) return;
+
+        TvmCell payload = _buildUnwrapPayload(0, 0);
+
+        _transferTokens(
+            wallets[token],
+            balances[token],
+            unwrap.pair,
+            _me(),
+            true,
+            payload,
+            Gas.BOOSTER_BUYBACK_LP_UNWRAP,
             0,
             false
         );
@@ -287,6 +354,21 @@ contract BoosterBuyBack is
         builder.store(id);
         builder.store(deploy_wallet_grams);
         builder.store(expected_amount);
+
+        TvmCell empty;
+        builder.store(empty);
+
+        return builder.toCell();
+    }
+
+    function _buildUnwrapPayload(
+        uint64 id,
+        uint128 deploy_wallet_grams
+    ) internal pure returns(TvmCell) {
+        TvmBuilder builder;
+        builder.store(DexOperationTypes.WITHDRAW_LIQUIDITY);
+        builder.store(id);
+        builder.store(deploy_wallet_grams);
 
         TvmCell empty;
         builder.store(empty);

@@ -62,6 +62,15 @@
 			]
 		},
 		{
+			"name": "setTokenUnwrap",
+			"inputs": [
+				{"name":"token","type":"address"},
+				{"components":[{"name":"pair","type":"address"},{"name":"minToUnwrap","type":"uint128"}],"name":"unwrap","type":"tuple"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setTokenMinToSwap",
 			"inputs": [
 				{"name":"token","type":"address"},
@@ -71,7 +80,24 @@
 			]
 		},
 		{
+			"name": "setTokenMinToUnwrap",
+			"inputs": [
+				{"name":"token","type":"address"},
+				{"name":"amount","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "removeTokenSwap",
+			"inputs": [
+				{"name":"token","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "removeTokenUnwrap",
 			"inputs": [
 				{"name":"token","type":"address"}
 			],
@@ -93,6 +119,14 @@
 		},
 		{
 			"name": "triggerSwap",
+			"inputs": [
+				{"name":"token","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "triggerUnwrap",
 			"inputs": [
 				{"name":"token","type":"address"}
 			],
@@ -155,6 +189,14 @@
 			]
 		},
 		{
+			"name": "unwraps",
+			"inputs": [
+			],
+			"outputs": [
+				{"components":[{"name":"pair","type":"address"},{"name":"minToUnwrap","type":"uint128"}],"name":"unwraps","type":"map(address,tuple)"}
+			]
+		},
+		{
 			"name": "balances",
 			"inputs": [
 			],
@@ -201,6 +243,7 @@
 		{"name":"_randomNonce","type":"uint256"},
 		{"name":"wallets","type":"map(address,address)"},
 		{"components":[{"name":"token","type":"address"},{"name":"pair","type":"address"},{"name":"minToSwap","type":"uint128"}],"name":"swaps","type":"map(address,tuple)"},
+		{"components":[{"name":"pair","type":"address"},{"name":"minToUnwrap","type":"uint128"}],"name":"unwraps","type":"map(address,tuple)"},
 		{"name":"balances","type":"map(address,uint128)"},
 		{"name":"received","type":"map(address,uint128)"},
 		{"name":"paused","type":"bool"}
